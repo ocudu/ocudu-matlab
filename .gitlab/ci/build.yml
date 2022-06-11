@@ -1,0 +1,34 @@
+stages:
+  - build testvectors
+  - run unit tests
+
+build testvectors:
+  stage: build testvectors
+  variables:
+    GIT_STRATEGY: clone
+  tags:
+    - matlab
+  artifacts:
+    paths:
+      - $ARTIFACTSDIR/
+  script:
+    - mkdir -p ./artifacts
+    - export ARTIFACTSDIR="`pwd`/artifacts"
+    - /usr/local/MATLAB/R2022a/bin/matlab -sd ./ -batch "runSRSGNBUnittest('all', 'testvector'); srsTest.copySRStestvectors('testvector_outputs', '$ARTIFACTSDIR')" -logfile $ARTIFACTSDIR/matlab.log
+
+run unit tests:
+  stage: run unit tests
+  tags:
+    - matlab
+  variables:
+    GIT_STRATEGY: clone
+  artifacts:
+    name: build testvectors
+    paths:
+    - artifacts/
+  before_script:
+    - export export SRSGNBDIR="`pwd`/srsgnb"
+    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/softwareradiosystems/srsgnb.git srsgnb
+  script:
+    - rsync -av ./artifacts/ $SRSGNBDIR
+    - ctest --build-and-test $SRSGNBDIR $SRSGNBDIR/build --build-generator Ninja --test-command ctest -L phy
