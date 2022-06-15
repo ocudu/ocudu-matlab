@@ -38,4 +38,9 @@ run unit tests:
         echo `git ls-files --others`
         exit 1
       fi
+    - |
+      if [[ $(git ls-files --modified|wc -l) -eq 0 ]]; then
+        echo "No test files were copied to the srsgnb working directory."
+        exit 1
+      fi
     - ctest --build-and-test $SRSGNBDIR $SRSGNBDIR/build --build-generator Ninja --test-command ctest -L phy
