@@ -14,7 +14,7 @@ build testvectors:
   script:
     - mkdir -p ./artifacts
     - export ARTIFACTSDIR="`pwd`/artifacts"
-    - /usr/local/MATLAB/R2022a/bin/matlab -sd ./ -batch "runSRSGNBUnittest('all', 'testvector'); srsTest.copySRStestvectors('testvector_outputs', '$ARTIFACTSDIR')" -logfile $ARTIFACTSDIR/matlab.log
+    - /usr/local/MATLAB/R2022a/bin/matlab -sd ./ -batch "runSRSGNBUnittest('all', 'testvector'); srsTest.copySRStestvectors('testvector_outputs', '$ARTIFACTSDIR')"
 
 run unit tests:
   stage: run unit tests
