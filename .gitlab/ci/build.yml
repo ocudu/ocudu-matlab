@@ -10,7 +10,7 @@ build testvectors:
     - matlab
   artifacts:
     paths:
-      - $ARTIFACTSDIR/
+      - artifacts/
   script:
     - mkdir -p ./artifacts
     - export ARTIFACTSDIR="`pwd`/artifacts"
@@ -31,4 +31,11 @@ run unit tests:
     - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/softwareradiosystems/srsgnb.git srsgnb
   script:
     - rsync -av ./artifacts/ $SRSGNBDIR
+    - cd $SRSGNBDIR
+    - |
+      if [[ $(git ls-files --others|wc -l) -gt 0 ]]; then
+        echo "The following files were not tracked by git:"
+        echo `git ls-files --others`
+        exit 1
+      fi
     - ctest --build-and-test $SRSGNBDIR $SRSGNBDIR/build --build-generator Ninja --test-command ctest -L phy
