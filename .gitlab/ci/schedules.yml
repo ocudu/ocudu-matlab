@@ -1,0 +1,12 @@
+Nightly:
+  cron: "30 2 * * *"
+  cron_timezone: "Europe/Madrid"
+  ref: master
+  active: true
+  variables:
+    - variable_type: env_var
+      key: NOTIFY_SLACK
+      value: "true"
+    - variable_type: env_var
+      key: SLACK_CHANNEL
+      value: "#ci_gnb"
