@@ -1,3 +1,8 @@
+include:
+  - project: softwareradiosystems/testing-tools
+    ref: "12"
+    file: .gitlab/ci-shared/default.yml
+
 stages:
   - build testvectors
   - run unit tests
@@ -25,7 +30,7 @@ run unit tests:
   artifacts:
     name: build testvectors
     paths:
-    - artifacts/
+      - artifacts/
   before_script:
     - export export SRSGNBDIR="`pwd`/srsgnb"
     - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/softwareradiosystems/srsgnb.git srsgnb
