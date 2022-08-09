@@ -6,6 +6,7 @@ include:
 stages:
   - build testvectors
   - run unit tests
+  - check mex files
 
 build testvectors:
   stage: build testvectors
@@ -49,3 +50,27 @@ run unit tests:
         exit 1
       fi
     - ctest --build-and-test $SRSGNBDIR $SRSGNBDIR/build --build-generator Ninja --test-command ctest -L phy
+
+check mex files:
+  stage: check mex files
+  tags:
+    - matlab
+  variables:
+    GIT_STRATEGY: clone
+  before_script:
+    - export export SRSGNBDIR="`pwd`/srsgnb"
+    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/softwareradiosystems/srsgnb.git srsgnb
+  script:
+    - export WORKSPACE_DIR=`pwd`
+    - cd $SRSGNBDIR
+    - |
+      mkdir -p build
+      cd build
+      cmake -GNinja -DENABLE_EXPORT=On ..
+      ninja all
+    - |
+      cd $WORKSPACE_DIR/sourceMex
+      mkdir -p build
+      cd build
+      cmake -GNinja -DSRSGNB_BINARY_DIR="$SRSGNBDIR/build" -DMatlab_ROOT_DIR="/usr/local/MATLAB/R2022a" ..
+      ninja all
