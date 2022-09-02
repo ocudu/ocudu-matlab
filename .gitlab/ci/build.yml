@@ -1,7 +1,7 @@
 include:
   - project: softwareradiosystems/testing-tools
     ref: "20"
-    file: .gitlab/ci-shared/default.yml
+    file: .gitlab/ci-shared/setup/default.yml
 
 stages:
   - build testvectors
