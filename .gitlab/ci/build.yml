@@ -1,6 +1,6 @@
 include:
   - project: softwareradiosystems/testing-tools
-    ref: "20"
+    ref: "28"
     file: .gitlab/ci-shared/setup/default.yml
 
 stages:
