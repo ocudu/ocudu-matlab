@@ -50,6 +50,7 @@ run unit tests:
         exit 1
       fi
     - ctest --build-and-test $SRSGNBDIR $SRSGNBDIR/build --build-generator Ninja --test-command ctest -L phy
+    - ctest --test-dir $SRSGNBDIR/build -R "pdcch_candidates|tbs_calculator|ulsch_info"
 
 check mex files:
   stage: check mex files
