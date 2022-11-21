@@ -25,8 +25,11 @@
     "auto_cancel_pending_pipelines": "enabled",
     "auto_devops_enabled": false,
     "autoclose_referenced_issues": true,
+    "build_git_strategy": "fetch",
+    "build_timeout": 3600,
     "can_create_merge_request_in": true,
     "ci_allow_fork_pipelines_to_run_in_parent_project": false,
+    "ci_default_git_depth": 1,
     "ci_separated_caches": false,
     "container_expiration_policy": {
         "enabled": false
@@ -48,12 +51,10 @@
     "operations_access_level": "enabled",
     "packages_enabled": true,
     "pages_access_level": "private",
-    "protectedtags": [],
     "protectedbranches": [
         {
             "allow_force_push": false,
-            "code_owner_approval_required": false,
-            "merge_access_levels": [
+            "allowed_to_merge": [
                 {
                     "access_level": 30,
                     "access_level_description": "Developers + Maintainers",
@@ -61,8 +62,7 @@
                     "user_id": null
                 }
             ],
-            "name": "master",
-            "push_access_levels": [
+            "allowed_to_push": [
                 {
                     "access_level": 0,
                     "access_level_description": "No one",
@@ -70,9 +70,14 @@
                     "user_id": null
                 }
             ],
-            "unprotect_access_levels": []
+            "code_owner_approval_required": false,
+            "name": "master"
         }
     ],
+    "protectedtags": [],
+    "pushrules": {
+        "prevent_secrets": true
+    },
     "releases_access_level": "enabled",
     "remove_source_branch_after_merge": true,
     "repository_access_level": "enabled",
