@@ -40,7 +40,7 @@
     "forking_access_level": "disabled",
     "jobs_enabled": true,
     "keep_latest_artifact": true,
-    "lfs_enabled": true,
+    "lfs_enabled": false,
     "merge_method": "ff",
     "merge_pipelines_enabled": true,
     "merge_requests_access_level": "enabled",
