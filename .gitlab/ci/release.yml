@@ -1,0 +1,70 @@
+#
+# Copyright 2021-2023 Software Radio Systems Limited
+#
+# This file is part of srsRAN-matlab.
+#
+# srsRAN-matlab is free software: you can redistribute it and/or
+# modify it under the terms of the BSD 2-Clause License.
+#
+# srsRAN-matlab is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# BSD 2-Clause License for more details.
+#
+# A copy of the BSD 2-Clause License can be found in the LICENSE
+# file in the top-level directory of this distribution.
+#
+
+include:
+  - project: softwareradiosystems/ci/tools
+    ref: "6"
+    file: .gitlab/ci-shared/setup/all.yml
+
+stages:
+  - private
+  - public
+
+update agpl main:
+  stage: private
+  rules:
+    - if: $CI_DESCRIPTION =~ /Release/
+  interruptible: false
+  variables:
+    GIT_STRATEGY: none
+    BRANCH: agpl_main
+  image: ubuntu:22.04
+  before_script:
+    - DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends git git-filter-repo apt-transport-https ca-certificates
+    - git config --global user.name "${CODEBOT_USERNAME}"
+    - git config --global user.email "${CODEBOT_LONG_USERNAME}@noreply.gitlab.com"
+  script:
+    - git clone https://${CODEBOT_USERNAME}:${CODEBOT_TOKEN}@gitlab.com/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}.git /${CI_PROJECT_NAME}
+    - cd /${CI_PROJECT_NAME}
+    - git fetch -q origin ${CI_COMMIT_SHA} && git checkout ${CI_COMMIT_SHA}
+    - .gitlab/ci/auto_merge.sh ${CI_COMMIT_SHA} ${BRANCH}
+
+# TODO Test agpl_main with github public gnb code
+
+release:
+  stage: public
+  rules:
+    - if: $CI_DESCRIPTION =~ /Release/
+      when: manual
+      allow_failure: false
+  interruptible: false
+  image: alpine:3.16.0 # sh entrypoint
+  variables:
+    GIT_STRATEGY: none
+    PRIVATE_BRANCH: agpl_main
+    PUBLIC_NAME: srsRAN Matlab
+    PUBLIC_REPO: srsran/srsRAN_Matlab
+    PUBLIC_BRANCH: main
+  before_script:
+    - apk add git
+  script:
+    # Download private repo and add public as origin
+    - git clone --branch $PRIVATE_BRANCH https://${CODEBOT_USERNAME}:${CODEBOT_TOKEN}@gitlab.com/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}.git /${CI_PROJECT_NAME}
+    - cd /${CI_PROJECT_NAME}
+    - git remote add github_public https://${PUBLIC_TOKEN}@github.com/${PUBLIC_REPO}.git
+    # Push code to github main
+    - git push github_public ${PRIVATE_BRANCH}:${PUBLIC_BRANCH}
