@@ -24,14 +24,14 @@ stages:
   - private
   - public
 
-update agpl main:
+update public_main:
   stage: private
   rules:
     - if: $CI_DESCRIPTION =~ /Release/
   interruptible: false
   variables:
     GIT_STRATEGY: none
-    BRANCH: agpl_main
+    BRANCH: public_main
   image: ubuntu:22.04
   before_script:
     - DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends git git-filter-repo apt-transport-https ca-certificates
@@ -43,7 +43,7 @@ update agpl main:
     - git fetch -q origin ${CI_COMMIT_SHA} && git checkout ${CI_COMMIT_SHA}
     - .gitlab/ci/auto_merge.sh ${CI_COMMIT_SHA} ${BRANCH}
 
-# TODO Test agpl_main with github public gnb code
+# TODO Test public_main with github public gnb code
 
 release:
   stage: public
@@ -55,9 +55,9 @@ release:
   image: alpine:3.16.0 # sh entrypoint
   variables:
     GIT_STRATEGY: none
-    PRIVATE_BRANCH: agpl_main
-    PUBLIC_NAME: srsRAN Matlab
-    PUBLIC_REPO: srsran/srsRAN_Matlab
+    PRIVATE_BRANCH: public_main
+    PUBLIC_NAME: srsRAN-matlab
+    PUBLIC_REPO: srsran/srsRAN_matlab
     PUBLIC_BRANCH: main
   before_script:
     - apk add git

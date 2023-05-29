@@ -32,7 +32,7 @@ main() {
     # Create filtered ref of source ref
     git fetch -q origin "$source_ref"
     git checkout -b "filtered_$source_ref" FETCH_HEAD
-    git filter-repo --refs filtered_"$source_ref" --path .gitlab-ci.yml --path .gitlab/ --path .gitattributes --path-glob "*.tar.gz" --invert-paths --force
+    git filter-repo --refs "filtered_$source_ref" --path .gitlab-ci.yml --path .gitlab/ --path .gitattributes --path-glob "*.tar.gz" --invert-paths --force
 
     # Checkout target ref
     git fetch -q origin "$target_ref"

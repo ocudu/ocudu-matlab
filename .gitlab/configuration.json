@@ -91,7 +91,7 @@
                 }
             ],
             "code_owner_approval_required": false,
-            "name": "agpl_main"
+            "name": "public_main"
         }
     ],
     "protectedtags": [],
