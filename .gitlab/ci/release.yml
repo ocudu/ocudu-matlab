@@ -19,6 +19,9 @@ include:
   - project: softwareradiosystems/ci/tools
     ref: "6"
     file: .gitlab/ci-shared/setup/all.yml
+  - project: softwareradiosystems/ci/tools
+    ref: "6"
+    file: .gitlab/ci-shared/features/all.yml
 
 stages:
   - private
@@ -45,7 +48,7 @@ update public_main:
 
 # TODO Test public_main with github public gnb code
 
-release:
+publish main:
   stage: public
   rules:
     - if: $CI_DESCRIPTION =~ /Release/
@@ -68,3 +71,18 @@ release:
     - git remote add github_public https://${PUBLIC_TOKEN}@github.com/${PUBLIC_REPO}.git
     # Push code to github main
     - git push github_public ${PRIVATE_BRANCH}:${PUBLIC_BRANCH}
+
+notify main published:
+  extends: .notifier
+  stage: public
+  rules:
+    - if: $CI_DESCRIPTION =~ /Release/
+  needs:
+    - job: publish main
+      optional: false
+      artifacts: false
+  variables:
+    CI_DESCRIPTION: "Public GitHub Updated"
+    MSG: "main branch has been updated."
+    SLACK_CHANNEL: $SLACK_CHANNEL_OK
+    LEVEL: "ok"
