@@ -46,8 +46,6 @@ update public_main:
     - git fetch -q origin ${CI_COMMIT_SHA} && git checkout ${CI_COMMIT_SHA}
     - .gitlab/ci/auto_merge.sh ${CI_COMMIT_SHA} ${BRANCH}
 
-# TODO Test public_main with github public gnb code
-
 publish main:
   stage: public
   rules:
