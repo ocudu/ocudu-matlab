@@ -35,6 +35,7 @@ update public_main:
   variables:
     GIT_STRATEGY: none
     BRANCH: public_main
+    MODE: push
   image: ubuntu:22.04
   before_script:
     - DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends git git-filter-repo apt-transport-https ca-certificates
@@ -44,7 +45,17 @@ update public_main:
     - git clone https://${CODEBOT_USERNAME}:${CODEBOT_TOKEN}@gitlab.com/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}.git /${CI_PROJECT_NAME}
     - cd /${CI_PROJECT_NAME}
     - git fetch -q origin ${CI_COMMIT_SHA} && git checkout ${CI_COMMIT_SHA}
-    - .gitlab/ci/auto_merge.sh ${CI_COMMIT_SHA} ${BRANCH}
+    - .gitlab/ci/auto_merge.sh ${CI_COMMIT_SHA} ${BRANCH} ${MODE}
+
+update public_main dryrun:
+  extends: update public_main
+  rules:
+    - if: $CI_DESCRIPTION =~ /Nightly/
+      when: always
+      allow_failure: true
+  variables:
+    MODE: "dryrun"
+  needs: []
 
 publish main:
   stage: public
