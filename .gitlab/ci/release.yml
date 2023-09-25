@@ -45,7 +45,7 @@ update compatibility table:
     - git clone --branch ${CI_DEFAULT_BRANCH} https://${CODEBOT_USERNAME}:${CODEBOT_TOKEN}@gitlab.com/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}.git /${CI_PROJECT_NAME}
     - sed -i "s/latest  /${latest_matlab_public}/g" README.md
     - sed -zi "s/|\n\n###/|\n|     latest      |     ${latest_srsran_public}   |\n\n###/g" README.md
-    - git add .
+    - git add README.md
     - git commit -m "README Update compatibility table"
     - git push
 
