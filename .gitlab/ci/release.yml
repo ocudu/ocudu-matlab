@@ -27,6 +27,28 @@ stages:
   - private
   - public
 
+update compatibility table:
+  stage: private
+  rules:
+    - if: $CI_DESCRIPTION =~ /Release/
+  interruptible: false
+  image: ubuntu:22.04
+  variables:
+    PUBLIC_REPO: srsran/srsRAN_matlab
+  before_script:
+    - DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends git git-filter-repo apt-transport-https ca-certificates
+    - git config --global user.name "${CODEBOT_USERNAME}"
+    - git config --global user.email "${CODEBOT_LONG_USERNAME}@noreply.gitlab.com"
+  script:
+    - latest_matlab_public=$(git ls-remote https://${PUBLIC_TOKEN}@github.com/${PUBLIC_REPO}.git HEAD | cut -c1-8)
+    - latest_srsran_public=$(git ls-remote https://${PUBLIC_TOKEN}@github.com/srsran/srsRAN_Project.git HEAD | cut -c1-8)
+    - git clone --branch ${CI_DEFAULT_BRANCH} https://${CODEBOT_USERNAME}:${CODEBOT_TOKEN}@gitlab.com/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}.git /${CI_PROJECT_NAME}
+    - sed -i "s/latest  /${latest_matlab_public}/g" README.md
+    - sed -zi "s/|\n\n###/|\n|     latest      |     ${latest_srsran_public}   |\n\n###/g" README.md
+    - git add .
+    - git commit -m "README Update compatibility table"
+    - git push
+
 update public_main:
   stage: private
   rules:
@@ -46,6 +68,9 @@ update public_main:
     - cd /${CI_PROJECT_NAME}
     - git fetch -q origin ${CI_COMMIT_SHA} && git checkout ${CI_COMMIT_SHA}
     - .gitlab/ci/auto_merge.sh ${CI_COMMIT_SHA} ${BRANCH} ${MODE}
+  needs:
+    - job: update compatibility table
+      artifacts: false
 
 update public_main dryrun:
   extends: update public_main
