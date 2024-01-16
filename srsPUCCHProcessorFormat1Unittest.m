@@ -58,7 +58,7 @@
 %   A copy of the BSD 2-Clause License can be found in the LICENSE
 %   file in the top-level directory of this distribution.
 
-%   Copyright 2021-2023 Software Radio Systems Limited
+%   Copyright 2021-2024 Software Radio Systems Limited
 %
 %   This file is part of srsRAN-matlab.
 %
