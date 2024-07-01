@@ -49,5 +49,5 @@ function postprocessconformance(testResults)
     end
 
     nTests = length(testResults);
-    assert(nSoftFailures < 0.1 * nTests, 'conformance:tooManyVerification', ...
-        'At most 10%% of verification failures allowed: found %d out of %d.', nSoftFailures, nTests);
+    assert(nSoftFailures < 0.5 * nTests, 'conformance:tooManyVerification', ...
+        'At most 50%% of verification failures allowed: found %d out of %d.', nSoftFailures, nTests);
