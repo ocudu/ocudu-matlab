@@ -68,8 +68,8 @@ update public_main:
   script:
     - git clone https://${CODEBOT_USERNAME}:${CODEBOT_TOKEN}@gitlab.com/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}.git /${CI_PROJECT_NAME}
     - cd /${CI_PROJECT_NAME}
-    - git fetch -q origin ${CI_COMMIT_SHA} && git checkout ${CI_COMMIT_SHA}
-    - .gitlab/ci/auto_merge.sh ${CI_COMMIT_SHA} ${BRANCH} ${MODE}
+    - git fetch -q origin ${CI_DEFAULT_BRANCH} && git checkout ${CI_DEFAULT_BRANCH}
+    - .gitlab/ci/auto_merge.sh ${CI_DEFAULT_BRANCH} ${BRANCH} ${MODE}
   needs:
     - job: update compatibility table
       artifacts: false
