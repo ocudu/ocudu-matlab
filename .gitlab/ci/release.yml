@@ -15,18 +15,6 @@
 # file in the top-level directory of this distribution.
 #
 
-include:
-  - project: softwareradiosystems/ci/tools
-    ref: "20"
-    file: .gitlab/ci-shared/setup/all.yml
-  - project: softwareradiosystems/ci/tools
-    ref: "20"
-    file: .gitlab/ci-shared/features/all.yml
-
-stages:
-  - private
-  - public
-
 update compatibility table:
   stage: private
   rules:
