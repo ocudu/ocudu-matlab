@@ -50,7 +50,7 @@ main() {
     echo "========="
     echo "= Merge ="
     echo "========="
-    git merge --ff "filtered_$source_ref" -m "Update main"
+    git merge --ff --strategy-option theirs "filtered_$source_ref" -m "Update main"
 
     # Push
     if [ "$mode" = "push" ]; then
