@@ -76,8 +76,6 @@ publish main:
   stage: public
   rules:
     - if: $CI_DESCRIPTION =~ /Release/
-      when: manual
-      allow_failure: false
   interruptible: false
   image: alpine:3.16.0 # sh entrypoint
   variables:
