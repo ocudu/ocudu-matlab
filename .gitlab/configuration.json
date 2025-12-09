@@ -35,7 +35,7 @@
         "enabled": false
     },
     "container_registry_access_level": "enabled",
-    "default_branch": "master",
+    "default_branch": "main",
     "enforce_auth_checks_on_uploads": true,
     "forking_access_level": "disabled",
     "jobs_enabled": true,
@@ -55,7 +55,7 @@
             "allow_force_push": false,
             "allowed_to_merge": [
                 {
-                    "id": 111292925,
+                    "id": 197116570,
                     "access_level": 30,
                     "access_level_description": "Developers + Maintainers",
                     "group_id": null,
@@ -64,7 +64,7 @@
             ],
             "allowed_to_push": [
                 {
-                    "id": 125248069,
+                    "id": 239879709,
                     "access_level": 40,
                     "access_level_description": "$CODEBOT_USERNAME",
                     "group_id": null,
@@ -73,31 +73,7 @@
                 }
             ],
             "code_owner_approval_required": false,
-            "name": "master"
-        },
-        {
-            "allow_force_push": false,
-            "allowed_to_merge": [
-                {
-                    "id": 111292927,
-                    "access_level": 0,
-                    "access_level_description": "No one",
-                    "group_id": null,
-                    "user_id": null
-                }
-            ],
-            "allowed_to_push": [
-                {
-                    "id": 123675106,
-                    "access_level": 40,
-                    "access_level_description": "Maintainers",
-                    "group_id": null,
-                    "user_id": null,
-                    "deploy_key_id": null
-                }
-            ],
-            "code_owner_approval_required": false,
-            "name": "public_main"
+            "name": "main"
         }
     ],
     "protectedtags": [],
