@@ -1,0 +1,62 @@
+#
+# Copyright 2021-2025 Software Radio Systems Limited
+#
+# By using this file, you agree to the terms and conditions set
+# forth in the LICENSE file which can be found at the top level of
+# the distribution.
+#
+
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test_data)
+set(TEST_DATA_DIR ${CMAKE_CURRENT_BINARY_DIR}/test_data)
+
+set_directory_properties(PROPERTIES LABELS "phy")
+
+include_directories(
+    ${CMAKE_SOURCE_DIR}/tests/unittests/phy/upper/channel_processors/pusch
+    ${CMAKE_SOURCE_DIR}/tests/unittests/phy/support)
+
+add_executable(pusch_decoder_test pusch_decoder_vectortest.cpp)
+set(PUSCH_DECODER_LIBRARIES ocudu_channel_processors ocudulog ocudu_upper_phy_support)
+
+if (ENABLE_PUSCH_HWACC)
+    set_source_files_properties(pusch_decoder_vectortest.cpp PROPERTIES COMPILE_DEFINITIONS "HWACC_PUSCH_ENABLED")
+    list(APPEND PUSCH_DECODER_LIBRARIES ocudu_hal_pusch)
+endif (ENABLE_PUSCH_HWACC)
+
+target_link_libraries(pusch_decoder_test ${PUSCH_DECODER_LIBRARIES})
+add_test_vector(pusch_decoder_test pusch_decoder_test_data.tar.gz "-e0 -i2")
+add_test(pusch_decoder_early_stop_test pusch_decoder_test -e1 -i6)
+
+add_executable(pusch_demodulator_vectortest pusch_demodulator_vectortest.cpp)
+target_link_libraries(pusch_demodulator_vectortest
+        ocudu_channel_processors
+        ocudu_channel_equalizer
+        ocudu_phy_support
+        ocudulog
+        ocudu_upper_phy_support
+        ocudu_transform_precoding
+        gtest
+        gtest_main)
+add_test_vector(pusch_demodulator_vectortest pusch_demodulator_test_data.tar.gz "")
+
+add_executable(pusch_processor_vectortest pusch_processor_vectortest.cpp)
+set(PUSCH_PROCESSOR_LIBRARIES ocudu_channel_equalizer
+        ocudu_channel_processors
+        ocudu_phy_support
+        ocudulog
+        ocudu_upper_phy_support
+        ocudu_transform_precoding
+        gtest
+        gtest_main)
+
+if (ENABLE_PUSCH_HWACC)
+    set_source_files_properties(pusch_processor_vectortest.cpp PROPERTIES COMPILE_DEFINITIONS "HWACC_PUSCH_ENABLED")
+    list(APPEND PUSCH_PROCESSOR_LIBRARIES ocudu_hal_pusch)
+endif (ENABLE_PUSCH_HWACC)
+
+target_link_libraries(pusch_processor_vectortest ${PUSCH_PROCESSOR_LIBRARIES})
+add_test_vector(pusch_processor_vectortest pusch_processor_test_data.tar.gz "")
+
+add_executable(ulsch_demultiplex_test ulsch_demultiplex_test.cpp)
+target_link_libraries(ulsch_demultiplex_test ocudu_channel_processors ocudu_channel_coding gtest gtest_main)
+add_test_vector(ulsch_demultiplex_test ulsch_demultiplex_test_data.tar.gz "")
