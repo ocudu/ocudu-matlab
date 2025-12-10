@@ -9,24 +9,24 @@
 %   SNRrange                  - SNR range in dB.
 %   TotalBlocksCtr            - Counter of transmitted UCI messages.
 %   MissedBlocksMATLABCtr     - Counter of missed UCI messages for MATLAB PUCCH.
-%   MissedBlocksSRSCtr        - Counter of missed UCI messages for SRS PUCCH.
+%   MissedBlocksOCUDUCtr      - Counter of missed UCI messages for OCUDU PUCCH.
 %   FalseBlocksMATLABCtr      - Counter of falsely detected UCI blocks (MATLAB case).
-%   FalseBlocksSRSCtr         - Counter of falsely detected UCI blocks (SRS case).
+%   FalseBlocksOCUDUCtr       - Counter of falsely detected UCI blocks (OCUDU case).
 %   BlockErrorRateMATLAB      - UCI block error rate (MATLAB case).
-%   BlockErrorRateSRS         - UCI block error rate (SRS case).
+%   BlockErrorRateOCUDU       - UCI block error rate (OCUDU case).
 %   FalseDetectionRateMATLAB  - False detection rate of UCI blocks (MATLAB case).
-%   FalseDetectionRateSRS     - False detection rate of UCI blocks (SRS case).
+%   FalseDetectionRateOCUDU   - False detection rate of UCI blocks (OCUDU case).
 %
 %   See also PUCCHPERF.
 
 %   Copyright 2021-2025 Software Radio Systems Limited
 %
-%   This file is part of srsRAN-matlab.
+%   This file is part of OCUDU-matlab.
 %
-%   srsRAN-matlab is free software: you can redistribute it and/or
+%   OCUDU-matlab is free software: you can redistribute it and/or
 %   modify it under the terms of the BSD 2-Clause License.
 %
-%   srsRAN-matlab is distributed in the hope that it will be useful,
+%   OCUDU-matlab is distributed in the hope that it will be useful,
 %   but WITHOUT ANY WARRANTY; without even the implied warranty of
 %   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 %   BSD 2-Clause License for more details.
@@ -42,23 +42,23 @@ classdef FormatDetailsF2 < handle
         TotalBlocksCtr = []
         %Counter of missed UCI messages for MATLAB PUCCH.
         MissedBlocksMATLABCtr = []
-        %Counter of missed UCI messages for SRS PUCCH.
-        MissedBlocksSRSCtr = []
+        %Counter of missed UCI messages for OCUDU PUCCH.
+        MissedBlocksOCUDUCtr = []
         %Counter of falsely detected UCI blocks (MATLAB case).
         FalseBlocksMATLABCtr = []
-        %Counter of falsely detected UCI blocks (SRS case).
-        FalseBlocksSRSCtr = []
+        %Counter of falsely detected UCI blocks (OCUDU case).
+        FalseBlocksOCUDUCtr = []
     end % of properties (SetAccess = private)
 
     properties (Dependent)
         %UCI block error rate (MATLAB case).
         BlockErrorRateMATLAB
-        %UCI block error rate (SRS case).
-        BlockErrorRateSRS
+        %UCI block error rate (OCUDU case).
+        BlockErrorRateOCUDU
         %False detection rate of UCI blocks (MATLAB case).
         FalseDetectionRateMATLAB
-        %False detection rate of UCI blocks (SRS case).
-        FalseDetectionRateSRS
+        %False detection rate of UCI blocks (OCUDU case).
+        FalseDetectionRateOCUDU
     end
 
     properties (Hidden)
@@ -91,9 +91,9 @@ classdef FormatDetailsF2 < handle
             obj.SNRrange = [];
             obj.TotalBlocksCtr = [];
             obj.MissedBlocksMATLABCtr = [];
-            obj.MissedBlocksSRSCtr = [];
+            obj.MissedBlocksOCUDUCtr = [];
             obj.FalseBlocksMATLABCtr = [];
-            obj.FalseBlocksSRSCtr = [];
+            obj.FalseBlocksOCUDUCtr = [];
         end
 
         function updateCounters(obj, stats, SNRIn, totalBlocks)
@@ -103,10 +103,10 @@ classdef FormatDetailsF2 < handle
             obj.TotalBlocksCtr = joinArrays(obj.TotalBlocksCtr, totalBlocks, repeatedIdx, sortedIdx);
             if obj.isDetectionTest
                 obj.MissedBlocksMATLABCtr = joinArrays(obj.MissedBlocksMATLABCtr, stats.blerUCI, repeatedIdx, sortedIdx);
-                obj.MissedBlocksSRSCtr = joinArrays(obj.MissedBlocksSRSCtr, stats.blerUCISRS, repeatedIdx, sortedIdx);
+                obj.MissedBlocksOCUDUCtr = joinArrays(obj.MissedBlocksOCUDUCtr, stats.blerUCIOCUDU, repeatedIdx, sortedIdx);
             else
                 obj.FalseBlocksMATLABCtr = joinArrays(obj.FalseBlocksMATLABCtr, stats.blerUCI, repeatedIdx, sortedIdx);
-                obj.FalseBlocksSRSCtr = joinArrays(obj.FalseBlocksSRSCtr, stats.blerUCISRS, repeatedIdx, sortedIdx);
+                obj.FalseBlocksOCUDUCtr = joinArrays(obj.FalseBlocksOCUDUCtr, stats.blerUCIOCUDU, repeatedIdx, sortedIdx);
             end
         end % of function updateCounters(obj, stats, SNRIn, totalBlocks)
     end
@@ -122,7 +122,7 @@ classdef FormatDetailsF2 < handle
         function stats = setupTmpStats(nPoints)
             stats = struct(...
                 'blerUCI', zeros(nPoints), ...
-                'blerUCISRS', zeros(nPoints) ...
+                'blerUCIOCUDU', zeros(nPoints) ...
                 );
         end % of function stats = setupTmpStats(nPoints)
 
@@ -143,20 +143,20 @@ classdef FormatDetailsF2 < handle
             end % if isDetectTest
         end
 
-        function stats = updateStatsSRS(stats, uci, msg, isDetectTest, snrIdx)
+        function stats = updateStatsOCUDU(stats, uci, msg, isDetectTest, snrIdx)
             if isDetectTest
-                decucibitssrs = [msg.HARQAckPayload; msg.SRPayload; msg.CSI1Payload; msg.CSI2Payload];
-                stats.blerUCISRS(snrIdx) = stats.blerUCISRS(snrIdx) + (~(isequal(decucibitssrs, uci)));
+                decucibitsocudu = [msg.HARQAckPayload; msg.SRPayload; msg.CSI1Payload; msg.CSI2Payload];
+                stats.blerUCIOCUDU(snrIdx) = stats.blerUCIOCUDU(snrIdx) + (~(isequal(decucibitsocudu, uci)));
             else % false alarm test
-                stats.blerUCISRS(snrIdx) = stats.blerUCISRS(snrIdx) + msg.isValid;
+                stats.blerUCIOCUDU(snrIdx) = stats.blerUCIOCUDU(snrIdx) + msg.isValid;
             end
         end
 
         function flag = isSimOver(stats, snrIdx, implementationType)
-            useMATLABpucch = ~strcmp(implementationType, 'srs');
-            useSRSpucch = ~strcmp(implementationType, 'matlab');
+            useMATLABpucch = ~strcmp(implementationType, 'ocudu');
+            useOCUDUpucch = ~strcmp(implementationType, 'matlab');
 
-            flag = (~useMATLABpucch || (stats.blerUCI(snrIdx) >= 100)) && (~useSRSpucch || (stats.blerUCISRS(snrIdx) >= 100));
+            flag = (~useMATLABpucch || (stats.blerUCI(snrIdx) >= 100)) && (~useOCUDUpucch || (stats.blerUCIOCUDU(snrIdx) >= 100));
         end
     end % of methods (Static)
 
@@ -191,15 +191,15 @@ classdef FormatDetailsF2 < handle
             bler = obj.MissedBlocksMATLABCtr ./ obj.TotalBlocksCtr;
         end
 
-        function bler = get.BlockErrorRateSRS(obj)
+        function bler = get.BlockErrorRateOCUDU(obj)
             if ~obj.isDetectionTest
                 warning('off', 'backtrace');
-                warning('The BlockErrorRateSRS property is inactive when TestType == ''False Alarm''.');
+                warning('The BlockErrorRateOCUDU property is inactive when TestType == ''False Alarm''.');
                 warning('on', 'backtrace');
                 bler = [];
                 return
             end
-            bler = obj.MissedBlocksSRSCtr ./ obj.TotalBlocksCtr;
+            bler = obj.MissedBlocksOCUDUCtr ./ obj.TotalBlocksCtr;
         end
 
         function fdr = get.FalseDetectionRateMATLAB(obj)
@@ -213,15 +213,15 @@ classdef FormatDetailsF2 < handle
             fdr = obj.FalseBlocksMATLABCtr ./ obj.TotalBlocksCtr;
         end
 
-        function fdr = get.FalseDetectionRateSRS(obj)
+        function fdr = get.FalseDetectionRateOCUDU(obj)
             if obj.isDetectionTest
                 warning('off', 'backtrace');
-                warning('The FalseDetectionRateSRS property is inactive when TestType == ''Detection''.');
+                warning('The FalseDetectionRateOCUDU property is inactive when TestType == ''Detection''.');
                 warning('on', 'backtrace');
                 fdr = [];
                 return
             end
-            fdr = obj.FalseBlocksSRSCtr ./ obj.TotalBlocksCtr;
+            fdr = obj.FalseBlocksOCUDUCtr ./ obj.TotalBlocksCtr;
         end
 
         function flag = hasresults(obj)
@@ -233,18 +233,18 @@ classdef FormatDetailsF2 < handle
             counts.SNRrange = obj.SNRrange;
             counts.TotalBlocksCtr = obj.TotalBlocksCtr;
 
-            getMatlab = ~strcmp(implementationType, 'srs');
-            getSRS = ~strcmp(implementationType, 'matlab');
+            getMatlab = ~strcmp(implementationType, 'ocudu');
+            getOCUDU = ~strcmp(implementationType, 'matlab');
             if obj.isDetectionTest
-                if getSRS
-                    counts.MissedBlocksSRSCtr = obj.MissedBlocksSRSCtr;
+                if getOCUDU
+                    counts.MissedBlocksOCUDUCtr = obj.MissedBlocksOCUDUCtr;
                 end
                 if getMatlab
                     counts.MissedBlocksMATLABCtr = obj.MissedBlocksMATLABCtr;
                 end
             else
-                if getSRS
-                    counts.FalseBlocksSRSCtr = obj.FalseBlocksSRSCtr;
+                if getOCUDU
+                    counts.FalseBlocksOCUDUCtr = obj.FalseBlocksOCUDUCtr;
                 end
                 if getMatlab
                     counts.FalseBlocksMATLABCtr = obj.FalseBlocksMATLABCtr;
@@ -255,18 +255,18 @@ classdef FormatDetailsF2 < handle
         function statistics = getStatistics(obj, implementationType)
             statistics = struct();
 
-            getMatlab = ~strcmp(implementationType, 'srs');
-            getSRS = ~strcmp(implementationType, 'matlab');
+            getMatlab = ~strcmp(implementationType, 'ocudu');
+            getOCUDU = ~strcmp(implementationType, 'matlab');
             if obj.isDetectionTest
-                if getSRS
-                    statistics.BlockErrorRateSRS = obj.BlockErrorRateSRS;
+                if getOCUDU
+                    statistics.BlockErrorRateOCUDU = obj.BlockErrorRateOCUDU;
                 end
                 if getMatlab
                     statistics.BlockErrorRateMATLAB = obj.BlockErrorRateMATLAB;
                 end
             else
-                if getSRS
-                    statistics.FalseDetectionRateSRS = obj.FalseDetectionRateSRS;
+                if getOCUDU
+                    statistics.FalseDetectionRateOCUDU = obj.FalseDetectionRateOCUDU;
                 end
                 if getMatlab
                     statistics.FalseDetectionRateMATLAB = obj.FalseDetectionRateMATLAB;
@@ -285,21 +285,21 @@ classdef FormatDetailsF2 < handle
                 ' frame(s) at SNR ' num2str(SNRIn(snrIdx)) ' dB: ' num2str(stats.blerUCI(snrIdx)/totalBlocks(snrIdx)) '\n'])
         end % of function printMessages(stats, usedFrames, ~, SNRIn, isDetectTest, snrIdx)
 
-        function printMessagesSRS(obj, stats, usedFrames, totalBlocks, SNRIn, isDetectTest, snrIdx)
+        function printMessagesOCUDU(obj, stats, usedFrames, totalBlocks, SNRIn, isDetectTest, snrIdx)
             if isDetectTest
                 message = ['UCI BLER of PUCCH Format ', num2str(obj.PUCCHFormat)];
             else
                 message = ['UCI false detection rate of PUCCH Format ', num2str(obj.PUCCHFormat)];
             end
 
-            fprintf('SRS - ');
+            fprintf('OCUDU - ');
             fprintf([message ' for ' num2str(usedFrames) ...
-                ' frame(s) at SNR ' num2str(SNRIn(snrIdx)) ' dB: ' num2str(stats.blerUCISRS(snrIdx)/totalBlocks(snrIdx)) '\n'])
+                ' frame(s) at SNR ' num2str(SNRIn(snrIdx)) ' dB: ' num2str(stats.blerUCIOCUDU(snrIdx)/totalBlocks(snrIdx)) '\n'])
         end
 
         function plot(obj, implementationType, subcarrierSpacing)
             plotMATLAB = (strcmp(implementationType, 'matlab') || strcmp(implementationType, 'both'));
-            plotSRS = (strcmp(implementationType, 'srs') || strcmp(implementationType, 'both'));
+            plotOCUDU = (strcmp(implementationType, 'ocudu') || strcmp(implementationType, 'both'));
 
             titleString = sprintf('PUCCH F%d / SCS=%dkHz / %d UCI bits', obj.PUCCHFormat, subcarrierSpacing, ...
                 obj.NumACKBits + obj.NumSRBits + obj.NumCSI1Bits + obj.NumCSI2Bits);
@@ -307,11 +307,11 @@ classdef FormatDetailsF2 < handle
 
             if obj.isDetectionTest
                 ydataMATLAB = obj.MissedBlocksMATLABCtr;
-                ydataSRS = obj.MissedBlocksSRSCtr;
+                ydataOCUDU = obj.MissedBlocksOCUDUCtr;
                 yLab = 'BLER';
             else
                 ydataMATLAB = obj.FalseBlocksMATLABCtr;
-                ydataSRS = obj.FalseBlocksSRSCtr;
+                ydataOCUDU = obj.FalseBlocksOCUDUCtr;
                 yLab = 'False Det. Rate';
             end
 
@@ -322,11 +322,11 @@ classdef FormatDetailsF2 < handle
                     'LineWidth', 1)
                 legendstrings{end + 1} = 'MATLAB';
             end
-            if plotSRS
+            if plotOCUDU
                 hold on;
-                semilogy(obj.SNRrange, ydataSRS ./ obj.TotalBlocksCtr, '^-.', ...
+                semilogy(obj.SNRrange, ydataOCUDU ./ obj.TotalBlocksCtr, '^-.', ...
                     'LineWidth', 1, 'Color', [0.8500 0.3250 0.0980])
-                legendstrings{end + 1} = 'SRS';
+                legendstrings{end + 1} = 'OCUDU';
                 hold off;
             end
             xlabel('SNR (dB)'); ylabel(yLab); grid on; legend(legendstrings);

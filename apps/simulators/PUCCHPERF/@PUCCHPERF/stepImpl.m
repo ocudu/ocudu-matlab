@@ -2,12 +2,12 @@
 
 %   Copyright 2021-2025 Software Radio Systems Limited
 %
-%   This file is part of srsRAN-matlab.
+%   This file is part of OCUDU-matlab.
 %
-%   srsRAN-matlab is free software: you can redistribute it and/or
+%   OCUDU-matlab is free software: you can redistribute it and/or
 %   modify it under the terms of the BSD 2-Clause License.
 %
-%   srsRAN-matlab is distributed in the hope that it will be useful,
+%   OCUDU-matlab is distributed in the hope that it will be useful,
 %   but WITHOUT ANY WARRANTY; without even the implied warranty of
 %   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 %   BSD 2-Clause License for more details.
@@ -54,10 +54,10 @@ function stepImpl(obj, SNRIn, nFrames)
     isDetectTest = obj.isDetectionTest;
 
     useMATLABpucch = (strcmp(implementationType, 'matlab') || strcmp(implementationType, 'both'));
-    useSRSpucch = (strcmp(implementationType, 'srs') || strcmp(implementationType, 'both'));
+    useOCUDUpucch = (strcmp(implementationType, 'ocudu') || strcmp(implementationType, 'both'));
 
-    if useSRSpucch
-        processPUCCHsrs = srsMEX.phy.srsPUCCHProcessor;
+    if useOCUDUpucch
+        processPUCCHocudu = ocuduMEX.phy.ocuduPUCCHProcessor;
     end
 
     quickSim = obj.QuickSimulation;
@@ -229,15 +229,15 @@ function stepImpl(obj, SNRIn, nFrames)
                 stats = obj.FormatDetails.updateStatsMATLAB(stats, uci, uciRx, ouci, isDetectTest, snrIdx);
             end % if useMATLABpucch
 
-            if useSRSpucch
-                msg = processPUCCHsrs(carrier, pucch, rxGrid, ...
+            if useOCUDUpucch
+                msg = processPUCCHocudu(carrier, pucch, rxGrid, ...
                 NumHARQAck=obj.NumACKBits, ...
                 NumSR=obj.NumSRBits, ...
                 NumCSIPart1=obj.NumCSI1Bits, ...
                 NumCSIPart2=obj.NumCSI2Bits);
 
-                stats = obj.FormatDetails.updateStatsSRS(stats, uci, msg, isDetectTest, snrIdx);
-            end % if useSRSpucch
+                stats = obj.FormatDetails.updateStatsOCUDU(stats, uci, msg, isDetectTest, snrIdx);
+            end % if useOCUDUpucch
 
             totalBlocks(snrIdx) = totalBlocks(snrIdx) + 1;
 
@@ -253,8 +253,8 @@ function stepImpl(obj, SNRIn, nFrames)
             if useMATLABpucch
                 obj.FormatDetails.printMessagesMATLAB(stats, usedFrames, totalBlocks, SNRIn, isDetectTest, snrIdx);
             end
-            if useSRSpucch
-                obj.FormatDetails.printMessagesSRS(stats, usedFrames, totalBlocks, SNRIn, isDetectTest, snrIdx);
+            if useOCUDUpucch
+                obj.FormatDetails.printMessagesOCUDU(stats, usedFrames, totalBlocks, SNRIn, isDetectTest, snrIdx);
             end
         end % of if displaySimulationInformation == 1
     end % of for snrIdx = 1:numel(snrIn)

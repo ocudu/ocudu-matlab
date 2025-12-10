@@ -1,4 +1,4 @@
-%CheckSimulators Unit tests for the SRS link-level simulators.
+%CheckSimulators Unit tests for the OCUDU link-level simulators.
 %   This class, based on the matlab.unittest.TestCase framework, performs basic
 %   tests on the simulators in 'apps/simulators'. In few words, it checks whether
 %   a simulator object can be created, if it is of the correct type and it runs
@@ -30,12 +30,12 @@
 
 %   Copyright 2021-2025 Software Radio Systems Limited
 %
-%   This file is part of srsRAN-matlab.
+%   This file is part of OCUDU-matlab.
 %
-%   srsRAN-matlab is free software: you can redistribute it and/or
+%   OCUDU-matlab is free software: you can redistribute it and/or
 %   modify it under the terms of the BSD 2-Clause License.
 %
-%   srsRAN-matlab is distributed in the hope that it will be useful,
+%   OCUDU-matlab is distributed in the hope that it will be useful,
 %   but WITHOUT ANY WARRANTY; without even the implied warranty of
 %   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 %   BSD 2-Clause License for more details.
@@ -108,8 +108,8 @@ classdef CheckSimulators < matlab.unittest.TestCase
             pp.IgnoreCFO = true;
 
             % Disable verbose PRACH detector warnings.
-            prachwarn = warning('query', 'srsran_matlab:srsPRACHdetector');
-            warning('off', 'srsran_matlab:srsPRACHdetector');
+            prachwarn = warning('query', 'ocudu_matlab:ocuduPRACHdetector');
+            warning('off', 'ocudu_matlab:ocuduPRACHdetector');
 
             % Run detection test.
             try
@@ -349,17 +349,17 @@ classdef CheckSimulators < matlab.unittest.TestCase
 
             obj.assertClass(pp, 'PUSCHBLER', 'The created object is not a PUSCHBLER object.');
 
-            obj.assertThat('../../../+srsMEX/+phy/@srsPUSCHDecoder/pusch_decoder_mex.mexa64', IsFile, ...
+            obj.assertThat('../../../+ocuduMEX/+phy/@ocuduPUSCHDecoder/pusch_decoder_mex.mexa64', IsFile, ...
                 'Could not find PUSCH decoder mex executable.');
-            obj.assertThat('../../../+srsMEX/+phy/@srsPUSCHDemodulator/pusch_demodulator_mex.mexa64', IsFile, ...
+            obj.assertThat('../../../+ocuduMEX/+phy/@ocuduPUSCHDemodulator/pusch_demodulator_mex.mexa64', IsFile, ...
                 'Could not find PUSCH demodulator mex executable.');
-            obj.assertThat('../../../+srsMEX/+phy/@srsMultiPortChannelEstimator/multiport_channel_estimator_mex.mexa64', IsFile, ...
+            obj.assertThat('../../../+ocuduMEX/+phy/@ocuduMultiPortChannelEstimator/multiport_channel_estimator_mex.mexa64', IsFile, ...
                 'Could not find channel estimator mex executable.');
 
             pp.QuickSimulation = false;
-            pp.ImplementationType = 'srs';
+            pp.ImplementationType = 'ocudu';
             pp.PerfectChannelEstimator = false;
-            pp.SRSEstimatorType = EstimatorImplPUSCH;
+            pp.OCUDUEstimatorType = EstimatorImplPUSCH;
             snrs = -5.0:0.2:-4.2;
             try
                 pp(snrs, 100)
@@ -371,8 +371,8 @@ classdef CheckSimulators < matlab.unittest.TestCase
             obj.assertEqual(pp.SNRrange, snrs', 'Wrong SNR range.');
             obj.assertEqual(pp.TBS, 1800, 'Wrong transport block size.');
             obj.assertEqual(pp.MaxThroughput, 1.8, 'Wrong maximum throughput.');
-            obj.assertGreaterThanOrEqual(pp.ThroughputSRS, [0; 0; 0.041; 0.30; 0.70], "Wrong throughput curve.");
-            obj.assertLessThanOrEqual(pp.BlockErrorRateSRS, [0.70; 0.70; 0.65; 0.65; 0.62], "Wrong BLER curve.");
+            obj.assertGreaterThanOrEqual(pp.ThroughputOCUDU, [0; 0; 0.041; 0.30; 0.70], "Wrong throughput curve.");
+            obj.assertLessThanOrEqual(pp.BlockErrorRateOCUDU, [0.70; 0.70; 0.65; 0.65; 0.62], "Wrong BLER curve.");
         end % of function testPUSCHBLERmex(obj)
 
         function testPUCCHPERFF0mex(obj, PUCCHTestType)
@@ -390,7 +390,7 @@ classdef CheckSimulators < matlab.unittest.TestCase
 
             obj.assertClass(pp, 'PUCCHPERF', 'The created object is not a PUCCHPERF object.');
 
-            obj.assertThat('../../../+srsMEX/+phy/@srsPUCCHProcessor/pucch_processor_mex.mexa64', IsFile, ...
+            obj.assertThat('../../../+ocuduMEX/+phy/@ocuduPUCCHProcessor/pucch_processor_mex.mexa64', IsFile, ...
                 'Could not find PUCCH processor mex executable.');
 
             pp.PUCCHFormat = 0;
@@ -399,7 +399,7 @@ classdef CheckSimulators < matlab.unittest.TestCase
             pp.NumACKBits = 1;
             pp.NRxAnts = 2;
             pp.TestType = PUCCHTestType;
-            pp.ImplementationType = 'srs';
+            pp.ImplementationType = 'ocudu';
 
             snrs = -15:2:1;
             try
@@ -411,12 +411,12 @@ classdef CheckSimulators < matlab.unittest.TestCase
 
             obj.assertEqual(pp.Counters.SNRrange, snrs', 'Wrong SNR range.');
             if (PUCCHTestType == "Detection")
-                obj.assertEqual(pp.Statistics.SRDetectionRateSRS, ones(numel(snrs), 1), "Wrong SR detection curve.");
-                obj.assertGreaterThanOrEqual(pp.Statistics.ACKDetectionRateSRS, ...
+                obj.assertEqual(pp.Statistics.SRDetectionRateOCUDU, ones(numel(snrs), 1), "Wrong SR detection curve.");
+                obj.assertGreaterThanOrEqual(pp.Statistics.ACKDetectionRateOCUDU, ...
                     [0.010; 0.030; 0.070; 0.150; 0.250; 0.440; 0.630; 0.775; 0.890], ...
                     "Wrong ACK detection curve.");
             else
-                obj.assertLessThanOrEqual(pp.Statistics.FalseACKDetectionRateSRS, 0.008 * ones(numel(snrs), 1), ...
+                obj.assertLessThanOrEqual(pp.Statistics.FalseACKDetectionRateOCUDU, 0.008 * ones(numel(snrs), 1), ...
                     "Wrong false ACK detection rate curve.");
             end
         end % of function testPUCCHPERFF0mex(obj, PUCCHTestType)
@@ -436,7 +436,7 @@ classdef CheckSimulators < matlab.unittest.TestCase
 
             obj.assertClass(pp, 'PUCCHPERF', 'The created object is not a PUCCHPERF object.');
 
-            obj.assertThat('../../../+srsMEX/+phy/@srsPUCCHProcessor/pucch_processor_mex.mexa64', IsFile, ...
+            obj.assertThat('../../../+ocuduMEX/+phy/@ocuduPUCCHProcessor/pucch_processor_mex.mexa64', IsFile, ...
                 'Could not find PUCCH processor mex executable.');
 
             pp.PUCCHFormat = 1;
@@ -446,7 +446,7 @@ classdef CheckSimulators < matlab.unittest.TestCase
             pp.NRxAnts = 2;
             pp.FrequencyHopping = 'intraSlot';
             pp.TestType = PUCCHTestType;
-            pp.ImplementationType = 'srs';
+            pp.ImplementationType = 'ocudu';
             pp.PerfectChannelEstimator = false;
 
             snrs = -32:2:-14;
@@ -459,12 +459,12 @@ classdef CheckSimulators < matlab.unittest.TestCase
 
             obj.assertEqual(pp.Counters.SNRrange, snrs', 'Wrong SNR range.');
             if (PUCCHTestType == "Detection")
-                obj.assertLessThan(pp.Statistics.NACK2ACKDetectionRateSRS, 0.04, "Wrong NACK-to-ACK detection curve.");
-                obj.assertGreaterThanOrEqual(pp.Statistics.ACKDetectionRateSRS, ...
+                obj.assertLessThan(pp.Statistics.NACK2ACKDetectionRateOCUDU, 0.04, "Wrong NACK-to-ACK detection curve.");
+                obj.assertGreaterThanOrEqual(pp.Statistics.ACKDetectionRateOCUDU, ...
                     [0.007; 0.007; 0.013; 0.023; 0.032; 0.075; 0.130; 0.270; 0.430; 0.610], ...
                     "Wrong ACK detection rate curve.");
             else
-                obj.assertEqual(pp.Statistics.FalseACKDetectionRateSRS, 0.0075 * ones(10, 1), "Wrong false ACK detection rate curve.", RelTol=0.03);
+                obj.assertEqual(pp.Statistics.FalseACKDetectionRateOCUDU, 0.0075 * ones(10, 1), "Wrong false ACK detection rate curve.", RelTol=0.03);
             end
         end % of function testPUCCHPERFF1mex(obj, PUCCHTestType)
 
@@ -484,12 +484,12 @@ classdef CheckSimulators < matlab.unittest.TestCase
             obj.assertClass(pp, 'PUCCHPERF', 'The created object is not a PUCCHPERF object.');
             obj.assertEqual(pp.PUCCHFormat, 2, ['The PUCCH Format is set to ' num2str(pp.PUCCHFormat) ' instead of 2.']);
 
-            obj.assertThat('../../../+srsMEX/+phy/@srsPUCCHProcessor/pucch_processor_mex.mexa64', IsFile, ...
+            obj.assertThat('../../../+ocuduMEX/+phy/@ocuduPUCCHProcessor/pucch_processor_mex.mexa64', IsFile, ...
                 'Could not find PUCCH processor mex executable.');
 
             pp.TestType = PUCCHTestType;
             pp.NRxAnts = 2;
-            pp.ImplementationType = 'srs';
+            pp.ImplementationType = 'ocudu';
             pp.PerfectChannelEstimator = false;
 
             snrs = -20:2:-4;
@@ -502,11 +502,11 @@ classdef CheckSimulators < matlab.unittest.TestCase
 
             obj.assertEqual(pp.Counters.SNRrange, snrs', 'Wrong SNR range.');
             if (PUCCHTestType == "Detection")
-                obj.assertLessThanOrEqual(pp.Statistics.BlockErrorRateSRS, ...
+                obj.assertLessThanOrEqual(pp.Statistics.BlockErrorRateOCUDU, ...
                     [0.920; 0.910; 0.890; 0.850; 0.720; 0.600; 0.420; 0.250; 0.160], ...
                     "Wrong BLER curve.");
             else
-                obj.assertLessThanOrEqual(pp.Statistics.FalseDetectionRateSRS, 0.008 * ones(9, 1), "Wrong false alarm curve.");
+                obj.assertLessThanOrEqual(pp.Statistics.FalseDetectionRateOCUDU, 0.008 * ones(9, 1), "Wrong false alarm curve.");
             end
         end % of function testPUCCHPERFF2mex(obj, PUCCHTestType)
 
@@ -525,7 +525,7 @@ classdef CheckSimulators < matlab.unittest.TestCase
 
             obj.assertClass(pp, 'PUCCHPERF', 'The created object is not a PUCCHPERF object.');
 
-            obj.assertThat('../../../+srsMEX/+phy/@srsPUCCHProcessor/pucch_processor_mex.mexa64', IsFile, ...
+            obj.assertThat('../../../+ocuduMEX/+phy/@ocuduPUCCHProcessor/pucch_processor_mex.mexa64', IsFile, ...
                 'Could not find PUCCH processor mex executable.');
 
             pp.PUCCHFormat = 3;
@@ -535,7 +535,7 @@ classdef CheckSimulators < matlab.unittest.TestCase
             pp.NumACKBits = 16;
             pp.NRxAnts = 2;
             pp.FrequencyHopping = 'intraSlot';
-            pp.ImplementationType = 'srs';
+            pp.ImplementationType = 'ocudu';
             pp.PerfectChannelEstimator = false;
 
             snrs = -14:2:-6;
@@ -547,7 +547,7 @@ classdef CheckSimulators < matlab.unittest.TestCase
             end
 
             obj.assertEqual(pp.Counters.SNRrange, snrs', 'Wrong SNR range.');
-            obj.assertLessThanOrEqual(pp.Statistics.BlockErrorRateSRS, [1; 0.9434; 0.800; 0.600; 0.410], ...
+            obj.assertLessThanOrEqual(pp.Statistics.BlockErrorRateOCUDU, [1; 0.9434; 0.800; 0.600; 0.410], ...
                 "Wrong BLER curve.");
         end % of function testPUCCHPERFF3mex(obj)
 
@@ -566,7 +566,7 @@ classdef CheckSimulators < matlab.unittest.TestCase
 
             obj.assertClass(pp, 'PUCCHPERF', 'The created object is not a PUCCHPERF object.');
 
-            obj.assertThat('../../../+srsMEX/+phy/@srsPUCCHProcessor/pucch_processor_mex.mexa64', IsFile, ...
+            obj.assertThat('../../../+ocuduMEX/+phy/@ocuduPUCCHProcessor/pucch_processor_mex.mexa64', IsFile, ...
                 'Could not find PUCCH processor mex executable.');
 
             pp.PUCCHFormat = 4;
@@ -576,7 +576,7 @@ classdef CheckSimulators < matlab.unittest.TestCase
             pp.NumACKBits = 22;
             pp.NRxAnts = 2;
             pp.FrequencyHopping = 'intraSlot';
-            pp.ImplementationType = 'srs';
+            pp.ImplementationType = 'ocudu';
             pp.PerfectChannelEstimator = false;
 
             snrs = -14:2:-6;
@@ -588,7 +588,7 @@ classdef CheckSimulators < matlab.unittest.TestCase
             end
 
             obj.assertEqual(pp.Counters.SNRrange, snrs', 'Wrong SNR range.');
-            obj.assertLessThanOrEqual(pp.Statistics.BlockErrorRateSRS, [1; 0.991; 0.926; 0.782; 0.541], ...
+            obj.assertLessThanOrEqual(pp.Statistics.BlockErrorRateOCUDU, [1; 0.991; 0.926; 0.782; 0.541], ...
                 "Wrong BLER curve.");
         end % of function testPUCCHPERFF4mex(obj)
     end % of methods (Test, TestTags = {'mex code'})

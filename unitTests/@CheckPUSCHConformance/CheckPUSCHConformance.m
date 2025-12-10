@@ -42,12 +42,12 @@
 
 %   Copyright 2021-2025 Software Radio Systems Limited
 %
-%   This file is part of srsRAN-matlab.
+%   This file is part of OCUDU-matlab.
 %
-%   srsRAN-matlab is free software: you can redistribute it and/or
+%   OCUDU-matlab is free software: you can redistribute it and/or
 %   modify it under the terms of the BSD 2-Clause License.
 %
-%   srsRAN-matlab is distributed in the hope that it will be useful,
+%   OCUDU-matlab is distributed in the hope that it will be useful,
 %   but WITHOUT ANY WARRANTY; without even the implied warranty of
 %   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 %   BSD 2-Clause License for more details.
@@ -235,7 +235,7 @@ classdef CheckPUSCHConformance < matlab.unittest.TestCase
             % Avoid multi-layer tests if not supported by the MEX functions.
             % Note: The TS38.104 specifies the number of layers to be equal to the number
             % of Tx antennas.
-            maxLayers = srsMEX.phy.srsPUSCHCapabilitiesMEX().NumLayers;
+            maxLayers = ocuduMEX.phy.ocuduPUSCHCapabilitiesMEX().NumLayers;
             obj.assumeGreaterThanOrEqual(maxLayers, TestConfig.NTxAnts, ...
                 sprintf('The current MEX version does not support more than %d layers, requested %d.', maxLayers, TestConfig.NTxAnts));
 
@@ -250,11 +250,11 @@ classdef CheckPUSCHConformance < matlab.unittest.TestCase
 
             obj.assertClass(pp, 'PUSCHBLER', 'The created object is not a PUSCHBLER object.');
 
-            obj.assertThat('../../../+srsMEX/+phy/@srsPUSCHDecoder/pusch_decoder_mex.mexa64', IsFile, ...
+            obj.assertThat('../../../+ocuduMEX/+phy/@ocuduPUSCHDecoder/pusch_decoder_mex.mexa64', IsFile, ...
                 'Could not find PUSCH decoder mex executable.');
-            obj.assertThat('../../../+srsMEX/+phy/@srsPUSCHDemodulator/pusch_demodulator_mex.mexa64', IsFile, ...
+            obj.assertThat('../../../+ocuduMEX/+phy/@ocuduPUSCHDemodulator/pusch_demodulator_mex.mexa64', IsFile, ...
                 'Could not find PUSCH demodulator mex executable.');
-            obj.assertThat('../../../+srsMEX/+phy/@srsMultiPortChannelEstimator/multiport_channel_estimator_mex.mexa64', IsFile, ...
+            obj.assertThat('../../../+ocuduMEX/+phy/@ocuduMultiPortChannelEstimator/multiport_channel_estimator_mex.mexa64', IsFile, ...
                 'Could not find channel estimator mex executable.');
 
             % Avoid meaningless warnings.
@@ -267,11 +267,11 @@ classdef CheckPUSCHConformance < matlab.unittest.TestCase
             if contains(TestConfig.Name, 'Custom')
                 pp.NSizeGrid = 273;
                 pp.CarrierFrequencyOffset = 600;
-                pp.SRSCompensateCFO = true;
+                pp.OCUDUCompensateCFO = true;
             else
                 pp.NSizeGrid = frc.PRBSet(end) + 1;
                 pp.CarrierFrequencyOffset = 0;
-                pp.SRSCompensateCFO = false;
+                pp.OCUDUCompensateCFO = false;
             end
             pp.PRBSet = frc.PRBSet;
             pp.MCSTable = 'custom';
@@ -286,11 +286,11 @@ classdef CheckPUSCHConformance < matlab.unittest.TestCase
             pp.FadingTimeEvolution = 'Slot independent';
             pp.PerfectChannelEstimator = false;
             pp.EnableHARQ = true;
-            pp.ImplementationType = 'srs';
-            pp.SRSEstimatorType = 'MEX';
-            pp.SRSInterpolation = 'interpolate';
-            pp.SRSSmoothing = 'filter';
-            pp.SRSEqualizerType = 'MMSE';
+            pp.ImplementationType = 'ocudu';
+            pp.OCUDUEstimatorType = 'MEX';
+            pp.OCUDUInterpolation = 'interpolate';
+            pp.OCUDUSmoothing = 'filter';
+            pp.OCUDUEqualizerType = 'MMSE';
             pp.QuickSimulation = false;
 
             if ~contains(TestConfig.Name, 'Table 8.2.2.2')
@@ -310,7 +310,7 @@ classdef CheckPUSCHConformance < matlab.unittest.TestCase
                 obj.assertFail(['PUSCHBLER simulation failed with error: ', ME.message]);
             end
 
-            tp = pp.ThroughputSRS / pp.MaxThroughput;
+            tp = pp.ThroughputOCUDU / pp.MaxThroughput;
 
             % Export throughput in csv format to be imported in grafana.
             if (maxLayers == 1)

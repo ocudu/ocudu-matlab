@@ -66,7 +66,7 @@
 %                             frequency synchronization (only for ImplementationType 'matlab').
 %   DetectionThreshold      - Custom detection threshold (NaN for default or positive value,
 %                             only for ImplementationType 'matlab').
-%   ImplementationType      - PRACH detector implementation type('matlab', 'srs'). Default is 'matlab'.
+%   ImplementationType      - PRACH detector implementation type('matlab', 'ocudu'). Default is 'matlab'.
 %   QuickSimulation         - Quick-simulation flag: set to true to stop each point
 %                             after 100 failures (tunable).
 %
@@ -87,12 +87,12 @@
 
 %   Copyright 2021-2025 Software Radio Systems Limited
 %
-%   This file is part of srsRAN-matlab.
+%   This file is part of OCUDU-matlab.
 %
-%   srsRAN-matlab is free software: you can redistribute it and/or
+%   OCUDU-matlab is free software: you can redistribute it and/or
 %   modify it under the terms of the BSD 2-Clause License.
 %
-%   srsRAN-matlab is distributed in the hope that it will be useful,
+%   OCUDU-matlab is distributed in the hope that it will be useful,
 %   but WITHOUT ANY WARRANTY; without even the implied warranty of
 %   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 %   BSD 2-Clause License for more details.
@@ -135,15 +135,15 @@ classdef PRACHPERF < matlab.System
         %   Possible values are ('Detection', 'False Alarm'). Default is 'Detection'.
         TestType (1, :) char {mustBeMember(TestType, {'Detection', 'False Alarm'})} = 'Detection'
         %CFO flag: if true, the detector will assume perfect frequency synchronization.
-        %   Only applies when ImplementationType is 'matlab'. For ImplementationType 'srs'
+        %   Only applies when ImplementationType is 'matlab'. For ImplementationType 'ocudu'
         %   this is assumed true.
         IgnoreCFO (1, 1) logical = true
         %Custom detection threshold (only for ImplementationType 'matlab').
         %   If NaN, the detector uses the default threshold value.
         DetectionThreshold (1, 1) double = NaN
-        %PRACH detector implementation type('matlab', 'srs'). Default is 'matlab'.
-        %   Both implementations refer to the same algorithm, but the 'srs' one runs the MEX version.
-        ImplementationType (1, :) char {mustBeMember(ImplementationType, {'matlab', 'srs'})} = 'matlab'
+        %PRACH detector implementation type('matlab', 'ocudu'). Default is 'matlab'.
+        %   Both implementations refer to the same algorithm, but the 'ocudu' one runs the MEX version.
+        ImplementationType (1, :) char {mustBeMember(ImplementationType, {'matlab', 'ocudu'})} = 'matlab'
     end
 
     properties (Access = private, Hidden)
@@ -203,10 +203,10 @@ classdef PRACHPERF < matlab.System
             % Checks that Sequence Index is compatible with Format.
             switch obj.Format
                 case {'0', '1', '2', '3'}
-                    assert(obj.SequenceIndex < 838, 'srsran_matlab:PRACHPERF', ...
+                    assert(obj.SequenceIndex < 838, 'ocudu_matlab:PRACHPERF', ...
                         'For long formats, the sequence index must be between 0 and 837');
                 case {'A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'B4', 'C0', 'C2'}
-                    assert(obj.SequenceIndex < 138, 'srsran_matlab:PRACHPERF', ...
+                    assert(obj.SequenceIndex < 138, 'ocudu_matlab:PRACHPERF', ...
                         'For long formats, the sequence index must be between 0 and 137');
             end
         end
@@ -291,7 +291,7 @@ classdef PRACHPERF < matlab.System
             zeroCorrelationZone = ncsTable.ZeroCorrelationZone(ncsTable{:,ncsTableCol} == obj.NCS);
 
             % PRACH Configuration
-            obj.PRACH = srsLib.phy.helpers.srsConfigurePRACH(preambleFormat, ...
+            obj.PRACH = ocuduLib.phy.helpers.ocuduConfigurePRACH(preambleFormat, ...
                 RestrictedSet=restrictedSet, ...             % Normal mode
                 FrequencyStart=0, ...                        % Frequency location
                 SequenceIndex=obj.SequenceIndex, ...         % Logical sequence index
@@ -372,8 +372,8 @@ classdef PRACHPERF < matlab.System
             channelInfo = info(channel);
 
             % Implementation flag.
-            useMEX = strcmp(obj.ImplementationType, 'srs');
-            prachDetectorMex = srsMEX.phy.srsPRACHDetector;
+            useMEX = strcmp(obj.ImplementationType, 'ocudu');
+            prachDetectorMex = ocuduMEX.phy.ocuduPRACHDetector;
 
             for snrIdx = 1:numel(SNRdB)
 
@@ -402,7 +402,7 @@ classdef PRACHPERF < matlab.System
                     % Generate PRACH waveform for the current occasion.
                     prach.NPRACHSlot = 0;
 
-                    [waveform, gridset, winfo] = srsLib.phy.upper.channel_processors.srsPRACHgenerator(carrier, prach);
+                    [waveform, gridset, winfo] = ocuduLib.phy.upper.channel_processors.ocuduPRACHgenerator(carrier, prach);
 
                     % Set PRACH timing offset in microseconds as per TS 38.141-1 Figure 8.4.1.4.2-2
                     % and Figure 8.4.1.4.2-3.
@@ -452,7 +452,7 @@ classdef PRACHPERF < matlab.System
                     prachRx.NPRACHSlot = winfo.NPRACHSlot;
 
                     % Demodulate the PRACH waveform.
-                    prachDemodulated = srsLib.phy.lower.modulation.srsPRACHdemodulator(carrier, ...
+                    prachDemodulated = ocuduLib.phy.lower.modulation.ocuduPRACHdemodulator(carrier, ...
                         prachRx, gridset.Info, rxwave, winfo);
 
                     if useMEX
@@ -464,7 +464,7 @@ classdef PRACHPERF < matlab.System
                         offsets(prachResults.PreambleIndices + 1) = prachResults.TimeAdvance * 1e6;
                     else
                         % PRACH detection for all cell preamble indices.
-                        [indicesMask, offsets] = srsLib.phy.upper.channel_processors.srsPRACHdetector(carrier, prachRx, ...
+                        [indicesMask, offsets] = ocuduLib.phy.upper.channel_processors.ocuduPRACHdetector(carrier, prachRx, ...
                             prachDemodulated, ignoreCFO, detectionThreshold);
                     end
 

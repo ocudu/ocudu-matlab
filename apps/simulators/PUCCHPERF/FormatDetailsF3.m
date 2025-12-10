@@ -10,18 +10,18 @@
 %   SNRrange                  - SNR range in dB.
 %   TotalBlocksCtr            - Counter of transmitted UCI messages.
 %   BlockErrorRateMATLAB      - UCI block error rate (MATLAB case).
-%   BlockErrorRateSRS         - UCI block error rate (SRS case).
+%   BlockErrorRateOCUDU       - UCI block error rate (OCUDU case).
 %
 %   See also PUCCHPERF, FormatDetailsF2.
 
 %   Copyright 2021-2025 Software Radio Systems Limited
 %
-%   This file is part of srsRAN-matlab.
+%   This file is part of OCUDU-matlab.
 %
-%   srsRAN-matlab is free software: you can redistribute it and/or
+%   OCUDU-matlab is free software: you can redistribute it and/or
 %   modify it under the terms of the BSD 2-Clause License.
 %
-%   srsRAN-matlab is distributed in the hope that it will be useful,
+%   OCUDU-matlab is distributed in the hope that it will be useful,
 %   but WITHOUT ANY WARRANTY; without even the implied warranty of
 %   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 %   BSD 2-Clause License for more details.

@@ -11,32 +11,32 @@
 %   TransmittedNACKsCtr           - Counter of transmitted NACKs.
 %   ACKOccasionsCtr               - Counter of ACK occasions.
 %   MissedOccasionsMATLABCtr      - Counter of missed occasions (MATLAB case).
-%   MissedOccasionsSRSCtr         - Counter of missed occasions (SRS case).
+%   MissedOccasionsOCUDUCtr       - Counter of missed occasions (OCUDU case).
 %   MissedACKsMATLABCtr           - Counter of missed ACK bits (MATLAB case).
-%   MissedACKsSRSCtr              - Counter of missed ACK bits (SRS case).
+%   MissedACKsOCUDUCtr            - Counter of missed ACK bits (OCUDU case).
 %   NACK2ACKsMATLABCtr            - Counter of NACK bits received as ACK bits (MATLAB case).
-%   NACK2ACKsSRSCtr               - Counter of NACK bits received as ACK bits (SRS case).
+%   NACK2ACKsOCUDUCtr             - Counter of NACK bits received as ACK bits (OCUDU case).
 %   FalseACKsMATLABCtr            - Counter of false ACK bits (MATLAB case).
-%   FalseACKsSRSCtr               - Counter of false ACK bits (SRS case).
+%   FalseACKsOCUDUCtr             - Counter of false ACK bits (OCUDU case).
 %   PUCCHDetectionRateMATLAB      - Detection rate of PUCCH F1 transmissions (MATLAB case).
-%   PUCCHDetectionRateSRS         - Detection rate of PUCCH F1 transmissions (SRS case).
+%   PUCCHDetectionRateOCUDU       - Detection rate of PUCCH F1 transmissions (OCUDU case).
 %   FalseACKDetectionRateMATLAB   - False ACK detection rate (MATLAB case).
-%   FalseACKDetectionRateSRS      - False ACK detection rate (SRS case).
+%   FalseACKDetectionRateOCUDU    - False ACK detection rate (OCUDU case).
 %   NACK2ACKDetectionRateMATLAB   - NACK-to-ACK detection rate (MATLAB case).
-%   NACK2ACKDetectionRateSRS      - NACK-to-ACK detection rate (SRS case).
+%   NACK2ACKDetectionRateOCUDU    - NACK-to-ACK detection rate (OCUDU case).
 %   ACKDetectionRateMATLAB        - ACK Detection rate (MATLAB case).
-%   ACKDetectionRateSRS           - ACK Detection rate (SRS case).
+%   ACKDetectionRateOCUDU         - ACK Detection rate (OCUDU case).
 %
 %   See also PUCCHPERF.
 
 %   Copyright 2021-2025 Software Radio Systems Limited
 %
-%   This file is part of srsRAN-matlab.
+%   This file is part of OCUDU-matlab.
 %
-%   srsRAN-matlab is free software: you can redistribute it and/or
+%   OCUDU-matlab is free software: you can redistribute it and/or
 %   modify it under the terms of the BSD 2-Clause License.
 %
-%   srsRAN-matlab is distributed in the hope that it will be useful,
+%   OCUDU-matlab is distributed in the hope that it will be useful,
 %   but WITHOUT ANY WARRANTY; without even the implied warranty of
 %   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 %   BSD 2-Clause License for more details.
@@ -56,47 +56,47 @@ classdef FormatDetailsF1 < handle
         ACKOccasionsCtr = []
         %Counter of missed occasions (MATLAB case).
         MissedOccasionsMATLABCtr = []
-        %Counter of missed occasions (SRS case).
-        MissedOccasionsSRSCtr = []
+        %Counter of missed occasions (OCUDU case).
+        MissedOccasionsOCUDUCtr = []
         %Counter of missed ACK bits (MATLAB case).
         MissedACKsMATLABCtr = []
-        %Counter of missed ACK bits (SRS case).
-        MissedACKsSRSCtr = []
+        %Counter of missed ACK bits (OCUDU case).
+        MissedACKsOCUDUCtr = []
         %Counter of NACK bits received as ACK bits (MATLAB case).
         NACK2ACKsMATLABCtr = []
-        %Counter of NACK bits received as ACK bits (SRS case).
-        NACK2ACKsSRSCtr = []
+        %Counter of NACK bits received as ACK bits (OCUDU case).
+        NACK2ACKsOCUDUCtr = []
         %Counter of false ACK bits (MATLAB case).
         FalseACKsMATLABCtr = []
-        %Counter of false ACK bits (SRS case).
-        FalseACKsSRSCtr = []
+        %Counter of false ACK bits (OCUDU case).
+        FalseACKsOCUDUCtr = []
     end % of properties (SetAccess = private)
 
     properties (Dependent)
         %False ACK detection rate (MATLAB case).
         %   Probability of detecting an ACK when the input is only noise (or DTX).
         FalseACKDetectionRateMATLAB
-        %False ACK detection rate (SRS case).
+        %False ACK detection rate (OCUDU case).
         %   Probability of detecting an ACK when the input is only noise (or DTX).
-        FalseACKDetectionRateSRS
+        FalseACKDetectionRateOCUDU
         %NACK-to-ACK detection rate (MATLAB case).
         %   Probability of detecting an ACK when a NACK is transmitted.
         NACK2ACKDetectionRateMATLAB
-        %NACK-to-ACK detection rate (SRS case).
+        %NACK-to-ACK detection rate (OCUDU case).
         %   Probability of detecting an ACK when a NACK is transmitted.
-        NACK2ACKDetectionRateSRS
+        NACK2ACKDetectionRateOCUDU
         %ACK Detection rate (MATLAB case).
         %   Probability of detecting an ACK when the ACK is transmitted.
         ACKDetectionRateMATLAB
-        %ACK Detection rate (SRS case).
+        %ACK Detection rate (OCUDU case).
         %   Probability of detecting an ACK when the ACK is transmitted.
-        ACKDetectionRateSRS
+        ACKDetectionRateOCUDU
         %Transmission detection rate (MATLAB case).
         %   Probability of detecting a PUCCH F1 when the PUCCH F1 is transmitted.
         PUCCHDetectionRateMATLAB
-        %Transmission detection rate (SRS case).
+        %Transmission detection rate (OCUDU case).
         %   Probability of detecting a PUCCH F1 when the PUCCH F1 is transmitted.
-        PUCCHDetectionRateSRS
+        PUCCHDetectionRateOCUDU
     end % of properties (Dependable)
 
     properties (Hidden)
@@ -123,11 +123,11 @@ classdef FormatDetailsF1 < handle
             obj.TransmittedNACKsCtr = [];
             obj.ACKOccasionsCtr = [];
             obj.MissedOccasionsMATLABCtr = [];
-            obj.MissedOccasionsSRSCtr = [];
+            obj.MissedOccasionsOCUDUCtr = [];
             obj.MissedACKsMATLABCtr = [];
-            obj.MissedACKsSRSCtr = [];
+            obj.MissedACKsOCUDUCtr = [];
             obj.FalseACKsMATLABCtr = [];
-            obj.FalseACKsSRSCtr = [];
+            obj.FalseACKsOCUDUCtr = [];
         end
 
         function updateCounters(obj, stats, SNRIn, ~)
@@ -141,14 +141,14 @@ classdef FormatDetailsF1 < handle
                 obj.TransmittedACKsCtr = joinArrays(obj.TransmittedACKsCtr, stats.nACKs, repeatedIdx, sortedIdx);
                 obj.TransmittedNACKsCtr = joinArrays(obj.TransmittedNACKsCtr, stats.nNACKs, repeatedIdx, sortedIdx);
                 obj.MissedACKsMATLABCtr = joinArrays(obj.MissedACKsMATLABCtr, stats.missedACK, repeatedIdx, sortedIdx);
-                obj.MissedACKsSRSCtr = joinArrays(obj.MissedACKsSRSCtr, stats.missedACKSRS, repeatedIdx, sortedIdx);
+                obj.MissedACKsOCUDUCtr = joinArrays(obj.MissedACKsOCUDUCtr, stats.missedACKOCUDU, repeatedIdx, sortedIdx);
                 obj.NACK2ACKsMATLABCtr = joinArrays(obj.NACK2ACKsMATLABCtr, stats.NACK2ACK, repeatedIdx, sortedIdx);
-                obj.NACK2ACKsSRSCtr = joinArrays(obj.NACK2ACKsSRSCtr, stats.NACK2ACKSRS, repeatedIdx, sortedIdx);
+                obj.NACK2ACKsOCUDUCtr = joinArrays(obj.NACK2ACKsOCUDUCtr, stats.NACK2ACKOCUDU, repeatedIdx, sortedIdx);
                 obj.MissedOccasionsMATLABCtr = joinArrays(obj.MissedOccasionsMATLABCtr, stats.missedPUCCH, repeatedIdx, sortedIdx);
-                obj.MissedOccasionsSRSCtr = joinArrays(obj.MissedOccasionsSRSCtr, stats.missedPUCCHSRS, repeatedIdx, sortedIdx);
+                obj.MissedOccasionsOCUDUCtr = joinArrays(obj.MissedOccasionsOCUDUCtr, stats.missedPUCCHOCUDU, repeatedIdx, sortedIdx);
             else
                 obj.FalseACKsMATLABCtr = joinArrays(obj.FalseACKsMATLABCtr, stats.falseACK, repeatedIdx, sortedIdx);
-                obj.FalseACKsSRSCtr = joinArrays(obj.FalseACKsSRSCtr, stats.falseACKSRS, repeatedIdx, sortedIdx);
+                obj.FalseACKsOCUDUCtr = joinArrays(obj.FalseACKsOCUDUCtr, stats.falseACKOCUDU, repeatedIdx, sortedIdx);
             end
         end % of function updateCounters(obj)
     end
@@ -182,17 +182,17 @@ classdef FormatDetailsF1 < handle
         % Creates a temporary structure of metrics to collect data for the current simulation.
         function stats = setupTmpStats(nPoints)
             stats = struct(...
-                'missedPUCCH', zeros(nPoints, 1), ...     % number of MATLAB non-detected PUCCH transmissions
-                'missedACK', zeros(nPoints, 1), ...       % number of MATLAB missed ACKs
-                'NACK2ACK', zeros(nPoints, 1), ...        % number of MATLAB NACKs received as ACKs
-                'falseACK', zeros(nPoints, 1), ...        % number of MATLAB false ACKs
-                'missedPUCCHSRS', zeros(nPoints, 1), ...  % number of SRS non-detected PUCCH transmissions
-                'missedACKSRS', zeros(nPoints, 1), ...    % number of SRS missed ACKs
-                'NACK2ACKSRS', zeros(nPoints, 1), ...     % number of SRS NACKs received as ACKs
-                'falseACKSRS', zeros(nPoints, 1), ...     % number of SRS false ACKs
-                'nACKs', zeros(nPoints, 1), ...           % number of transmitted ACKs
-                'nNACKs', zeros(nPoints, 1), ...          % number of transmitted NACKs
-                'nOccasions', zeros(nPoints, 1) ...       % number of ACK occasions
+                'missedPUCCH', zeros(nPoints, 1), ...       % number of MATLAB non-detected PUCCH transmissions
+                'missedACK', zeros(nPoints, 1), ...         % number of MATLAB missed ACKs
+                'NACK2ACK', zeros(nPoints, 1), ...          % number of MATLAB NACKs received as ACKs
+                'falseACK', zeros(nPoints, 1), ...          % number of MATLAB false ACKs
+                'missedPUCCHOCUDU', zeros(nPoints, 1), ...  % number of OCUDU non-detected PUCCH transmissions
+                'missedACKOCUDU', zeros(nPoints, 1), ...    % number of OCUDU missed ACKs
+                'NACK2ACKOCUDU', zeros(nPoints, 1), ...     % number of OCUDU NACKs received as ACKs
+                'falseACKOCUDU', zeros(nPoints, 1), ...     % number of OCUDU false ACKs
+                'nACKs', zeros(nPoints, 1), ...             % number of transmitted ACKs
+                'nNACKs', zeros(nPoints, 1), ...            % number of transmitted NACKs
+                'nOccasions', zeros(nPoints, 1) ...         % number of ACK occasions
                 );
         end
 
@@ -218,26 +218,26 @@ classdef FormatDetailsF1 < handle
             end % if isDetectTest
         end
 
-        function stats = updateStatsSRS(stats, uci, msg, isDetectTest, snrIdx)
-            uciRxSRS = msg.HARQAckPayload;
+        function stats = updateStatsOCUDU(stats, uci, msg, isDetectTest, snrIdx)
+            uciRxOCUDU = msg.HARQAckPayload;
             if isDetectTest
-                % If SRS's PUCCH decoder was able to detect a PUCCH.
+                % If OCUDU's PUCCH decoder was able to detect a PUCCH.
                 if msg.isValid
                     % NACK to ACK.
-                    stats.NACK2ACKSRS(snrIdx) = stats.NACK2ACKSRS(snrIdx) + sum(~uci & uciRxSRS);
+                    stats.NACK2ACKOCUDU(snrIdx) = stats.NACK2ACKOCUDU(snrIdx) + sum(~uci & uciRxOCUDU);
                     % Missed ACK.
-                    stats.missedACKSRS(snrIdx) = stats.missedACKSRS(snrIdx) + sum(uci & ~uciRxSRS);
+                    stats.missedACKOCUDU(snrIdx) = stats.missedACKOCUDU(snrIdx) + sum(uci & ~uciRxOCUDU);
                 else
                     % Record a non-detected PUCCH F1 transmission.
-                    stats.missedPUCCHSRS(snrIdx) = stats.missedPUCCHSRS(snrIdx) + 1;
-                    % Missed ACK. Here, SRS's PUCCH decoder failed
+                    stats.missedPUCCHOCUDU(snrIdx) = stats.missedPUCCHOCUDU(snrIdx) + 1;
+                    % Missed ACK. Here, OCUDU's PUCCH decoder failed
                     % to detect and all ACKs are lost.
-                    stats.missedACKSRS(snrIdx) = stats.missedACKSRS(snrIdx) + sum(uci);
+                    stats.missedACKOCUDU(snrIdx) = stats.missedACKOCUDU(snrIdx) + sum(uci);
                 end
             else % false alarm test
                 % False ACK.
                 if msg.isValid
-                    stats.falseACKSRS(snrIdx) = stats.falseACKSRS(snrIdx) + sum(uciRxSRS);
+                    stats.falseACKOCUDU(snrIdx) = stats.falseACKOCUDU(snrIdx) + sum(uciRxOCUDU);
                 end
             end
         end
@@ -256,17 +256,17 @@ classdef FormatDetailsF1 < handle
             end
         end
 
-        function printMessagesSRS(stats, usedFrames, ~, SNRIn, isDetectTest, snrIdx)
+        function printMessagesOCUDU(stats, usedFrames, ~, SNRIn, isDetectTest, snrIdx)
             if isDetectTest
-                fprintf(['SRS - PUCCH Format 1 - Missed transmission rate for %d frame(s) at ', ...
-                    'SNR %.1f dB: %g\n'], usedFrames, SNRIn(snrIdx), stats.missedPUCCHSRS(snrIdx)/stats.nOccasions(snrIdx));
-                fprintf(['SRS - PUCCH Format 1 - NACK to ACK rate for %d frame(s) at ', ...
-                    'SNR %.1f dB: %g\n'], usedFrames, SNRIn(snrIdx), stats.NACK2ACKSRS(snrIdx)/stats.nNACKs(snrIdx));
-                fprintf(['SRS - PUCCH Format 1 - ACK missed detection rate for %d frame(s) at ', ...
-                    'SNR %.1f dB: %g\n'], usedFrames, SNRIn(snrIdx), stats.missedACKSRS(snrIdx)/stats.nACKs(snrIdx));
+                fprintf(['OCUDU - PUCCH Format 1 - Missed transmission rate for %d frame(s) at ', ...
+                    'SNR %.1f dB: %g\n'], usedFrames, SNRIn(snrIdx), stats.missedPUCCHOCUDU(snrIdx)/stats.nOccasions(snrIdx));
+                fprintf(['OCUDU - PUCCH Format 1 - NACK to ACK rate for %d frame(s) at ', ...
+                    'SNR %.1f dB: %g\n'], usedFrames, SNRIn(snrIdx), stats.NACK2ACKOCUDU(snrIdx)/stats.nNACKs(snrIdx));
+                fprintf(['OCUDU - PUCCH Format 1 - ACK missed detection rate for %d frame(s) at ', ...
+                    'SNR %.1f dB: %g\n'], usedFrames, SNRIn(snrIdx), stats.missedACKOCUDU(snrIdx)/stats.nACKs(snrIdx));
             else
-                fprintf(['SRS - PUCCH Format 1 - false ACK detection rate for %d frame(s) at ', ...
-                    'SNR %.1f dB: %g\n'], usedFrames, SNRIn(snrIdx), stats.falseACKSRS(snrIdx)/stats.nOccasions(snrIdx));
+                fprintf(['OCUDU - PUCCH Format 1 - false ACK detection rate for %d frame(s) at ', ...
+                    'SNR %.1f dB: %g\n'], usedFrames, SNRIn(snrIdx), stats.falseACKOCUDU(snrIdx)/stats.nOccasions(snrIdx));
             end
         end
     end % of methods (Static)
@@ -283,15 +283,15 @@ classdef FormatDetailsF1 < handle
             fdr = obj.FalseACKsMATLABCtr ./ obj.ACKOccasionsCtr;
         end
 
-        function fdr = get.FalseACKDetectionRateSRS(obj)
+        function fdr = get.FalseACKDetectionRateOCUDU(obj)
             if obj.isDetectionTest
                 warning('off', 'backtrace');
-                warning('The FalseACKDetectionRateSRS property is inactive when TestType == ''Detection''.');
+                warning('The FalseACKDetectionRateOCUDU property is inactive when TestType == ''Detection''.');
                 warning('on', 'backtrace');
                 fdr = [];
                 return
             end
-            fdr = obj.FalseACKsSRSCtr ./ obj.ACKOccasionsCtr;
+            fdr = obj.FalseACKsOCUDUCtr ./ obj.ACKOccasionsCtr;
         end
 
         function n2a = get.NACK2ACKDetectionRateMATLAB(obj)
@@ -305,15 +305,15 @@ classdef FormatDetailsF1 < handle
             n2a = obj.NACK2ACKsMATLABCtr ./ obj.TransmittedNACKsCtr;
         end
 
-        function n2a = get.NACK2ACKDetectionRateSRS(obj)
+        function n2a = get.NACK2ACKDetectionRateOCUDU(obj)
             if ~obj.isDetectionTest
                 warning('off', 'backtrace');
-                warning('The NACK2ACKDetectionRateSRS property is inactive when TestType == ''False Alarm''.');
+                warning('The NACK2ACKDetectionRateOCUDU property is inactive when TestType == ''False Alarm''.');
                 warning('on', 'backtrace');
                 n2a = [];
                 return
             end
-            n2a = obj.NACK2ACKsSRSCtr ./ obj.TransmittedNACKsCtr;
+            n2a = obj.NACK2ACKsOCUDUCtr ./ obj.TransmittedNACKsCtr;
         end
 
         function ackd = get.ACKDetectionRateMATLAB(obj)
@@ -327,15 +327,15 @@ classdef FormatDetailsF1 < handle
             ackd = 1 - obj.MissedACKsMATLABCtr ./ obj.TransmittedACKsCtr;
         end
 
-        function ackd = get.ACKDetectionRateSRS(obj)
+        function ackd = get.ACKDetectionRateOCUDU(obj)
             if ~obj.isDetectionTest
                 warning('off', 'backtrace');
-                warning('The ACKDetectionRateSRS property is inactive when TestType == ''False Alarm''.');
+                warning('The ACKDetectionRateOCUDU property is inactive when TestType == ''False Alarm''.');
                 warning('on', 'backtrace');
                 ackd = [];
                 return
             end
-            ackd = 1 - obj.MissedACKsSRSCtr ./ obj.TransmittedACKsCtr;
+            ackd = 1 - obj.MissedACKsOCUDUCtr ./ obj.TransmittedACKsCtr;
         end
 
         function pucchd = get.PUCCHDetectionRateMATLAB(obj)
@@ -349,15 +349,15 @@ classdef FormatDetailsF1 < handle
             pucchd = 1 - obj.MissedOccasionsMATLABCtr ./ obj.ACKOccasionsCtr;
         end
 
-        function pucchd = get.PUCCHDetectionRateSRS(obj)
+        function pucchd = get.PUCCHDetectionRateOCUDU(obj)
             if ~obj.isDetectionTest
                 warning('off', 'backtrace');
-                warning('The PUCCHDetectionRateSRS property is inactive when TestType == ''False Alarm''.');
+                warning('The PUCCHDetectionRateOCUDU property is inactive when TestType == ''False Alarm''.');
                 warning('on', 'backtrace');
                 pucchd = [];
                 return
             end
-            pucchd = 1 - obj.MissedOccasionsSRSCtr ./ obj.ACKOccasionsCtr;
+            pucchd = 1 - obj.MissedOccasionsOCUDUCtr ./ obj.ACKOccasionsCtr;
         end
 
         function flag = hasresults(obj)
@@ -381,15 +381,15 @@ classdef FormatDetailsF1 < handle
             counts.SNRrange = obj.SNRrange;
             counts.ACKOccasionsCtr = obj.ACKOccasionsCtr;
 
-            getMatlab = ~strcmp(implementationType, 'srs');
-            getSRS = ~strcmp(implementationType, 'matlab');
+            getMatlab = ~strcmp(implementationType, 'ocudu');
+            getOCUDU = ~strcmp(implementationType, 'matlab');
             if obj.isDetectionTest
                 counts.TransmittedACKsCtr = obj.TransmittedACKsCtr;
                 counts.TransmittedNACKsCtr = obj.TransmittedNACKsCtr;
-                if getSRS
-                    counts.MissedOccasionsSRSCtr = obj.MissedOccasionsSRSCtr;
-                    counts.MissedACKsSRSCtr = obj.MissedACKsSRSCtr;
-                    counts.NACK2ACKsSRSCtr = obj.NACK2ACKsSRSCtr;
+                if getOCUDU
+                    counts.MissedOccasionsOCUDUCtr = obj.MissedOccasionsOCUDUCtr;
+                    counts.MissedACKsOCUDUCtr = obj.MissedACKsOCUDUCtr;
+                    counts.NACK2ACKsOCUDUCtr = obj.NACK2ACKsOCUDUCtr;
                 end
                 if getMatlab
                     counts.MissedOccasionsMATLABCtr = obj.MissedOccasionsMATLABCtr;
@@ -397,8 +397,8 @@ classdef FormatDetailsF1 < handle
                     counts.NACK2ACKsMATLABCtr = obj.NACK2ACKsMATLABCtr;
                 end
             else
-                if getSRS
-                    counts.FalseACKsSRSCtr = obj.FalseACKsSRSCtr;
+                if getOCUDU
+                    counts.FalseACKsOCUDUCtr = obj.FalseACKsOCUDUCtr;
                 end
                 if getMatlab
                     counts.FalseACKsMATLABCtr = obj.FalseACKsMATLABCtr;
@@ -409,13 +409,13 @@ classdef FormatDetailsF1 < handle
         function statistics = getStatistics(obj, implementationType)
             statistics = struct();
 
-            getMatlab = ~strcmp(implementationType, 'srs');
-            getSRS = ~strcmp(implementationType, 'matlab');
+            getMatlab = ~strcmp(implementationType, 'ocudu');
+            getOCUDU = ~strcmp(implementationType, 'matlab');
             if obj.isDetectionTest
-                if getSRS
-                    statistics.ACKDetectionRateSRS = obj.ACKDetectionRateSRS;
-                    statistics.NACK2ACKDetectionRateSRS = obj.NACK2ACKDetectionRateSRS;
-                    statistics.PUCCHDetectionRateSRS = obj.PUCCHDetectionRateSRS;
+                if getOCUDU
+                    statistics.ACKDetectionRateOCUDU = obj.ACKDetectionRateOCUDU;
+                    statistics.NACK2ACKDetectionRateOCUDU = obj.NACK2ACKDetectionRateOCUDU;
+                    statistics.PUCCHDetectionRateOCUDU = obj.PUCCHDetectionRateOCUDU;
                 end
                 if getMatlab
                     statistics.ACKDetectionRateMATLAB = obj.ACKDetectionRateMATLAB;
@@ -423,8 +423,8 @@ classdef FormatDetailsF1 < handle
                     statistics.PUCCHDetectionRateMATLAB = obj.PUCCHDetectionRateMATLAB;
                 end
             else
-                if getSRS
-                    statistics.FalseACKDetectionRateSRS = obj.FalseACKDetectionRateSRS;
+                if getOCUDU
+                    statistics.FalseACKDetectionRateOCUDU = obj.FalseACKDetectionRateOCUDU;
                 end
                 if getMatlab
                     statistics.FalseACKDetectionRateMATLAB = obj.FalseACKDetectionRateMATLAB;
@@ -433,26 +433,26 @@ classdef FormatDetailsF1 < handle
         end % of function getStatistics(obj)
 
         function flag = isSimOver(obj, stats, snrIdx, implementationType)
-            useMATLAB = ~strcmp(implementationType, 'srs');
-            useSRS = ~strcmp(implementationType, 'matlab');
+            useMATLAB = ~strcmp(implementationType, 'ocudu');
+            useOCUDU = ~strcmp(implementationType, 'matlab');
 
             if obj.isDetectionTest
                 isSimOverMATLAB = (stats.missedACK(snrIdx) >= 100) && (stats.NACK2ACK(snrIdx) >= 100);
-                isSimOverSRS = (stats.missedACKSRS(snrIdx) >= 100) && (stats.NACK2ACKSRS(snrIdx) >= 100);
+                isSimOverOCUDU = (stats.missedACKOCUDU(snrIdx) >= 100) && (stats.NACK2ACKOCUDU(snrIdx) >= 100);
             else
                 isSimOverMATLAB = (stats.falseACK(snrIdx) >= 100);
-                isSimOverSRS = (stats.falseACKSRS(snrIdx) >= 100);
+                isSimOverOCUDU = (stats.falseACKOCUDU(snrIdx) >= 100);
             end
             isSimOverMATLAB = ~useMATLAB || isSimOverMATLAB;
-            isSimOverSRS = ~useSRS || isSimOverSRS;
+            isSimOverOCUDU = ~useOCUDU || isSimOverOCUDU;
 
-            flag = isSimOverMATLAB && isSimOverSRS;
+            flag = isSimOverMATLAB && isSimOverOCUDU;
         end
 
         function plot(obj, implementationType, subcarrierSpacing)
 
             plotMATLAB = (strcmp(implementationType, 'matlab') || strcmp(implementationType, 'both'));
-            plotSRS = (strcmp(implementationType, 'srs') || strcmp(implementationType, 'both'));
+            plotOCUDU = (strcmp(implementationType, 'ocudu') || strcmp(implementationType, 'both'));
 
             titleString = sprintf('PUCCH F1 / SCS=%dkHz / %d ACK bits', subcarrierSpacing, obj.NumACKBits);
             legendstrings = {};
@@ -477,20 +477,20 @@ classdef FormatDetailsF1 < handle
                 end
             end
 
-            if plotSRS
+            if plotOCUDU
                 hold on;
                 if obj.isDetectionTest
-                    semilogy(obj.SNRrange, obj.NACK2ACKsSRSCtr ./ obj.TransmittedNACKsCtr, 'o-.', ...
+                    semilogy(obj.SNRrange, obj.NACK2ACKsOCUDUCtr ./ obj.TransmittedNACKsCtr, 'o-.', ...
                         'LineWidth', 1, 'Color', [0.8500 0.3250 0.0980]);
-                    legendstrings{end + 1} = 'SRS - NACK to ACK';
+                    legendstrings{end + 1} = 'OCUDU - NACK to ACK';
 
-                    semilogy(obj.SNRrange, obj.MissedACKsSRSCtr ./ obj.TransmittedACKsCtr, 'square:', ...
+                    semilogy(obj.SNRrange, obj.MissedACKsOCUDUCtr ./ obj.TransmittedACKsCtr, 'square:', ...
                         'LineWidth', 1, 'Color', [0.8500 0.3250 0.0980]);
-                    legendstrings{end + 1} = 'SRS - Missed ACK';
+                    legendstrings{end + 1} = 'OCUDU - Missed ACK';
                 else
-                    semilogy(obj.SNRrange, obj.FalseACKsSRSCtr ./ obj.ACKOccasionsCtr, 'o-.', ...
+                    semilogy(obj.SNRrange, obj.FalseACKsOCUDUCtr ./ obj.ACKOccasionsCtr, 'o-.', ...
                         'LineWidth', 1, 'Color', [0.8500 0.3250 0.0980]);
-                    legendstrings{end + 1} = 'SRS - False ACK';
+                    legendstrings{end + 1} = 'OCUDU - False ACK';
                 end
                 hold off;
             end

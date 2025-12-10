@@ -11,30 +11,30 @@
 %   the type of throughput plot, either 'absolute' or 'relative' (default 'absolute'), e.g.
 %   combinePUSCHSims(FILES, 'TPType', 'relative')
 %
-%   TABLESRS = combinePUSCHSims(___) returns a table with a summary of the
-%   simulations using the SRS PUSCH decoder.
+%   TABLEOCUDU = combinePUSCHSims(___) returns a table with a summary of the
+%   simulations using the OCUDU PUSCH decoder.
 %
-%   [TABLESRS, TABLEMATLAB] = combinePUSCHSims(___) also returns a summary
+%   [TABLEOCUDU, TABLEMATLAB] = combinePUSCHSims(___) also returns a summary
 %   table for the simulations using the MATLAB PUSCH decoder.
 %
-%   [TABLESRS, TABLEMATLAB, FIGS] = combinePUSCHSims(___) also returns a 2x1
+%   [TABLEOCUDU, TABLEMATLAB, FIGS] = combinePUSCHSims(___) also returns a 2x1
 %   array of the created axes objects.
 %
 %   Example
 %      D = dir('my_file*.mat');
 %      FILES = string({D.name});
-%      [tableSRS, tableMATLAB] = combinePUSCHSims(FILES);
+%      [tableOCUDU, tableMATLAB] = combinePUSCHSims(FILES);
 %
 %   See also PUSCHBLER.
 
 %   Copyright 2021-2025 Software Radio Systems Limited
 %
-%   This file is part of srsRAN-matlab.
+%   This file is part of OCUDU-matlab.
 %
-%   srsRAN-matlab is free software: you can redistribute it and/or
+%   OCUDU-matlab is free software: you can redistribute it and/or
 %   modify it under the terms of the BSD 2-Clause License.
 %
-%   srsRAN-matlab is distributed in the hope that it will be useful,
+%   OCUDU-matlab is distributed in the hope that it will be useful,
 %   but WITHOUT ANY WARRANTY; without even the implied warranty of
 %   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 %   BSD 2-Clause License for more details.
@@ -42,19 +42,19 @@
 %   A copy of the BSD 2-Clause License can be found in the LICENSE
 %   file in the top-level directory of this distribution.
 
-function [tableSRS, tableMATLAB, figs] = combinePUSCHSims(files, opt)
+function [tableOCUDU, tableMATLAB, figs] = combinePUSCHSims(files, opt)
     arguments
         files (1,:) string
         opt.TPType (1, :) string {mustBeMember(opt.TPType, {'absolute', 'relative'})} = 'absolute'
     end
 
     returnMATLAB = false;
-    returnSRS = false;
+    returnOCUDU = false;
     if nargout > 1
         returnMATLAB = true;
     end
     if nargout > 0
-        returnSRS = true;
+        returnOCUDU = true;
     end
 
     tpFig = axes(figure);
@@ -65,14 +65,14 @@ function [tableSRS, tableMATLAB, figs] = combinePUSCHSims(files, opt)
 
     numCurves = numel(files);
 
-    if returnSRS || returnMATLAB
+    if returnOCUDU || returnMATLAB
         varNames = ["PRB", "Symbols", "MCS table", "MCS index", "Modulation", ...
             "Target rate", "Spectral Eff", "TBS", "SNR @ 1e-2"];
         varTypes = ["double", "double", "string", "double", "string", "double", ...
             "double", "double", "double"];
         nVariables = 9;
-      if returnSRS
-        tableSRS = table('Size', [numCurves, nVariables], 'VariableTypes', varTypes, ...
+      if returnOCUDU
+        tableOCUDU = table('Size', [numCurves, nVariables], 'VariableTypes', varTypes, ...
             'VariableNames', varNames);
       end
       if returnMATLAB
@@ -81,26 +81,26 @@ function [tableSRS, tableMATLAB, figs] = combinePUSCHSims(files, opt)
       end
     end
 
-    hasSRS = false;
+    hasOCUDU = false;
     hasMATLAB = false;
     for iFile = 1:numCurves
         filename = files(iFile);
         fprintf('Processing file %s...\n', filename);
-        assert(exist(filename, 'file') == 2, 'srsran_matlab:combinePUSCHSims', 'File not found.');
+        assert(exist(filename, 'file') == 2, 'ocudu_matlab:combinePUSCHSims', 'File not found.');
 
         S = load(filename);
         puschName = fieldnames(S);
-        assert(isscalar(puschName), 'srsran_matlab:combinePUSCHSims', ...
+        assert(isscalar(puschName), 'ocudu_matlab:combinePUSCHSims', ...
             'File doesn''t contain a single object.');
         puschsim = S.(puschName{1});
-        assert(isa(puschsim, 'PUSCHBLER'), 'srsran_matlab::combinePUSCHSims', ...
+        assert(isa(puschsim, 'PUSCHBLER'), 'ocudu_matlab::combinePUSCHSims', ...
             'File doesn''t contain a PUSCHBLER object');
-        assert(puschsim.isLocked, 'srsran_matlab::combinePUSCHSims', ...
+        assert(puschsim.isLocked, 'ocudu_matlab::combinePUSCHSims', ...
             'Object %s is unlocked', puschName{1});
 
         SNRrange = puschsim.SNRrange;
         desiredBLER = 1e-2;
-        if ~strcmp(puschsim.ImplementationType, 'srs')
+        if ~strcmp(puschsim.ImplementationType, 'ocudu')
             hasMATLAB = true;
             blerMATLAB = puschsim.BlockErrorRateMATLAB;
 
@@ -118,19 +118,19 @@ function [tableSRS, tableMATLAB, figs] = combinePUSCHSims(files, opt)
             end
         end
         if ~strcmp(puschsim.ImplementationType, 'matlab')
-            hasSRS = true;
-            blerSRS = puschsim.BlockErrorRateSRS;
+            hasOCUDU = true;
+            blerOCUDU = puschsim.BlockErrorRateOCUDU;
 
-            tp = puschsim.ThroughputSRS;
+            tp = puschsim.ThroughputOCUDU;
             if strcmp(opt.TPType, 'relative')
                 tp = tp / puschsim.MaxThroughput * 100;
             end
             plot(tpFig, SNRrange, tp, '-', 'LineWidth', 1, 'Color', [0.8500 0.3250 0.0980]);
-            semilogy(blerFig, puschsim.SNRrange, blerSRS, ...
+            semilogy(blerFig, puschsim.SNRrange, blerOCUDU, ...
                 '-', 'LineWidth', 1, 'Color', [0.8500 0.3250 0.0980]);
-            if returnSRS
-                targetSNR = interpolate(SNRrange, blerSRS, desiredBLER);
-                tableSRS(iFile, :) = createTableEntry(puschsim, targetSNR);
+            if returnOCUDU
+                targetSNR = interpolate(SNRrange, blerOCUDU, desiredBLER);
+                tableOCUDU(iFile, :) = createTableEntry(puschsim, targetSNR);
             end
         end
     end % of for iFile = 1:numCurves
@@ -139,8 +139,8 @@ function [tableSRS, tableMATLAB, figs] = combinePUSCHSims(files, opt)
     if hasMATLAB
         lineLegend{end + 1} = 'MATLAB';
     end
-    if hasSRS
-        lineLegend{end + 1} = 'SRS';
+    if hasOCUDU
+        lineLegend{end + 1} = 'OCUDU';
     end
 
     xlabel(tpFig, 'SNR [dB]');
@@ -160,7 +160,7 @@ function [tableSRS, tableMATLAB, figs] = combinePUSCHSims(files, opt)
         figs = [tpFig; blerFig];
     end
 
-end % of function [tableSRS, tableMATLAB] = combinePUSCHSims(files)
+end % of function [tableOCUDU, tableMATLAB] = combinePUSCHSims(files)
 
 function snr = interpolate(snrRange, blerRange, value)
 %Finds the SNR corresponding to a BLER of "value" by interpolating the curve

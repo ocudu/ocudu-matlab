@@ -68,7 +68,7 @@
 %                                  'TDL-C'(rural scenario), 'TDLC300' (simplified rural scenario)).
 %   DelaySpread                  - Delay spread in seconds (TDL-C delay profile only).
 %   MaximumDopplerShift          - Maximum Doppler shift in hertz (TDL-C and TDLC300 delay profile only).
-%   ImplementationType           - PUCCH implementation type ('matlab', 'srs' or 'both').
+%   ImplementationType           - PUCCH implementation type ('matlab', 'ocudu' or 'both').
 %   TestType                     - Test type ('Detection', 'False Alarm').
 %   QuickSimulation              - Quick-simulation flag: set to true to stop
 %                                  each point after 100 errors (tunable).
@@ -83,12 +83,12 @@
 
 %   Copyright 2021-2025 Software Radio Systems Limited
 %
-%   This file is part of srsRAN-matlab.
+%   This file is part of OCUDU-matlab.
 %
-%   srsRAN-matlab is free software: you can redistribute it and/or
+%   OCUDU-matlab is free software: you can redistribute it and/or
 %   modify it under the terms of the BSD 2-Clause License.
 %
-%   srsRAN-matlab is distributed in the hope that it will be useful,
+%   OCUDU-matlab is distributed in the hope that it will be useful,
 %   but WITHOUT ANY WARRANTY; without even the implied warranty of
 %   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 %   BSD 2-Clause License for more details.
@@ -147,8 +147,8 @@ classdef PUCCHPERF < matlab.System
         DelaySpread (1, 1) double {mustBeReal, mustBeNonnegative} = 300e-9
         %Maximum Doppler shift in hertz (TDL-C and TDLC300 delay profile only).
         MaximumDopplerShift (1, 1) double {mustBeReal, mustBeNonnegative} = 100
-        %PUCCH implementation type ('matlab', 'srs', 'both').
-        ImplementationType (1, :) char {mustBeMember(ImplementationType, {'matlab', 'srs', 'both'})} = 'matlab'
+        %PUCCH implementation type ('matlab', 'ocudu', 'both').
+        ImplementationType (1, :) char {mustBeMember(ImplementationType, {'matlab', 'ocudu', 'both'})} = 'matlab'
         %Test type.
         %   Possible values are ('Detection', 'False Alarm'). Default is 'Detection'.
         TestType (1, :) char {mustBeMember(TestType, {'Detection', 'False Alarm'})} = 'Detection'

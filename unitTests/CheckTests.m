@@ -1,6 +1,6 @@
-%CheckTests Unit tests for the SRS unit test classes.
+%CheckTests Unit tests for the OCUDU unit test classes.
 %   This class, based on the matlab.unittest.TestCase framework, double checks
-%   that the classes implementing SRS unit tests comply with the required
+%   that the classes implementing OCUDU unit tests comply with the required
 %   specifications. The test only checks that
 %
 %   1. the class is an implementation of the main abstract test class;
@@ -12,7 +12,7 @@
 %
 %   CheckTests Properties (Constant):
 %
-%   fullBlocks - List of all possible SRSRAN blocks.
+%   fullBlocks - List of all possible OCUDU blocks.
 %
 %   CheckTests Properties (TestParameters):
 %
@@ -31,7 +31,7 @@
 %   runDefinitionTest  - Checks that test classes are properly defined.
 %   runVectorTest      - Checks that the testvector functionalities of the test classes
 %                        are correct.
-%   checkList          - Secondary test to ensure the list of SRS blocks is not
+%   checkList          - Secondary test to ensure the list of OCUDU blocks is not
 %                        over-populated.
 %
 %   CheckTests Methods (Test, TestTags = {'mex code'})
@@ -46,12 +46,12 @@
 
 %   Copyright 2021-2025 Software Radio Systems Limited
 %
-%   This file is part of srsRAN-matlab.
+%   This file is part of OCUDU-matlab.
 %
-%   srsRAN-matlab is free software: you can redistribute it and/or
+%   OCUDU-matlab is free software: you can redistribute it and/or
 %   modify it under the terms of the BSD 2-Clause License.
 %
-%   srsRAN-matlab is distributed in the hope that it will be useful,
+%   OCUDU-matlab is distributed in the hope that it will be useful,
 %   but WITHOUT ANY WARRANTY; without even the implied warranty of
 %   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 %   BSD 2-Clause License for more details.
@@ -61,15 +61,15 @@
 
 classdef CheckTests < matlab.unittest.TestCase
     properties (TestParameter)
-        %Test to check. File name of one of the 'srsBlockUnittest' subclasses defining
-        %   the tests for an SRSRAN block (e.g., 'srsModulationMapperUnittest.m').
+        %Test to check. File name of one of the 'ocuduBlockUnittest' subclasses defining
+        %   the tests for an OCUDU block (e.g., 'ocuduModulationMapperUnittest.m').
         testName
     end
 
     properties (Constant)
-        %List of all possible SRSRAN blocks. Here, block names include their type
+        %List of all possible OCUDU blocks. Here, block names include their type
         %   (e.g., 'phy/upper/channel_modulation/modulation_mapper').
-        fullBlocks = srsTest.listSRSblocks('full')
+        fullBlocks = ocuduTest.listOCUDUblocks('full')
     end
 
     properties (Hidden)
@@ -81,7 +81,7 @@ classdef CheckTests < matlab.unittest.TestCase
     methods (TestParameterDefinition, Static)
         function testName = obtainTestNames()
         %obtainTestNames initializes the testName parameter by selecting the proper files
-        %   in the srsran_matlab root directory.
+        %   in the ocudu_matlab root directory.
 
             % Get all .m files in root directory.
             tmp = what('..');
@@ -91,7 +91,7 @@ classdef CheckTests < matlab.unittest.TestCase
             nFiles = numel(testName);
             deletedFiles = false(nFiles, 1);
             for iFile = 1:nFiles
-                if ~startsWith(testName{iFile}, 'srs') ...
+                if ~startsWith(testName{iFile}, 'ocudu') ...
                         || ~endsWith(testName{iFile}, 'Unittest.m')
                     deletedFiles(iFile) = true;
                 end
@@ -102,7 +102,7 @@ classdef CheckTests < matlab.unittest.TestCase
 
     methods (TestClassSetup)
         function classSetup(obj)
-        %classSetup adds the srsran_matlab root directory to the MATLAB path.
+        %classSetup adds the ocudu_matlab root directory to the MATLAB path.
             import matlab.unittest.fixtures.PathFixture
             import matlab.unittest.fixtures.TemporaryFolderFixture;
 
@@ -121,10 +121,10 @@ classdef CheckTests < matlab.unittest.TestCase
 
             className = testName(1:end-2);
             classMeta = meta.class.fromName(className);
-            % Check whether test is inherited from srsBlockUnittest.
+            % Check whether test is inherited from ocuduBlockUnittest.
             supClasses = {classMeta.SuperclassList(:).Name};
-            msg = sprintf('Class %s does not inherit from srsBlockUnittest.', className);
-            obj.assertThat({'srsTest.srsBlockUnittest'}, IsSubsetOf(supClasses), msg);
+            msg = sprintf('Class %s does not inherit from ocuduBlockUnittest.', className);
+            obj.assertThat({'ocuduTest.ocuduBlockUnittest'}, IsSubsetOf(supClasses), msg);
 
             % Check whether the test is abstract.
             msg = sprintf('Class %s is abstract.', className);
@@ -132,8 +132,8 @@ classdef CheckTests < matlab.unittest.TestCase
 
             % Check whether test has the mandatory properties.
             props = {classMeta.PropertyList(:).Name};
-            [blockFlag, blockIdx] = ismember('srsBlock', props);
-            [typeFlag, typeIdx] = ismember('srsBlockType', props);
+            [blockFlag, blockIdx] = ismember('ocuduBlock', props);
+            [typeFlag, typeIdx] = ismember('ocuduBlockType', props);
             pathFlag = ismember('outputPath', props);
             msg = sprintf('Class %s misses one or more mandatory properties.', className);
             obj.assertTrue(blockFlag && typeFlag && pathFlag, msg);
@@ -165,7 +165,7 @@ classdef CheckTests < matlab.unittest.TestCase
 
             % Get the block name associated to the test.
             props = {classMeta.PropertyList(:).Name};
-            [~, blockIdx] = ismember('srsBlock', props);
+            [~, blockIdx] = ismember('ocuduBlock', props);
             blockVal = classMeta.PropertyList(blockIdx).DefaultValue;
 
             % Check whether an object of class testName can be instantiated.
@@ -203,31 +203,31 @@ classdef CheckTests < matlab.unittest.TestCase
                 obj.assertTrue(~isempty(dir([fileName, '*.tar.gz'])), msg);
             end
 
-            % Check whether runSRSRANUnittest can run the current test.
+            % Check whether runOCUDUunittest can run the current test.
             try
-                rtest = runSRSRANUnittest(blockVal, 'testvector');
+                rtest = runOCUDUunittest(blockVal, 'testvector');
             catch
-                msg = sprintf('runSRSRANUnittest cannot run a test for block %s.', blockVal);
+                msg = sprintf('runOCUDUunittest cannot run a test for block %s.', blockVal);
                 obj.assertFail(msg);
             end
-            msg = sprintf('runSRSRANUnittest maps block %s to class %s instead of class %s.', ...
+            msg = sprintf('runOCUDUunittest maps block %s to class %s instead of class %s.', ...
                 blockVal, rtest(1).TestClass, className);
             obj.assertMatches(rtest(1).TestClass, className, msg);
 
-        end % of function runVectorTest(obj, testName)
+        end % of function runVectorTest(obj, testName
 
         function checkList(obj)
-        %checkList checks that all blocks in listSRSblocks have a test.
+        %checkList checks that all blocks in listOCUDUblocks have a test.
 
-            blocks = srsTest.listSRSblocks();
+            blocks = ocuduTest.listOCUDUblocks();
             nBlocks = numel(blocks);
 
             for iBlock = 1:nBlocks
-                % Check whether runSRSRANUnittest has a test for the current block.
+                % Check whether runOCUDUunittest has a test for the current block.
                 try
-                    [~] = runSRSRANUnittest(blocks{iBlock}, 'testvector');
+                    [~] = runOCUDUunittest(blocks{iBlock}, 'testvector');
                 catch
-                    msg = sprintf('runSRSRANUnittest does not have a test for block %s.', blocks{iBlock});
+                    msg = sprintf('runOCUDUunittest does not have a test for block %s.', blocks{iBlock});
                     obj.assertFail(msg);
                 end
             end % of for iBlock

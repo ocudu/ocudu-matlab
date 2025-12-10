@@ -1,4 +1,4 @@
-%CheckAnalyzers Unit tests for the SRS analyzers.
+%CheckAnalyzers Unit tests for the OCUDU analyzers.
 %   This class, based on the matlab.unittest.TestCase framework, runs some simple
 %   tests on the analyzers in 'apps/analyzers'.
 %
@@ -27,12 +27,12 @@
 
 %   Copyright 2021-2025 Software Radio Systems Limited
 %
-%   This file is part of srsRAN-matlab.
+%   This file is part of OCUDU-matlab.
 %
-%   srsRAN-matlab is free software: you can redistribute it and/or
+%   OCUDU-matlab is free software: you can redistribute it and/or
 %   modify it under the terms of the BSD 2-Clause License.
 %
-%   srsRAN-matlab is distributed in the hope that it will be useful,
+%   OCUDU-matlab is distributed in the hope that it will be useful,
 %   but WITHOUT ANY WARRANTY; without even the implied warranty of
 %   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 %   BSD 2-Clause License for more details.
@@ -115,7 +115,7 @@ classdef CheckAnalyzers < matlab.unittest.TestCase
             obj.injectInputStub(answers);
 
             % Run the parser.
-            [carrier, pusch, extra] = srsParseLogs;
+            [carrier, pusch, extra] = ocuduParseLogs;
 
             % Check the carrier output.
             obj.assertClass(carrier, 'nrCarrierConfig', 'Output "carrier" is not an nrCarrierConfig object.');
@@ -200,7 +200,7 @@ classdef CheckAnalyzers < matlab.unittest.TestCase
             obj.injectInputStub(answers);
 
             % Run the parser.
-            [carrier, pucch, extra] = srsParseLogs;
+            [carrier, pucch, extra] = ocuduParseLogs;
 
             % Check the carrier output.
             obj.assertClass(carrier, 'nrCarrierConfig', 'Output "carrier" is not an nrCarrierConfig object.');
@@ -266,7 +266,7 @@ classdef CheckAnalyzers < matlab.unittest.TestCase
             obj.injectInputStub(answers);
 
             % Run the parser.
-            [carrier, pucch, extra] = srsParseLogs;
+            [carrier, pucch, extra] = ocuduParseLogs;
 
             % Check the carrier output.
             obj.assertClass(carrier, 'nrCarrierConfig', 'Output "carrier" is not an nrCarrierConfig object.');
@@ -328,7 +328,7 @@ classdef CheckAnalyzers < matlab.unittest.TestCase
             obj.injectInputStub(answers);
 
             % Run the parser.
-            [carrier, pucch, extra] = srsParseLogs;
+            [carrier, pucch, extra] = ocuduParseLogs;
 
             % Check the carrier output.
             obj.assertClass(carrier, 'nrCarrierConfig', 'Output "carrier" is not an nrCarrierConfig object.');
@@ -391,7 +391,7 @@ classdef CheckAnalyzers < matlab.unittest.TestCase
             obj.injectInputStub(answers);
 
             % Run the parser.
-            [carrier, pucch, extra] = srsParseLogs;
+            [carrier, pucch, extra] = ocuduParseLogs;
 
             % Check the carrier output.
             obj.assertClass(carrier, 'nrCarrierConfig', 'Output "carrier" is not an nrCarrierConfig object.');
@@ -460,7 +460,7 @@ classdef CheckAnalyzers < matlab.unittest.TestCase
             obj.injectInputStub(answers);
 
             % Run the parser.
-            [carrier, pucch, extra] = srsParseLogs;
+            [carrier, pucch, extra] = ocuduParseLogs;
 
             % Check the carrier output.
             obj.assertClass(carrier, 'nrCarrierConfig', 'Output "carrier" is not an nrCarrierConfig object.');
@@ -519,7 +519,7 @@ classdef CheckAnalyzers < matlab.unittest.TestCase
             obj.injectInputStub(answers);
 
             % Run the parser.
-            [carrier, prach, extra] = srsParseLogs;
+            [carrier, prach, extra] = ocuduParseLogs;
 
             % Check the carrier output. Despite the object is not needed for running
             % the PRACH analyzer, the parser still sets the subcarrier spacing and

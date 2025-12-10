@@ -25,12 +25,12 @@
 
 %   Copyright 2021-2025 Software Radio Systems Limited
 %
-%   This file is part of srsRAN-matlab.
+%   This file is part of OCUDU-matlab.
 %
-%   srsRAN-matlab is free software: you can redistribute it and/or
+%   OCUDU-matlab is free software: you can redistribute it and/or
 %   modify it under the terms of the BSD 2-Clause License.
 %
-%   srsRAN-matlab is distributed in the hope that it will be useful,
+%   OCUDU-matlab is distributed in the hope that it will be useful,
 %   but WITHOUT ANY WARRANTY; without even the implied warranty of
 %   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 %   BSD 2-Clause License for more details.
@@ -100,11 +100,11 @@ classdef CheckPUCCHF4Conformance < matlab.unittest.TestCase
             end
 
             % Export UCI BLER in csv format to be imported in grafana.
-            writecsv(obj, TestConfig, 'UCI BLER', pp.Statistics.BlockErrorRateSRS);
+            writecsv(obj, TestConfig, 'UCI BLER', pp.Statistics.BlockErrorRateOCUDU);
 
-            obj.verifyLessThanOrEqual(pp.Statistics.BlockErrorRateSRS, 0.01, ...
+            obj.verifyLessThanOrEqual(pp.Statistics.BlockErrorRateOCUDU, 0.01, ...
                 'WARNING: The PUCCH F4 UCI BLER should not be higher than 1%.');
-            obj.assertLessThanOrEqual(pp.Statistics.BlockErrorRateSRS, 0.05, ...
+            obj.assertLessThanOrEqual(pp.Statistics.BlockErrorRateOCUDU, 0.05, ...
                 'ERROR: The PUCCH F4 UCI BLER is above the hard acceptance threshold of 5%.');
         end % of function checkPUCCHF4BLER(obj, TestConfig)
 
@@ -125,7 +125,7 @@ classdef CheckPUCCHF4Conformance < matlab.unittest.TestCase
 
             obj.assertClass(pp, 'PUCCHPERF', 'The created object is not a PUCCHPERF object.');
 
-            obj.assertThat('../../../+srsMEX/+phy/@srsPUCCHProcessor/pucch_processor_mex.mexa64', IsFile, ...
+            obj.assertThat('../../../+ocuduMEX/+phy/@ocuduPUCCHProcessor/pucch_processor_mex.mexa64', IsFile, ...
                 'Could not find PUCCH processor mex executable.');
 
             pp.PUCCHFormat = 4;
@@ -139,7 +139,7 @@ classdef CheckPUCCHF4Conformance < matlab.unittest.TestCase
             pp.NRxAnts = TestConfig.NRxAnts;
             pp.DelayProfile = 'TDLC300';
             pp.MaximumDopplerShift = 100;
-            pp.ImplementationType = 'srs';
+            pp.ImplementationType = 'ocudu';
             pp.PerfectChannelEstimator = false;
             pp.QuickSimulation = false;
             pp.DisplaySimulationInformation = true;

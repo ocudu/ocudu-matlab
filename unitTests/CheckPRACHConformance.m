@@ -23,12 +23,12 @@
 
 %   Copyright 2021-2025 Software Radio Systems Limited
 %
-%   This file is part of srsRAN-matlab.
+%   This file is part of OCUDU-matlab.
 %
-%   srsRAN-matlab is free software: you can redistribute it and/or
+%   OCUDU-matlab is free software: you can redistribute it and/or
 %   modify it under the terms of the BSD 2-Clause License.
 %
-%   srsRAN-matlab is distributed in the hope that it will be useful,
+%   OCUDU-matlab is distributed in the hope that it will be useful,
 %   but WITHOUT ANY WARRANTY; without even the implied warranty of
 %   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 %   BSD 2-Clause License for more details.
@@ -51,10 +51,10 @@ classdef CheckPRACHConformance < matlab.unittest.TestCase
     methods (TestClassSetup)
         function silenceWarnings(obj)
         %Silences warnings related to non-optimized PRACH detector thresholds.
-            warn = warning('query', 'srsran_matlab:srsPRACHdetector');
-            warning('off', 'srsran_matlab:srsPRACHdetector');
+            warn = warning('query', 'ocudu_matlab:ocuduPRACHdetector');
+            warning('off', 'ocudu_matlab:ocuduPRACHdetector');
 
-            obj.addTeardown(@warning, warn.state, 'srsran_matlab:srsPRACHdetector');
+            obj.addTeardown(@warning, warn.state, 'ocudu_matlab:ocuduPRACHdetector');
         end
 
         function preparecsv(obj)
@@ -150,7 +150,7 @@ classdef CheckPRACHConformance < matlab.unittest.TestCase
 
             obj.assertClass(pp, 'PRACHPERF', 'The created object is not a PRACHPERF object.');
 
-            obj.assertThat('../../../+srsMEX/+phy/@srsPRACHDetector/prach_detector_mex.mexa64', IsFile, ...
+            obj.assertThat('../../../+ocuduMEX/+phy/@ocuduPRACHDetector/prach_detector_mex.mexa64', IsFile, ...
                 'Could not find PRACH detector mex executable.');
 
             pp.DelayProfile = TestConfig.DelayProfile;
@@ -180,7 +180,7 @@ classdef CheckPRACHConformance < matlab.unittest.TestCase
             end % of if contains(TestConfig.Name, '8.4.2.2-1')
 
             pp.IgnoreCFO = true;
-            pp.ImplementationType = 'srs';
+            pp.ImplementationType = 'ocudu';
             pp.NumReceiveAntennas = TestConfig.NRxAnts;
 
             pp.TimeErrorTolerance = pickTimeErrorTolerance(pp.Format, pp.DelayProfile, pp.PUSCHSubcarrierSpacing);
@@ -235,7 +235,7 @@ function TestConfig = createTestConfig()
 % Creates a cell array of configuration structures for all the cases listed in
 % the TS.
 
-% NOTE: We comment the configurations that are not yet supported by srsRAN.
+% NOTE: We comment the configurations that are not yet supported by OCUDU.
 
     TestConfig = { ...
         ... Long PRACH

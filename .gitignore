@@ -1,5 +1,5 @@
-# runSRSRANUnittest results.
-/testvector_outputs
+# runOCUDUunittest results.
+/testvectorOutputs
 # Conformance tests CSV results.
 /unitTests/conformanceResults
 # MATLAB automatic save files.

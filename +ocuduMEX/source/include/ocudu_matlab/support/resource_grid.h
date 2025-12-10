@@ -1,0 +1,38 @@
+/*
+ *
+ * Copyright 2021-2025 Software Radio Systems Limited
+ *
+ * This file is part of OCUDU-matlab.
+ *
+ * OCUDU-matlab is free software: you can redistribute it and/or
+ * modify it under the terms of the BSD 2-Clause License.
+ *
+ * OCUDU-matlab is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * BSD 2-Clause License for more details.
+ *
+ * A copy of the BSD 2-Clause License can be found in the LICENSE
+ * file in the top-level directory of this distribution.
+ *
+ */
+
+/// \file
+/// \brief Declaration of resource-grid utilities.
+
+#pragma once
+
+#include "ocudu/adt/complex.h"
+#include "ocudu/phy/support/resource_grid.h"
+#include "MatlabDataArray/TypedArray.hpp"
+
+namespace ocudu_matlab {
+
+/// \brief Creates a resource grid from a MATLAB multidimensional array.
+///
+/// \param[in] in_grid  The resource grid as a multidimensional (2D or 3D) array of complex floats, as passed by MATLAB
+///                     to the MEX.
+/// \return A unique pointer to the newly created resource grid object.
+std::unique_ptr<ocudu::resource_grid> read_resource_grid(const matlab::data::TypedArray<ocudu::cf_t>& in_grid);
+
+} // namespace ocudu_matlab

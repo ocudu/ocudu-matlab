@@ -1,0 +1,38 @@
+#
+# Copyright 2021-2025 Software Radio Systems Limited
+#
+# This file is part of OCUDU-matlab.
+#
+# OCUDU-matlab is free software: you can redistribute it and/or
+# modify it under the terms of the BSD 2-Clause License.
+#
+# OCUDU-matlab is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# BSD 2-Clause License for more details.
+#
+# A copy of the BSD 2-Clause License can be found in the LICENSE
+# file in the top-level directory of this distribution.
+#
+
+matlab_add_mex(
+    NAME multiport_channel_estimator_mex
+    SRC multiport_channel_estimator_mex.cpp
+    R2018a
+)
+
+target_link_libraries(multiport_channel_estimator_mex
+    ocudu_matlab::resource_grid
+    ocudu::ocudu_channel_estimator
+    ocudu::ocudu_dft
+    ocudu::fmt
+)
+
+# Tell the installed MEXs where to find libresource_grid.so.
+set_target_properties(multiport_channel_estimator_mex
+   PROPERTIES INSTALL_RPATH "${CMAKE_BINARY_DIR}/lib/support"
+)
+
+install(TARGETS multiport_channel_estimator_mex
+    DESTINATION "+phy/@ocuduMultiPortChannelEstimator"
+)

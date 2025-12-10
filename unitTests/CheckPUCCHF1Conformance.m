@@ -26,12 +26,12 @@
 
 %   Copyright 2021-2025 Software Radio Systems Limited
 %
-%   This file is part of srsRAN-matlab.
+%   This file is part of OCUDU-matlab.
 %
-%   srsRAN-matlab is free software: you can redistribute it and/or
+%   OCUDU-matlab is free software: you can redistribute it and/or
 %   modify it under the terms of the BSD 2-Clause License.
 %
-%   srsRAN-matlab is distributed in the hope that it will be useful,
+%   OCUDU-matlab is distributed in the hope that it will be useful,
 %   but WITHOUT ANY WARRANTY; without even the implied warranty of
 %   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 %   BSD 2-Clause License for more details.
@@ -96,11 +96,11 @@ classdef CheckPUCCHF1Conformance < matlab.unittest.TestCase
             end
 
             % Export nack-to-ack probability in csv format to be imported in grafana.
-            writecsv(obj, TestConfig, 'NACK-to-ACK', pp.Statistics.NACK2ACKDetectionRateSRS);
+            writecsv(obj, TestConfig, 'NACK-to-ACK', pp.Statistics.NACK2ACKDetectionRateOCUDU);
 
-            obj.verifyLessThanOrEqual(pp.Statistics.NACK2ACKDetectionRateSRS, 0.001, ...
+            obj.verifyLessThanOrEqual(pp.Statistics.NACK2ACKDetectionRateOCUDU, 0.001, ...
                 'WARNING: The PUCCH F1 NACK-to-ACK detection rate should not be larger than 0.1%.');
-            obj.assertLessThanOrEqual(pp.Statistics.NACK2ACKDetectionRateSRS, 0.005, ...
+            obj.assertLessThanOrEqual(pp.Statistics.NACK2ACKDetectionRateOCUDU, 0.005, ...
                 'ERROR: The PUCCH F1 NACK-to-ACK detection rate is above the hard acceptance threshold of 0.5%.');
         end % of function checkPUCCHF1nack2ack(obj, TestConfig)
 
@@ -127,11 +127,11 @@ classdef CheckPUCCHF1Conformance < matlab.unittest.TestCase
             end
 
             % Export ack-detection probability in csv format to be imported in grafana.
-            writecsv(obj, TestConfig, 'ACK detection', pp.Statistics.ACKDetectionRateSRS);
+            writecsv(obj, TestConfig, 'ACK detection', pp.Statistics.ACKDetectionRateOCUDU);
 
-            obj.verifyGreaterThanOrEqual(pp.Statistics.ACKDetectionRateSRS, 0.99, ...
+            obj.verifyGreaterThanOrEqual(pp.Statistics.ACKDetectionRateOCUDU, 0.99, ...
                 'WARNING: The PUCCH F1 ACK detection rate should not be lower than 99%.');
-            obj.assertGreaterThanOrEqual(pp.Statistics.ACKDetectionRateSRS, 0.95, ...
+            obj.assertGreaterThanOrEqual(pp.Statistics.ACKDetectionRateOCUDU, 0.95, ...
                 'ERROR: The PUCCH F1 ACK detection rate is below the hard acceptance threshold of 95%.');
 
             % TODO: export Detection Rate (and possibly other metrics) to grafana.
@@ -160,11 +160,11 @@ classdef CheckPUCCHF1Conformance < matlab.unittest.TestCase
             end
 
             % Export false-ack probability in csv format to be imported in grafana.
-            writecsv(obj, TestConfig, 'false ACK', max(pp.Statistics.FalseACKDetectionRateSRS));
+            writecsv(obj, TestConfig, 'false ACK', max(pp.Statistics.FalseACKDetectionRateOCUDU));
 
-            obj.verifyLessThanOrEqual(pp.Statistics.FalseACKDetectionRateSRS, 0.01, ...
+            obj.verifyLessThanOrEqual(pp.Statistics.FalseACKDetectionRateOCUDU, 0.01, ...
                 'WARNING: The PUCCH F1 false ACK detection rate should not be higher than 1%.');
-            obj.assertLessThanOrEqual(pp.Statistics.FalseACKDetectionRateSRS, 0.05, ...
+            obj.assertLessThanOrEqual(pp.Statistics.FalseACKDetectionRateOCUDU, 0.05, ...
                 'ERROR: The PUCCH F1 false ACK detection rate is above the hard acceptance threshold of 5%.');
         end % of function checkPUCCHF1falseack(obj, TestConfig)
     end % of methods (Test, TestTags = {'conformance'})
@@ -184,7 +184,7 @@ classdef CheckPUCCHF1Conformance < matlab.unittest.TestCase
 
             obj.assertClass(pp, 'PUCCHPERF', 'The created object is not a PUCCHPERF object.');
 
-            obj.assertThat('../../../+srsMEX/+phy/@srsPUCCHProcessor/pucch_processor_mex.mexa64', IsFile, ...
+            obj.assertThat('../../../+ocuduMEX/+phy/@ocuduPUCCHProcessor/pucch_processor_mex.mexa64', IsFile, ...
                 'Could not find PUCCH processor mex executable.');
 
             pp.PUCCHFormat = 1;
@@ -196,7 +196,7 @@ classdef CheckPUCCHF1Conformance < matlab.unittest.TestCase
             pp.NRxAnts = TestConfig.NRxAnts;
             pp.DelayProfile = 'TDLC300';
             pp.MaximumDopplerShift = 100;
-            pp.ImplementationType = 'srs';
+            pp.ImplementationType = 'ocudu';
             pp.PerfectChannelEstimator = false;
             pp.QuickSimulation = false;
             pp.DisplaySimulationInformation = true;

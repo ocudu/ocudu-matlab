@@ -16,12 +16,12 @@
 
 %   Copyright 2021-2025 Software Radio Systems Limited
 %
-%   This file is part of srsRAN-matlab.
+%   This file is part of OCUDU-matlab.
 %
-%   srsRAN-matlab is free software: you can redistribute it and/or
+%   OCUDU-matlab is free software: you can redistribute it and/or
 %   modify it under the terms of the BSD 2-Clause License.
 %
-%   srsRAN-matlab is distributed in the hope that it will be useful,
+%   OCUDU-matlab is distributed in the hope that it will be useful,
 %   but WITHOUT ANY WARRANTY; without even the implied warranty of
 %   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 %   BSD 2-Clause License for more details.
@@ -85,7 +85,7 @@ function PRACHthresholds(filename, format, scs)
         allIndices = 1:length(confs);
         confIndices = allIndices(mask);
         if isempty(confIndices)
-            error('srsran_matlab:PRACHthresholds', ...
+            error('ocudu_matlab:PRACHthresholds', ...
                 'The requested format %s and subcarrier spacing of %d kHz do not match any valid configuration.', ...
                 format, scs);
         end
@@ -109,8 +109,8 @@ function PRACHthresholds(filename, format, scs)
     % Number of runs for estimating the detection probability.
     runsDet = 10000;
 
-    prachWarn = warning('query', 'srsran_matlab:srsPRACHdetector');
-    warning('off', 'srsran_matlab:srsPRACHdetector');
+    prachWarn = warning('query', 'ocudu_matlab:ocuduPRACHdetector');
+    warning('off', 'ocudu_matlab:ocuduPRACHdetector');
 
     for iConf = startConf:lastConf
         % Load the configuration and set up the PRACHPERF simulator.
@@ -204,7 +204,7 @@ function PRACHthresholds(filename, format, scs)
 
     end % of for iConf = startConf:lastConf
 
-    warning(prachWarn.state, 'srsran_matlab:srsPRACHdetector');
+    warning(prachWarn.state, 'ocudu_matlab:ocuduPRACHdetector');
 
     %%%% Nested functions %%%%
 

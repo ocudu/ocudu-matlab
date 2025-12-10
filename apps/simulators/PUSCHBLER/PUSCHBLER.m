@@ -81,14 +81,14 @@
 %   EnableHARQ                   - HARQ flag: true for enabling retransmission with
 %                                  RV sequence [0, 2, 3, 1], false for no retransmissions.
 %   MaximumLDPCIterationCount    - Maximum LDPC decoding iterations.
-%   ImplementationType           - PUSCH implementation type ('matlab', 'srs' (requires mex), 'both')
-%   SRSEstimatorType             - Implementation of the SRS channel estimator ('MEX', 'noMEX')
-%   SRSSmoothing                 - Frequency-domain smoothing strategy of the SRS channel estimator
+%   ImplementationType           - PUSCH implementation type ('matlab', 'ocudu' (requires mex), 'both')
+%   OCUDUEstimatorType           - Implementation of the OCUDU channel estimator ('MEX', 'noMEX')
+%   OCUDUSmoothing               - Frequency-domain smoothing strategy of the OCUDU channel estimator
 %                                  ('none', 'mean', 'filter').
-%   SRSInterpolation             - Time-domain interpolation strategy of the SRS channel estimator
+%   OCUDUInterpolation           - Time-domain interpolation strategy of the OCUDU channel estimator
 %                                  ('average', 'interpolation').
-%   SRSCompensateCFO             - CFO compensation flag for the SRS channel estimator: true to enable.
-%   SRSEqualizerType             - Equalization algorithm of the SRS equalizer ('ZF', 'MMSE').
+%   OCUDUCompensateCFO           - CFO compensation flag for the OCUDU channel estimator: true to enable.
+%   OCUDUEqualizerType           - Equalization algorithm of the OCUDU equalizer ('ZF', 'MMSE').
 %   ApplyOFHCompression          - O-FH compression flag: set to true to emulate the effect of O-FH
 %                                  compression on the received grid (tunable).
 %   CompIQwidth                  - Bit-width of the compressed IQ samples (1...16). Used only if
@@ -104,29 +104,29 @@
 %   SNRrange              - Simulated SNR range in dB.
 %   MaxThroughputCtr      - Counter of transmitted transport blocks.
 %   ThroughputMATLABCtr   - Counter of correctly received transport blocks (MATLAB case).
-%   ThroughputSRSCtr      - Counter of correctly received transport blocks (SRS case).
+%   ThroughputOCUDUCtr    - Counter of correctly received transport blocks (OCUDU case).
 %   TotalBlocksCtr        - Counter of newly transmitted transport blocks (ignoring repetitions).
 %   MissedBlocksMATLABCtr - Counter of missed transport blocks, after all
 %                           allowed retransmissions (MATLAB case).
-%   MissedBlocksSRSCtr    - Counter of missed transport blocks, after all
-%                           allowed retransmissions (SRS case).
+%   MissedBlocksOCUDUCtr  - Counter of missed transport blocks, after all
+%                           allowed retransmissions (OCUDU case).
 %   TBS                   - Transport block size in bits.
 %   MaxThroughput         - Maximum achievable throughput in Mbps.
 %   ThroughputMATLAB      - Throughput in Mbps (MATLAB case).
-%   ThroughputSRS         - Throughput in Mbps (SRS case).
+%   ThroughputOCUDU       - Throughput in Mbps (OCUDU case).
 %   BlockErrorRateMATLAB  - Transport block error rate (MATLAB case).
-%   BlockErrorRateSRS     - Transport block error rate (SRS case).
+%   BlockErrorRateOCUDU   - Transport block error rate (OCUDU case).
 %
 %   Remark: The simulation loop is heavily based on the <a href="https://www.mathworks.com/help/5g/ug/nr-pusch-throughput.html">NR PUSCH Throughput</a> MATLAB example by MathWorks.
 
 %   Copyright 2021-2025 Software Radio Systems Limited
 %
-%   This file is part of srsRAN-matlab.
+%   This file is part of OCUDU-matlab.
 %
-%   srsRAN-matlab is free software: you can redistribute it and/or
+%   OCUDU-matlab is free software: you can redistribute it and/or
 %   modify it under the terms of the BSD 2-Clause License.
 %
-%   srsRAN-matlab is distributed in the hope that it will be useful,
+%   OCUDU-matlab is distributed in the hope that it will be useful,
 %   but WITHOUT ANY WARRANTY; without even the implied warranty of
 %   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 %   BSD 2-Clause License for more details.
@@ -208,24 +208,24 @@ classdef PUSCHBLER < matlab.System
         EnableHARQ (1, 1) logical = false
         %Maximum LDPC decoding iterations.
         MaximumLDPCIterationCount (1, 1) double {mustBeInteger, mustBePositive} = 6
-        %PUSCH implementation type ('matlab', 'srs' (requires mex), 'both').
-        ImplementationType (1, :) char {mustBeMember(ImplementationType, {'matlab', 'srs', 'both'})} = 'matlab'
-        %Implementation of the SRS channel estimator ('MEX', 'noMEX').
-        %   Only applies if ImplementationType is set to 'srs' or 'both' and PerfectChannelEstimator
+        %PUSCH implementation type ('matlab', 'ocudu' (requires mex), 'both').
+        ImplementationType (1, :) char {mustBeMember(ImplementationType, {'matlab', 'ocudu', 'both'})} = 'matlab'
+        %Implementation of the OCUDU channel estimator ('MEX', 'noMEX').
+        %   Only applies if ImplementationType is set to 'ocudu' or 'both' and PerfectChannelEstimator
         %   is set to false.
-        SRSEstimatorType (1, :) char {mustBeMember(SRSEstimatorType, {'MEX', 'noMEX'})} = 'MEX'
+        OCUDUEstimatorType (1, :) char {mustBeMember(OCUDUEstimatorType, {'MEX', 'noMEX'})} = 'MEX'
         %Channel estimator frequency-domain smoothing strategy ('none', 'mean', 'filter').
-        %   Valid only for SRS estimator.
-        SRSSmoothing (1, :) char {mustBeMember(SRSSmoothing, {'none', 'mean', 'filter'})} = 'filter'
+        %   Valid only for OCUDU estimator.
+        OCUDUSmoothing (1, :) char {mustBeMember(OCUDUSmoothing, {'none', 'mean', 'filter'})} = 'filter'
         %Time-domain interpolation strategy ('average', 'interpolate').
-        %   Valid only for SRS estimator.
-        SRSInterpolation (1, :) char {mustBeMember(SRSInterpolation, {'average', 'interpolate'})} = 'average'
+        %   Valid only for OCUDU estimator.
+        OCUDUInterpolation (1, :) char {mustBeMember(OCUDUInterpolation, {'average', 'interpolate'})} = 'average'
         %Channel estimator CFO compensation.
-        %   Valid only for SRS estimator.
-        SRSCompensateCFO (1, 1) logical = true
+        %   Valid only for OCUDU estimator.
+        OCUDUCompensateCFO (1, 1) logical = true
         %Channel equalizer type ('ZF', 'MMSE').
-        %   Valid only for SRS equalizer.
-        SRSEqualizerType (1, :) char {mustBeMember(SRSEqualizerType, {'ZF', 'MMSE'})} = 'ZF'
+        %   Valid only for OCUDU equalizer.
+        OCUDUEqualizerType (1, :) char {mustBeMember(OCUDUEqualizerType, {'ZF', 'MMSE'})} = 'ZF'
         %Flag for emulating O-FH compression.
         %   Emulates the effect of O-FH compression on the received grid: set to true
         %   to enable (tunable).
@@ -252,18 +252,18 @@ classdef PUSCHBLER < matlab.System
         MaxThroughputCtr = []
         %Counter of correctly received transport blocks (MATLAB case).
         ThroughputMATLABCtr = []
-        %Counter of correctly received transport blocks (SRS case).
-        ThroughputSRSCtr = []
+        %Counter of correctly received transport blocks (OCUDU case).
+        ThroughputOCUDUCtr = []
         %Counter of newly transmitted transport blocks (ignoring repetitions).
         TotalBlocksCtr = []
         %Counter of missed transport blocks, after all allowed retransmissions (MATLAB case).
         MissedBlocksMATLABCtr = []
-        %Counter of missed transport blocks, after all allowed retransmissions (SRS case).
-        MissedBlocksSRSCtr = []
-        %Counter of decoder iterations (SRS case).
-        DecIterationsSRSCtr = []
-        %Counter of decoder iterations, given CRC OK (SRS case).
-        DecIterationsCRCOKSRSCtr = []
+        %Counter of missed transport blocks, after all allowed retransmissions (OCUDU case).
+        MissedBlocksOCUDUCtr = []
+        %Counter of decoder iterations (OCUDU case).
+        DecIterationsOCUDUCtr = []
+        %Counter of decoder iterations, given CRC OK (OCUDU case).
+        DecIterationsCRCOKOCUDUCtr = []
         %Transport block size in bits.
         TBS = []
     end % of properties (SetAccess = private)
@@ -273,16 +273,16 @@ classdef PUSCHBLER < matlab.System
         MaxThroughput
         %Throughput in Mbps (MATLAB case).
         ThroughputMATLAB
-        %Throughput in Mbps (SRS case).
-        ThroughputSRS
+        %Throughput in Mbps (OCUDU case).
+        ThroughputOCUDU
         %Block error rate (MATLAB case).
         BlockErrorRateMATLAB
-        %Block error rate (SRS case).
-        BlockErrorRateSRS
-        %Average number of decoder iterations (SRS case).
-        AverageDecIterationsSRS
-        %Average number of decoder iterations, given CRC OK (SRS case).
-        AverageDecIterationsCRCOKSRS
+        %Block error rate (OCUDU case).
+        BlockErrorRateOCUDU
+        %Average number of decoder iterations (OCUDU case).
+        AverageDecIterationsOCUDU
+        %Average number of decoder iterations, given CRC OK (OCUDU case).
+        AverageDecIterationsCRCOKOCUDU
     end % of properties (Dependable)
 
     properties (Access = private, Hidden)
@@ -300,8 +300,8 @@ classdef PUSCHBLER < matlab.System
         EncodeULSCH
         %ULSCH decoder (MATLAB).
         DecodeULSCH
-        %ULSCH decoder (SRS).
-        DecodeULSCHsrs
+        %ULSCH decoder (OCUDU).
+        DecodeULSCHocudu
         %PUSCH resource element indices.
         PUSCHIndices
         %PUSCH resource information.
@@ -381,8 +381,8 @@ classdef PUSCHBLER < matlab.System
                 * obj.SubcarrierSpacing / 15;
         end
 
-        function tp = get.ThroughputSRS(obj)
-            tp = 1e-6 * obj.ThroughputSRSCtr ./ (obj.MaxThroughputCtr / obj.TBS * 1e-3) ...
+        function tp = get.ThroughputOCUDU(obj)
+            tp = 1e-6 * obj.ThroughputOCUDUCtr ./ (obj.MaxThroughputCtr / obj.TBS * 1e-3) ...
                 * obj.SubcarrierSpacing / 15;
         end
 
@@ -390,20 +390,20 @@ classdef PUSCHBLER < matlab.System
             bler = obj.MissedBlocksMATLABCtr ./ obj.TotalBlocksCtr;
         end
 
-        function bler = get.BlockErrorRateSRS(obj)
-            bler = obj.MissedBlocksSRSCtr ./ obj.TotalBlocksCtr;
+        function bler = get.BlockErrorRateOCUDU(obj)
+            bler = obj.MissedBlocksOCUDUCtr ./ obj.TotalBlocksCtr;
         end
 
         function maxTP = get.MaxThroughput(obj)
             maxTP = obj.TBS * 1e-3 * obj.SubcarrierSpacing / 15;
         end
 
-        function avgIter = get.AverageDecIterationsSRS(obj)
-            avgIter = obj.DecIterationsSRSCtr ./ obj.TotalBlocksCtr;
+        function avgIter = get.AverageDecIterationsOCUDU(obj)
+            avgIter = obj.DecIterationsOCUDUCtr ./ obj.TotalBlocksCtr;
         end
 
-        function avgIter = get.AverageDecIterationsCRCOKSRS(obj)
-            avgIter = obj.DecIterationsCRCOKSRSCtr ./ (obj.TotalBlocksCtr - obj.MissedBlocksSRSCtr);
+        function avgIter = get.AverageDecIterationsCRCOKOCUDU(obj)
+            avgIter = obj.DecIterationsCRCOKOCUDUCtr ./ (obj.TotalBlocksCtr - obj.MissedBlocksOCUDUCtr);
         end
 
         function plot(obj)
@@ -417,7 +417,7 @@ classdef PUSCHBLER < matlab.System
             implementationType = obj.ImplementationType;
 
             plotMATLABDecoder = (strcmp(implementationType, 'matlab') || strcmp(implementationType, 'both'));
-            plotSRSDecoder = (strcmp(implementationType, 'srs') || strcmp(implementationType, 'both'));
+            plotOCUDUDecoder = (strcmp(implementationType, 'ocudu') || strcmp(implementationType, 'both'));
 
             titleString = sprintf('NRB=%d / SCS=%dkHz / %s %d/1024', ...
                 obj.NSizeGrid, obj.SubcarrierSpacing, obj.Modulation, ...
@@ -430,11 +430,11 @@ classdef PUSCHBLER < matlab.System
                     'LineWidth', 1)
                 legendstrings{end + 1} = 'MATLAB';
             end
-            if plotSRSDecoder
+            if plotOCUDUDecoder
                 hold on;
-                plot(obj.SNRrange, obj.ThroughputSRSCtr * 100 ./ obj.MaxThroughputCtr, '^-.', ...
+                plot(obj.SNRrange, obj.ThroughputOCUDUCtr * 100 ./ obj.MaxThroughputCtr, '^-.', ...
                     'LineWidth', 1, 'Color', [0.8500 0.3250 0.0980])
-                legendstrings{end + 1} = 'SRS';
+                legendstrings{end + 1} = 'OCUDU';
                 hold off;
             end
             xlabel('SNR (dB)'); ylabel('Throughput (%)'); grid on; legend(legendstrings, 'Location', 'northwest');
@@ -446,9 +446,9 @@ classdef PUSCHBLER < matlab.System
                 semilogy(obj.SNRrange, obj.MissedBlocksMATLABCtr ./ obj.TotalBlocksCtr, 'o-.', ...
                     'LineWidth', 1)
             end
-            if plotSRSDecoder
+            if plotOCUDUDecoder
                 hold on;
-                semilogy(obj.SNRrange, obj.MissedBlocksSRSCtr ./ obj.TotalBlocksCtr, '^-.', ...
+                semilogy(obj.SNRrange, obj.MissedBlocksOCUDUCtr ./ obj.TotalBlocksCtr, '^-.', ...
                     'LineWidth', 1, 'Color', [0.8500 0.3250 0.0980])
                 hold off;
             end
@@ -462,9 +462,9 @@ classdef PUSCHBLER < matlab.System
 
             % Expand modulation and coding scheme.
             if ~strcmp(obj.MCSTable, 'custom')
-                [cc, mm] = srsLib.phy.helpers.srsExpandMCS(obj.MCSIndex, obj.MCSTable);
+                [cc, mm] = ocuduLib.phy.helpers.ocuduExpandMCS(obj.MCSIndex, obj.MCSTable);
                 obj.TargetCodeRate = cc / 1024;
-                mString = srsLib.phy.helpers.srsGetModulation(mm);
+                mString = ocuduLib.phy.helpers.ocuduGetModulation(mm);
                 obj.Modulation = mString;
             end
 
@@ -591,11 +591,11 @@ classdef PUSCHBLER < matlab.System
             obj.PUSCHIndices = puschIndices;
             obj.PUSCHIndicesInfo = puschIndicesInfo;
 
-            [obj.SegmentCfg, configSRS] = srsMEX.phy.srsPUSCHDecoder.configureSegment(obj.Carrier, ...
+            [obj.SegmentCfg, configOCUDU] = ocuduMEX.phy.ocuduPUSCHDecoder.configureSegment(obj.Carrier, ...
                 obj.PUSCH, obj.TargetCodeRate, obj.PUSCHExtension.NHARQProcesses, obj.PUSCHExtension.XOverhead);
             obj.SegmentCfg.MaximumLDPCIterationCount = obj.MaximumLDPCIterationCount;
-            obj.DecodeULSCHsrs = srsMEX.phy.srsPUSCHDecoder('MaxCodeblockSize', configSRS.MaxCodeblockSize, ...
-                'MaxSoftbuffers', configSRS.MaxSoftbuffers, 'MaxCodeblocks', configSRS.MaxCodeblocks);
+            obj.DecodeULSCHocudu = ocuduMEX.phy.ocuduPUSCHDecoder('MaxCodeblockSize', configOCUDU.MaxCodeblockSize, ...
+                'MaxSoftbuffers', configOCUDU.MaxSoftbuffers, 'MaxCodeblocks', configOCUDU.MaxCodeblocks);
 
         end % of setupImpl
 
@@ -679,17 +679,17 @@ classdef PUSCHBLER < matlab.System
             displaySimulationInformation = obj.DisplaySimulationInformation;
 
             useMATLABDecoder = (strcmp(implementationType, 'matlab') || strcmp(implementationType, 'both'));
-            useSRSDecoder = (strcmp(implementationType, 'srs') || strcmp(implementationType, 'both'));
+            useOCUDUDecoder = (strcmp(implementationType, 'ocudu') || strcmp(implementationType, 'both'));
 
             % Array to store the simulation throughput and BLER for all SNR points.
             simThroughput = zeros(length(SNRIn), 1);
             simBLER = zeros(length(SNRIn), 1);
 
             % Array to store the simulation throughput and BLER for all SNR points.
-            simThroughputSRS = zeros(length(SNRIn), 1);
-            simBLERSRS = zeros(length(SNRIn), 1);
-            simIterSRS = zeros(length(SNRIn), 1);
-            simIterCRCOKSRS = zeros(length(SNRIn), 1);
+            simThroughputOCUDU = zeros(length(SNRIn), 1);
+            simBLEROCUDU = zeros(length(SNRIn), 1);
+            simIterOCUDU = zeros(length(SNRIn), 1);
+            simIterCRCOKOCUDU = zeros(length(SNRIn), 1);
 
             quickSim = obj.QuickSimulation;
 
@@ -703,13 +703,13 @@ classdef PUSCHBLER < matlab.System
             % DM-RS over data amplitude gain.
             betaDMRS = sqrt(2);
 
-            if useSRSDecoder
-                srsDemodulatePUSCH = srsMEX.phy.srsPUSCHDemodulator(EqualizerStrategy = obj.SRSEqualizerType);
-                srsChannelEstimate = srsMEX.phy.srsMultiPortChannelEstimator(...
-                    ImplementationType = obj.SRSEstimatorType, ...
-                    Smoothing = obj.SRSSmoothing, ...
-                    Interpolation = obj.SRSInterpolation, ...
-                    CompensateCFO = obj.SRSCompensateCFO);
+            if useOCUDUDecoder
+                ocuduDemodulatePUSCH = ocuduMEX.phy.ocuduPUSCHDemodulator(EqualizerStrategy = obj.OCUDUEqualizerType);
+                ocuduChannelEstimate = ocuduMEX.phy.ocuduMultiPortChannelEstimator(...
+                    ImplementationType = obj.OCUDUEstimatorType, ...
+                    Smoothing = obj.OCUDUSmoothing, ...
+                    Interpolation = obj.OCUDUInterpolation, ...
+                    CompensateCFO = obj.OCUDUCompensateCFO);
             end
 
             % %%% Simulation loop.
@@ -768,7 +768,7 @@ classdef PUSCHBLER < matlab.System
 
                     % HARQ processing.
                     %
-                    % Create HARQ ID for the SRS decoder.
+                    % Create HARQ ID for the OCUDU decoder.
                     % Set the HARQ ID.
                     harqBufID.RNTI = pusch.RNTI;
                     harqBufID.HARQProcessID = harqEntity.HARQProcessID;
@@ -782,8 +782,8 @@ classdef PUSCHBLER < matlab.System
                         if harqEntity.SequenceTimeout
                             resetSoftBuffer(obj.DecodeULSCH, harqEntity.HARQProcessID);
                         end
-                        % The SRS decoder must be reset explicitely in any case.
-                        obj.DecodeULSCHsrs.resetCRCS(harqBufID);
+                        % The OCUDU decoder must be reset explicitely in any case.
+                        obj.DecodeULSCHocudu.resetCRCS(harqBufID);
                     end
 
                     % Encode the UL-SCH transport block.
@@ -893,8 +893,8 @@ classdef PUSCHBLER < matlab.System
                         % algorithm.
                         sf = 2^(compWidth - 1) / 1.5;
                         rxGrid = round(rxGrid * sf);
-                        [compRXGrid, compParam] = srsLib.ofh.compression.srsCompressor(rxGrid, 'BFP', compWidth);
-                        rxGrid = srsLib.ofh.compression.srsDecompressor(compRXGrid, compParam, 'BFP', compWidth);
+                        [compRXGrid, compParam] = ocuduLib.ofh.compression.ocuduCompressor(rxGrid, 'BFP', compWidth);
+                        rxGrid = ocuduLib.ofh.compression.ocuduDecompressor(compRXGrid, compParam, 'BFP', compWidth);
                         rxGrid = rxGrid / sf;
                     end
 
@@ -981,9 +981,9 @@ classdef PUSCHBLER < matlab.System
                         blkerrBoth = blkerr;
                     end
 
-                    if useSRSDecoder
+                    if useOCUDUDecoder
                         if (~perfectChannelEstimator)
-                            [estChannelGrid, noiseEst, extra] = srsChannelEstimate(rxGrid, pusch.SymbolAllocation, ...
+                            [estChannelGrid, noiseEst, extra] = ocuduChannelEstimate(rxGrid, pusch.SymbolAllocation, ...
                                 dmrsLayerIndices, dmrsLayerSymbols, ...
                                 'CyclicPrefix', carrier.CyclicPrefix, ...
                                 'SubcarrierSpacing', carrier.SubcarrierSpacing, ...
@@ -995,25 +995,25 @@ classdef PUSCHBLER < matlab.System
                             noiseEstLT = noiseEstLT + noiseEst;
                         end
 
-                        ulschLLRsInt8 = int8(srsDemodulatePUSCH(rxGrid, estChannelGrid, noiseEst, pusch, ...
+                        ulschLLRsInt8 = int8(ocuduDemodulatePUSCH(rxGrid, estChannelGrid, noiseEst, pusch, ...
                             puschIndices, dmrsLayerIndices, 0:nRxAnts-1));
 
                         % Set the RV.
                         segmentCfg.RV = harqEntity.RedundancyVersion;
 
-                        [decbitsSRS, statsSRS] = obj.DecodeULSCHsrs(ulschLLRsInt8, harqEntity.NewData, segmentCfg, harqBufID);
+                        [decbitsOCUDU, statsOCUDU] = obj.DecodeULSCHocudu(ulschLLRsInt8, harqEntity.NewData, segmentCfg, harqBufID);
 
                         % Store values to calculate throughput and BLER.
-                        simThroughputSRS(snrIdx) = simThroughputSRS(snrIdx) + (statsSRS.CRCOK * trBlkSize);
-                        isCountBLER = (isLastRetransmission || statsSRS.CRCOK);
-                        simBLERSRS(snrIdx) = simBLERSRS(snrIdx) + (isCountBLER && any(decbitsSRS ~= srsTest.helpers.bitPack(trBlk)));
+                        simThroughputOCUDU(snrIdx) = simThroughputOCUDU(snrIdx) + (statsOCUDU.CRCOK * trBlkSize);
+                        isCountBLER = (isLastRetransmission || statsOCUDU.CRCOK);
+                        simBLEROCUDU(snrIdx) = simBLEROCUDU(snrIdx) + (isCountBLER && any(decbitsOCUDU ~= ocuduTest.helpers.bitPack(trBlk)));
 
-                        blkerrBoth = blkerrBoth || (~statsSRS.CRCOK);
+                        blkerrBoth = blkerrBoth || (~statsOCUDU.CRCOK);
 
                         % Store decoder iteration stats.
-                        simIterSRS(snrIdx) = simIterSRS(snrIdx) + statsSRS.LDPCIterationsMean;
-                        if (statsSRS.CRCOK)
-                            simIterCRCOKSRS(snrIdx) = simIterCRCOKSRS(snrIdx) + statsSRS.LDPCIterationsMean;
+                        simIterOCUDU(snrIdx) = simIterOCUDU(snrIdx) + statsOCUDU.LDPCIterationsMean;
+                        if (statsOCUDU.CRCOK)
+                            simIterCRCOKOCUDU(snrIdx) = simIterCRCOKOCUDU(snrIdx) + statsOCUDU.LDPCIterationsMean;
                         end
                     end
 
@@ -1034,7 +1034,7 @@ classdef PUSCHBLER < matlab.System
                     end
 
                     % To speed the simulation up, we stop after 100 missed transport blocks.
-                    if quickSim && (~useMATLABDecoder || (simBLER(snrIdx) >= 100)) && (~useSRSDecoder || (simBLERSRS(snrIdx) >= 100))
+                    if quickSim && (~useMATLABDecoder || (simBLER(snrIdx) >= 100)) && (~useOCUDUDecoder || (simBLEROCUDU(snrIdx) >= 100))
                         break;
                     end
                 end
@@ -1050,12 +1050,12 @@ classdef PUSCHBLER < matlab.System
                     fprintf('Throughput(%%) after %.0f frame(s) = %.4f\n', usedFrames, simThroughput(snrIdx)*100/maxThroughput(snrIdx));
                     fprintf('BLER after %.0f frame(s) = %.4f\n', usedFrames, simBLER(snrIdx)/totalBlocks(snrIdx));
                 end
-                if useSRSDecoder
-                    fprintf('\nSRS');
+                if useOCUDUDecoder
+                    fprintf('\nOCUDU');
                     fprintf('\nThroughput(Mbps) after %.0f frame(s) = %.4f (max %.4f)\n', usedFrames, ...
-                        1e-6*[simThroughputSRS(snrIdx) maxThroughput(snrIdx)]/(usedFrames*10e-3));
-                    fprintf('Throughput(%%) after %.0f frame(s) = %.4f\n', usedFrames, simThroughputSRS(snrIdx)*100/maxThroughput(snrIdx));
-                    fprintf('BLER after %.0f frame(s) = %.4f\n', usedFrames, simBLERSRS(snrIdx)/totalBlocks(snrIdx));
+                        1e-6*[simThroughputOCUDU(snrIdx) maxThroughput(snrIdx)]/(usedFrames*10e-3));
+                    fprintf('Throughput(%%) after %.0f frame(s) = %.4f\n', usedFrames, simThroughputOCUDU(snrIdx)*100/maxThroughput(snrIdx));
+                    fprintf('BLER after %.0f frame(s) = %.4f\n', usedFrames, simBLEROCUDU(snrIdx)/totalBlocks(snrIdx));
 
                     if (~perfectChannelEstimator)
                         fprintf('Measured SNR = %.1f dB.\n', 10*log10(rsrpLT * pusch.NumLayers / noiseEstLT / betaDMRS^2));
@@ -1070,12 +1070,12 @@ classdef PUSCHBLER < matlab.System
 
             obj.MaxThroughputCtr = joinArrays(obj.MaxThroughputCtr, maxThroughput, repeatedIdx, sortedIdx);
             obj.ThroughputMATLABCtr = joinArrays(obj.ThroughputMATLABCtr, simThroughput, repeatedIdx, sortedIdx);
-            obj.ThroughputSRSCtr = joinArrays(obj.ThroughputSRSCtr, simThroughputSRS, repeatedIdx, sortedIdx);
+            obj.ThroughputOCUDUCtr = joinArrays(obj.ThroughputOCUDUCtr, simThroughputOCUDU, repeatedIdx, sortedIdx);
             obj.TotalBlocksCtr = joinArrays(obj.TotalBlocksCtr, totalBlocks, repeatedIdx, sortedIdx);
             obj.MissedBlocksMATLABCtr = joinArrays(obj.MissedBlocksMATLABCtr, simBLER, repeatedIdx, sortedIdx);
-            obj.MissedBlocksSRSCtr = joinArrays(obj.MissedBlocksSRSCtr, simBLERSRS, repeatedIdx, sortedIdx);
-            obj.DecIterationsSRSCtr = joinArrays(obj.DecIterationsSRSCtr, simIterSRS, repeatedIdx, sortedIdx);
-            obj.DecIterationsCRCOKSRSCtr = joinArrays(obj.DecIterationsCRCOKSRSCtr, simIterCRCOKSRS, ...
+            obj.MissedBlocksOCUDUCtr = joinArrays(obj.MissedBlocksOCUDUCtr, simBLEROCUDU, repeatedIdx, sortedIdx);
+            obj.DecIterationsOCUDUCtr = joinArrays(obj.DecIterationsOCUDUCtr, simIterOCUDU, repeatedIdx, sortedIdx);
+            obj.DecIterationsCRCOKOCUDUCtr = joinArrays(obj.DecIterationsCRCOKOCUDUCtr, simIterCRCOKOCUDU, ...
                 repeatedIdx, sortedIdx);
         end % of function stepImpl()
 
@@ -1084,18 +1084,18 @@ classdef PUSCHBLER < matlab.System
             reset(obj.Channel);
             reset(obj.EncodeULSCH);
             reset(obj.DecodeULSCH);
-            reset(obj.DecodeULSCHsrs);
+            reset(obj.DecodeULSCHocudu);
 
             % Reset simulation results.
             obj.SNRrange = [];
             obj.MaxThroughputCtr = [];
             obj.ThroughputMATLABCtr = [];
-            obj.ThroughputSRSCtr = [];
+            obj.ThroughputOCUDUCtr = [];
             obj.TotalBlocksCtr = [];
             obj.MissedBlocksMATLABCtr = [];
-            obj.MissedBlocksSRSCtr = [];
-            obj.DecIterationsSRSCtr = [];
-            obj.DecIterationsCRCOKSRSCtr = [];
+            obj.MissedBlocksOCUDUCtr = [];
+            obj.DecIterationsOCUDUCtr = [];
+            obj.DecIterationsCRCOKOCUDUCtr = [];
         end
 
         function releaseImpl(obj)
@@ -1106,7 +1106,7 @@ classdef PUSCHBLER < matlab.System
             release(obj.Channel);
             release(obj.EncodeULSCH);
             release(obj.DecodeULSCH);
-            release(obj.DecodeULSCHsrs);
+            release(obj.DecodeULSCHocudu);
         end
 
         function flag = isInactivePropertyImpl(obj, property)
@@ -1119,8 +1119,8 @@ classdef PUSCHBLER < matlab.System
                 case 'MaximumDopplerShift'
                     flag = strcmp(obj.DelayProfile, 'AWGN');
                 case {'ThroughputMATLABCtr', 'MissedBlocksMATLABCtr'}
-                    flag = isempty(obj.SNRrange) || strcmp(obj.ImplementationType, 'srs');
-                case {'ThroughputSRSCtr', 'MissedBlocksSRSCtr', 'DecIterationsSRSCtr', 'DecIterationsCRCOKSRSCtr'}
+                    flag = isempty(obj.SNRrange) || strcmp(obj.ImplementationType, 'ocudu');
+                case {'ThroughputOCUDUCtr', 'MissedBlocksOCUDUCtr', 'DecIterationsOCUDUCtr', 'DecIterationsCRCOKOCUDUCtr'}
                     flag = isempty(obj.SNRrange) || strcmp(obj.ImplementationType, 'matlab');
                 case {'SNRrange', 'MaxThroughputCtr', 'TotalBlocksCtr'}
                     flag = isempty(obj.SNRrange);
@@ -1131,12 +1131,12 @@ classdef PUSCHBLER < matlab.System
                 case {'TBS', 'MaxThroughput'}
                     flag = isempty(obj.TBS) || ~obj.isLocked;
                 case {'ThroughputMATLAB', 'BlockErrorRateMATLAB'}
-                    flag = isempty(obj.ThroughputMATLABCtr) || strcmp(obj.ImplementationType, 'srs');
-                case {'ThroughputSRS', 'BlockErrorRateSRS', 'AverageDecIterationsSRS', 'AverageDecIterationsCRCOKSRS'}
-                    flag = isempty(obj.ThroughputSRSCtr) || strcmp(obj.ImplementationType, 'matlab');
-                case {'SRSEstimatorType', 'SRSSmoothing', 'SRSInterpolation', 'SRSCompensateCFO'}
+                    flag = isempty(obj.ThroughputMATLABCtr) || strcmp(obj.ImplementationType, 'ocudu');
+                case {'ThroughputOCUDU', 'BlockErrorRateOCUDU', 'AverageDecIterationsOCUDU', 'AverageDecIterationsCRCOKOCUDU'}
+                    flag = isempty(obj.ThroughputOCUDUCtr) || strcmp(obj.ImplementationType, 'matlab');
+                case {'OCUDUEstimatorType', 'OCUDUSmoothing', 'OCUDUInterpolation', 'OCUDUCompensateCFO'}
                     flag = strcmp(obj.ImplementationType, 'matlab') || obj.PerfectChannelEstimator;
-                case 'SRSEqualizerType'
+                case 'OCUDUEqualizerType'
                     flag = strcmp(obj.ImplementationType, 'matlab');
                 case 'CompIQwidth'
                     flag = ~obj.ApplyOFHCompression;
@@ -1147,11 +1147,11 @@ classdef PUSCHBLER < matlab.System
 
         function groups = getPropertyGroups(obj)
 
-            results = {'SNRrange', 'MaxThroughputCtr', 'ThroughputMATLABCtr', 'ThroughputSRSCtr', ...
-                'TotalBlocksCtr', 'MissedBlocksMATLABCtr', 'MissedBlocksSRSCtr', ...
-                'DecIterationsSRSCtr', 'DecIterationsCRCOKSRSCtr', 'TBS', ...
-                'MaxThroughput', 'ThroughputMATLAB', 'ThroughputSRS', 'BlockErrorRateMATLAB', ...
-                'BlockErrorRateSRS', 'AverageDecIterationsSRS', 'AverageDecIterationsCRCOKSRS'};
+            results = {'SNRrange', 'MaxThroughputCtr', 'ThroughputMATLABCtr', 'ThroughputOCUDUCtr', ...
+                'TotalBlocksCtr', 'MissedBlocksMATLABCtr', 'MissedBlocksOCUDUCtr', ...
+                'DecIterationsOCUDUCtr', 'DecIterationsCRCOKOCUDUCtr', 'TBS', ...
+                'MaxThroughput', 'ThroughputMATLAB', 'ThroughputOCUDU', 'BlockErrorRateMATLAB', ...
+                'BlockErrorRateOCUDU', 'AverageDecIterationsOCUDU', 'AverageDecIterationsCRCOKOCUDU'};
 
             confProps = {...
                 ... Generic.
@@ -1175,8 +1175,8 @@ classdef PUSCHBLER < matlab.System
                 'ApplyOFHCompression', 'CompIQwidth', ...
                 ... Other simulation details.
                 'MaximumLDPCIterationCount', ...
-                'ImplementationType', 'SRSEqualizerType', 'SRSEstimatorType', 'SRSSmoothing', 'SRSInterpolation', ...
-                'SRSCompensateCFO', 'QuickSimulation', 'DisplaySimulationInformation', 'DisplayDiagnostics'};
+                'ImplementationType', 'OCUDUEqualizerType', 'OCUDUEstimatorType', 'OCUDUSmoothing', 'OCUDUInterpolation', ...
+                'OCUDUCompensateCFO', 'QuickSimulation', 'DisplaySimulationInformation', 'DisplayDiagnostics'};
             groups = matlab.mixin.util.PropertyGroup(confProps, 'Configuration');
 
             resProps = {};
@@ -1205,7 +1205,7 @@ classdef PUSCHBLER < matlab.System
                 s.Channel = matlab.System.saveObject(obj.Channel);
                 s.EncodeULSCH = matlab.System.saveObject(obj.EncodeULSCH);
                 s.DecodeULSCH = matlab.System.saveObject(obj.DecodeULSCH);
-                s.DecodeULSCHsrs = matlab.System.saveObject(obj.DecodeULSCHsrs);
+                s.DecodeULSCHocudu = matlab.System.saveObject(obj.DecodeULSCHocudu);
                 s.SegmentCfg = obj.SegmentCfg;
 
                 % Save FFT size.
@@ -1215,12 +1215,12 @@ classdef PUSCHBLER < matlab.System
                 s.SNRrange = obj.SNRrange;
                 s.MaxThroughputCtr = obj.MaxThroughputCtr;
                 s.ThroughputMATLABCtr = obj.ThroughputMATLABCtr;
-                s.ThroughputSRSCtr = obj.ThroughputSRSCtr;
+                s.ThroughputOCUDUCtr = obj.ThroughputOCUDUCtr;
                 s.TotalBlocksCtr = obj.TotalBlocksCtr;
                 s.MissedBlocksMATLABCtr = obj.MissedBlocksMATLABCtr;
-                s.MissedBlocksSRSCtr = obj.MissedBlocksSRSCtr;
-                s.DecIterationsSRSCtr = obj.DecIterationsSRSCtr;
-                s.DecIterationsCRCOKSRSCtr = obj.DecIterationsCRCOKSRSCtr;
+                s.MissedBlocksOCUDUCtr = obj.MissedBlocksOCUDUCtr;
+                s.DecIterationsOCUDUCtr = obj.DecIterationsOCUDUCtr;
+                s.DecIterationsCRCOKOCUDUCtr = obj.DecIterationsCRCOKOCUDUCtr;
                 s.TBS = obj.TBS;
             end
         end % of function s = saveObjectImpl(obj)
@@ -1236,7 +1236,7 @@ classdef PUSCHBLER < matlab.System
                 obj.Channel = matlab.System.loadObject(s.Channel);
                 obj.EncodeULSCH = matlab.System.loadObject(s.EncodeULSCH);
                 obj.DecodeULSCH = matlab.System.loadObject(s.DecodeULSCH);
-                obj.DecodeULSCHsrs = matlab.System.loadObject(s.DecodeULSCHsrs);
+                obj.DecodeULSCHocudu = matlab.System.loadObject(s.DecodeULSCHocudu);
                 obj.SegmentCfg = s.SegmentCfg;
 
                 % Load FFT size.
@@ -1246,12 +1246,12 @@ classdef PUSCHBLER < matlab.System
                 obj.SNRrange = s.SNRrange;
                 obj.MaxThroughputCtr = s.MaxThroughputCtr;
                 obj.ThroughputMATLABCtr = s.ThroughputMATLABCtr;
-                obj.ThroughputSRSCtr = s.ThroughputSRSCtr;
+                obj.ThroughputOCUDUCtr = s.ThroughputOCUDUCtr;
                 obj.TotalBlocksCtr = s.TotalBlocksCtr;
                 obj.MissedBlocksMATLABCtr = s.MissedBlocksMATLABCtr;
-                obj.MissedBlocksSRSCtr = s.MissedBlocksSRSCtr;
-                obj.DecIterationsSRSCtr = s.DecIterationsSRSCtr;
-                obj.DecIterationsCRCOKSRSCtr = s.DecIterationsCRCOKSRSCtr;
+                obj.MissedBlocksOCUDUCtr = s.MissedBlocksOCUDUCtr;
+                obj.DecIterationsOCUDUCtr = s.DecIterationsOCUDUCtr;
+                obj.DecIterationsCRCOKOCUDUCtr = s.DecIterationsCRCOKOCUDUCtr;
                 obj.TBS = s.TBS;
             end
 
@@ -1287,11 +1287,11 @@ function validateNumLayers(simParameters)
             numlayers, antennaDescription);
     end
 
-    % When using srsRAN components (ImplementationType is 'srs' or 'both'), check that
+    % When using OCUDU components (ImplementationType is 'ocudu' or 'both'), check that
     % the number of layers is supported by the available MEX libraries.
-    if (~strcmp(simParameters.ImplementationType, 'matlab') && (numlayers > srsMEX.phy.srsPUSCHCapabilitiesMEX().NumLayers))
+    if (~strcmp(simParameters.ImplementationType, 'matlab') && (numlayers > ocuduMEX.phy.ocuduPUSCHCapabilitiesMEX().NumLayers))
         error(['The number of layers (%d) is larger than the number of layers supported ', ...
-              'by the current MEX version (%d).'], numlayers, srsMEX.phy.srsPUSCHCapabilitiesMEX().NumLayers);
+              'by the current MEX version (%d).'], numlayers, ocuduMEX.phy.ocuduPUSCHCapabilitiesMEX().NumLayers);
     end
 
     % Display a warning if the maximum possible rank of the channel equals
