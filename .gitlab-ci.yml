@@ -200,7 +200,7 @@ build and run vector unit tests:
     OCUDU_DIR: *ocudu_dir
     OS: ubuntu-24.04
     COMPILER: gcc
-    SRS_TARGET: all_vector_tests
+    OCUDU_TARGET: all_vector_tests
     MARCH: x86-64-v3
     TEST_MODE: vectortest
     COMPARE_HEADERS: "True"
@@ -239,7 +239,7 @@ build ocudu with export on:
     OCUDU_DIR: *ocudu_dir
     OS: ubuntu-22.04
     COMPILER: gcc
-    SRS_TARGET: ocudu_exported_libs
+    OCUDU_TARGET: ocudu_exported_libs
     ENABLE_EXPORT: "True"
     ENABLE_BACKWARD: "False"
     MARCH: x86-64-v3
