@@ -7,13 +7,13 @@
 #
 
 Nightly:
-  cron: "30 2 * * 1-5"
+  cron: "30 2 * * 2-6"
   cron_timezone: "Europe/Madrid"
   ref: main
   active: true
 
 Weekly:
-  cron: "00 10 * * 6"
+  cron: "00 6 * * 6"
   cron_timezone: "Europe/Madrid"
   ref: main
   active: true
