@@ -318,7 +318,7 @@ build mex full tests:
       variables:
         RANDOM_TESTS: "true"
   script:
-    - matlab -sd ./ -batch "allTests = runOCUDUunittest('all', 'testvector', RandomShuffle=${RANDOM_TESTS}); allResults = run(allTests); ocuduTest.copyOCUDUtestvectors('testvectorOutputs', '$ARTIFACTSDIR'); assertSuccess(allResults)" -logfile matlablog.log
+    - matlab -sd ./ -batch "allTests = runOCUDUunittest('all', 'testmex', RandomShuffle=${RANDOM_TESTS}); allResults = run(allTests); assertSuccess(allResults)" -logfile matlablog.log
   artifacts:
     <<: *mex_artifacts
     expire_in: 10 days
