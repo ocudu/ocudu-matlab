@@ -11,13 +11,13 @@
 % most likely to be based on Sounding Reference Signal (OCUDU) measurements. It
 % is not included in this preliminary analysis.
 
-%% MU-MIMO in the PUSCH
-% A simple example of MU-MIMO PUSCH transmission can be constructed as follows.
-% Let us assume that the gNB intends to serve two UEs on the same time-frequency
-% resources. Note that complete overlap of the grants, as well as identical DM-RS
-% configurations (but for the DM-RS ports), are necessary to guarantee that
-% the DM-RSs of the two UEs do not interfere with one another nor with the other
-% UE's data signal.
+%
+%   Copyright 2021-2025 Software Radio Systems Limited
+%
+%   By using this file, you agree to the terms and conditions set
+%   forth in the LICENSE file which can be found at the top level of
+%   the distribution.
+%
 
 % First, we need to configure the carrier - we pick a 10-MHz bandwidth with
 % 30-kHz subcarrier spacing.

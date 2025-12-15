@@ -29,22 +29,13 @@
 %                      and $l_1$ values in Column 5 of TS38.211 Table
 %                      7.4.1.5.3-1.
 
-%% CSI-RS for channel measurements - 1 transmit port
-% These reference signals are used for generating Channel State Information
-% (CSI) reports.
 %
-% The density of the CSI-RS resources for channel measurement is one (i.e.,
-% |Density = 'one'|) and they are located in the fifth symbol within the
-% slot (i.e., |SymbolLocations = 4|) for avoiding overlap with other
-% signals.
+%   Copyright 2021-2025 Software Radio Systems Limited
 %
-% The number of antenna ports determines the row index in TS38.211 Table
-% 7.4.1.5.3-1. For instance, row 2 is selected for one transmit port.
-% This means that each NZP-CSI-RS resource takes one resource element per
-% resource block without any code multiplex.
+%   By using this file, you agree to the terms and conditions set
+%   forth in the LICENSE file which can be found at the top level of
+%   the distribution.
 %
-%
-% Because of this there are twelve possible frequency domain locations.
 
 % Prepare carrier configuration.
 carrier = nrCarrierConfig;

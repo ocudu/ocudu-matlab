@@ -18,20 +18,13 @@
 %   [TEST, RUNNER] = runOCUDUunittest(...) also returns a TestRunner with
 %   suitable settings for the generated test suite.
 
+%
 %   Copyright 2021-2025 Software Radio Systems Limited
 %
-%   This file is part of OCUDU-matlab.
+%   By using this file, you agree to the terms and conditions set
+%   forth in the LICENSE file which can be found at the top level of
+%   the distribution.
 %
-%   OCUDU-matlab is free software: you can redistribute it and/or
-%   modify it under the terms of the BSD 2-Clause License.
-%
-%   OCUDU-matlab is distributed in the hope that it will be useful,
-%   but WITHOUT ANY WARRANTY; without even the implied warranty of
-%   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-%   BSD 2-Clause License for more details.
-%
-%   A copy of the BSD 2-Clause License can be found in the LICENSE
-%   file in the top-level directory of this distribution.
 
 function [test, runner] = runOCUDUunittest(blockName, testType, opt)
     arguments

@@ -1,20 +1,13 @@
 %Creates test configurations for PUSCH, Type A, 20 MHz channel bandwidth, 30 kHz SCS.
 %   These test cases are specified in TS38.104 V15.19.0, Table 8.2.1.2-5.
 
+%
 %   Copyright 2021-2025 Software Radio Systems Limited
 %
-%   This file is part of OCUDU-matlab.
+%   By using this file, you agree to the terms and conditions set
+%   forth in the LICENSE file which can be found at the top level of
+%   the distribution.
 %
-%   OCUDU-matlab is free software: you can redistribute it and/or
-%   modify it under the terms of the BSD 2-Clause License.
-%
-%   OCUDU-matlab is distributed in the hope that it will be useful,
-%   but WITHOUT ANY WARRANTY; without even the implied warranty of
-%   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-%   BSD 2-Clause License for more details.
-%
-%   A copy of the BSD 2-Clause License can be found in the LICENSE
-%   file in the top-level directory of this distribution.
 
 function testConfig = createTestConfigTable8_2_1_2_5()
     testConfig = { ...
