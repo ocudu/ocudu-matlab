@@ -6,3 +6,6 @@
 *.asv
 # MEX libraries.
 *.mexa64
+# clang-tidy and clang-format inherited from OCUDU
+/ocuduVectorTests/.clang-format
+/ocuduVectorTests/.clang-tidy
