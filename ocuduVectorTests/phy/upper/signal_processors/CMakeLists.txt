@@ -55,7 +55,6 @@ target_link_libraries(dmrs_pusch_estimator_test
     ocudu_dft
     ocudu_sequence_generators
     ocudu_phy_support
-    ocudu_pusch_processor
     ocuduvec
     ocudulog
     gtest

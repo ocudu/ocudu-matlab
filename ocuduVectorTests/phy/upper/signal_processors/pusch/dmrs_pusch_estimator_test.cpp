@@ -8,10 +8,11 @@
  *
  */
 
+#include "../channel_estimator/port_channel_estimator_doubles.h"
 #include "dmrs_pusch_estimator_test_data.h"
 #include "resource_grid_test_doubles.h"
 #include "ocudu/ocuduvec/zero.h"
-#include "ocudu/phy/upper/channel_processors/pusch/pusch_processor_phy_capabilities.h"
+#include "ocudu/phy/upper/channel_estimation.h"
 #include "ocudu/phy/upper/signal_processors/pusch/factories.h"
 #include "ocudu/support/executors/inline_task_executor.h"
 #include "fmt/ostream.h"
@@ -24,7 +25,7 @@ namespace ocudu {
 std::ostream& operator<<(std::ostream& os, dmrs_pusch_estimator::configuration config)
 {
   fmt::print(os,
-             "slot={}; type={}; scaling={:.3f}; cp={}; dmrs_pos={}; f_alloc={}; "
+             "slot={}; type={}; scaling={:.3f}; cp={}; dmrs_pos={}; f_alloc={:x}; "
              "t_alloc={}:{}; tx_layers={}; rx_ports=[{}];",
              config.slot,
              config.get_dmrs_type() == dmrs_type::TYPE1 ? "1" : "2",
@@ -55,20 +56,29 @@ namespace {
 class dmrs_pusch_estimator_notifier_spy : public dmrs_pusch_estimator_notifier
 {
 public:
-  void on_estimation_complete() override { ++estimation_notified; }
+  void on_estimation_complete(const dmrs_pusch_estimator_results& est_results) override
+  {
+    ++estimation_notified;
+    results_ptr = &est_results;
+  }
 
   bool has_notified() const { return (estimation_notified == 1); }
 
+  const dmrs_pusch_estimator_results& get_results() const { return *results_ptr; }
+
 private:
-  unsigned estimation_notified = 0;
+  unsigned                            estimation_notified = 0;
+  const dmrs_pusch_estimator_results* results_ptr         = nullptr;
 };
 
 class DmrsPuschEstimatorFixture : public ::testing::TestWithParam<test_case_t>
 {
 protected:
-  std::unique_ptr<dmrs_pusch_estimator> estimator;
-  resource_grid_reader_spy              grid;
-  inline_task_executor                  ch_est_executor;
+  std::shared_ptr<dmrs_pusch_estimator_factory>         estimator_factory;
+  std::shared_ptr<dmrs_pusch_estimator_factory>         estimator_interface_factory;
+  resource_grid_reader_spy                              grid;
+  inline_task_executor                                  ch_est_executor;
+  std::vector<port_channel_estimator_spy::placeholders> dummy_values;
 
   // Default constructor - initializes the resource grid with the maximum size possible.
   DmrsPuschEstimatorFixture() : ::testing::TestWithParam<ParamType>(), grid(MAX_PORTS, MAX_NSYMB_PER_SLOT, MAX_NOF_PRBS)
@@ -98,13 +108,13 @@ protected:
         create_time_alignment_estimator_dft_factory(dft_factory);
     ASSERT_NE(ta_estimator_factory, nullptr) << "Cannot create TA estimator factory.";
 
-    // Create port estimator.
+    // Create factory for full port estimators.
     std::shared_ptr<port_channel_estimator_factory> port_estimator_factory =
         create_port_channel_estimator_factory_sw(ta_estimator_factory);
     ASSERT_TRUE(port_estimator_factory);
 
-    // Create estimator factory.
-    std::shared_ptr<dmrs_pusch_estimator_factory> estimator_factory =
+    // Create estimator factory with full port channel estimator.
+    estimator_factory =
         create_dmrs_pusch_estimator_factory_sw(prg_factory,
                                                low_papr_sequence_gen_factory_factory,
                                                port_estimator_factory,
@@ -115,22 +125,40 @@ protected:
                                                true);
     ASSERT_TRUE(estimator_factory);
 
-    // Create actual channel estimator.
-    estimator = estimator_factory->create();
-    ASSERT_TRUE(estimator);
+    // Create factory for spy port estimators.
+    dummy_values.resize(test_case.config.rx_ports.size());
+    std::shared_ptr<port_channel_estimator_factory> port_estimator_spy_factory =
+        create_port_channel_estimator_factory_spy(dummy_values);
+    ASSERT_TRUE(port_estimator_spy_factory);
+
+    estimator_interface_factory =
+        create_dmrs_pusch_estimator_factory_sw(prg_factory,
+                                               low_papr_sequence_gen_factory_factory,
+                                               port_estimator_spy_factory,
+                                               ch_est_executor,
+                                               test_case.config.rx_ports.size(),
+                                               port_channel_estimator_fd_smoothing_strategy::filter,
+                                               port_channel_estimator_td_interpolation_strategy::average,
+                                               true);
+    ASSERT_TRUE(estimator_interface_factory);
 
     // Setup resource grid symbols.
     std::vector<resource_grid_reader_spy::expected_entry_t> rg_entries = test_case.rx_symbols.read();
     grid.write(rg_entries);
   }
 };
+
 } // namespace
 
 static constexpr float tolerance = 0.01;
 
 TEST_P(DmrsPuschEstimatorFixture, Creation)
 {
-  // This test only looks to whether the estimator places the DM-RS pilots in the correct position. To this end, the
+  // Create actual channel estimator.
+  std::unique_ptr<dmrs_pusch_estimator> estimator = estimator_factory->create();
+  ASSERT_TRUE(estimator);
+
+  // This test only looks at whether the estimator places the DM-RS pilots in the correct position. To this end, the
   // received channel samples have been generated assuming that layers are transmitted on orthogonal channels (one layer
   // - one port), with no impairments. Then, the estimated channel should be one at the pilot coordinates and zero
   // elsewhere.
@@ -138,9 +166,7 @@ TEST_P(DmrsPuschEstimatorFixture, Creation)
   dmrs_pusch_estimator::configuration config = GetParam().config;
 
   // The current estimator does not support Type2 DM-RS.
-  // As well, the MIMO case only works with at most two layers.
-  if ((config.get_dmrs_type() == dmrs_type::TYPE2) ||
-      (config.get_nof_tx_layers() > get_pusch_processor_phy_capabilities().max_nof_layers)) {
+  if (config.get_dmrs_type() == dmrs_type::TYPE2) {
     GTEST_SKIP() << "Configuration not supported yet, skipping.";
   }
 
@@ -167,33 +193,47 @@ TEST_P(DmrsPuschEstimatorFixture, Creation)
   dmrs_pusch_estimator_notifier_spy notifier;
 
   // Estimate.
-  estimator->estimate(ch_est, notifier, grid, config);
-
-  // First, assert the channel estimate dimensions haven't changed.
-  ch_estimate_dims = ch_est.size();
-  ASSERT_EQ(ch_estimate_dims.nof_prb, config.rb_mask.size()) << "Wrong number of PRBs.";
-  ASSERT_EQ(ch_estimate_dims.nof_symbols, config.nof_symbols + config.first_symbol) << "Wrong number of symbols.";
-  ASSERT_EQ(ch_estimate_dims.nof_rx_ports, config.rx_ports.size()) << "Wrong number of Rx ports.";
-  ASSERT_EQ(ch_estimate_dims.nof_tx_layers, config.get_nof_tx_layers()) << "Wrong number of Tx layers.";
+  estimator->estimate(notifier, grid, config);
 
   // Next, assert the notifier has been called.
   ASSERT_TRUE(notifier.has_notified()) << "The estimator notifier was not called.";
+  const dmrs_pusch_estimator_results& results = notifier.get_results();
 
+  unsigned             nof_re = config.rb_mask.size() * NRE;
+  std::vector<cbf16_t> symbol_est(nof_re, {0, 0});
+  std::vector<cbf16_t> path_est(nof_re * config.nof_symbols, {0, 0});
   for (unsigned i_port = 0; i_port != ch_estimate_dims.nof_rx_ports; ++i_port) {
     for (unsigned i_layer = 0; i_layer != ch_estimate_dims.nof_tx_layers; ++i_layer) {
-      for (unsigned i_symbol = 0; i_symbol != ch_estimate_dims.nof_symbols; ++i_symbol) {
-        span<const cbf16_t> current_symbol = ch_est.get_symbol_ch_estimate(i_symbol, i_port, i_layer);
-        if ((i_port != i_layer) || (i_symbol < config.first_symbol)) {
-          ASSERT_TRUE(std::all_of(current_symbol.begin(), current_symbol.end(), [](cbf16_t a) {
+      // Get the channel estimates for the entire rx_port - tx_layer path.
+      results.get_path_ch_estimate(path_est, i_port, i_layer);
+      span<const cbf16_t> path_est_span(path_est);
+
+      for (unsigned i_symbol = config.first_symbol; i_symbol != ch_estimate_dims.nof_symbols; ++i_symbol) {
+        // Get the channel estimates for the current OFDM symbol.
+        results.get_symbol_ch_estimate(symbol_est, i_symbol, i_port, i_layer);
+
+        // Isolate the current ODFM symbol from the path view.
+        span<const cbf16_t> path_symbol = path_est_span.first(nof_re);
+        path_est_span                   = path_est_span.last(path_est_span.size() - nof_re);
+
+        if (i_port != i_layer) {
+          ASSERT_TRUE(std::all_of(symbol_est.begin(), symbol_est.end(), [](cbf16_t a) {
             return (a.real.value() == 0) && (a.imag.value() == 0);
-          })) << "REs should be zero on cross paths and on not allocated symbols.";
+          })) << "REs should be zero on cross paths.";
+
+          ASSERT_TRUE(std::all_of(path_symbol.begin(), path_symbol.end(), [](cbf16_t a) {
+            return (a.real.value() == 0) && (a.imag.value() == 0);
+          })) << "REs should be zero on cross paths (path version).";
           continue;
         }
-        cf_t value        = cf_t(1, 0);
-        bool is_ok        = true;
-        auto check_symbol = [current_symbol, &value, &is_ok](unsigned i_prb) {
+
+        // Check the retrieved symbol.
+        cf_t                value = cf_t(1, 0);
+        bool                is_ok = true;
+        span<const cbf16_t> symbol_span(symbol_est);
+        auto                check_symbol = [&symbol_span, &value, &is_ok](unsigned i_prb) {
           unsigned            i_re        = i_prb * NRE;
-          span<const cbf16_t> current_prb = current_symbol.subspan(i_re, NRE);
+          span<const cbf16_t> current_prb = span<const cbf16_t>(symbol_span).subspan(i_re, NRE);
           is_ok = is_ok && std::all_of(current_prb.begin(), current_prb.end(), [value](cbf16_t a) {
                     return (std::abs(to_cf(a) - value) < tolerance);
                   });
@@ -205,9 +245,181 @@ TEST_P(DmrsPuschEstimatorFixture, Creation)
         is_ok = true;
         config.rb_mask.for_each(0, config.rb_mask.size(), check_symbol, false);
         ASSERT_TRUE(is_ok) << "All estimates in non-allocated REs should be 0.";
+
+        // Check the symbol as part of the retrieved path.
+        symbol_span = path_symbol;
+        value       = cf_t(1, 0);
+        is_ok       = true;
+        config.rb_mask.for_each(0, config.rb_mask.size(), check_symbol);
+        ASSERT_TRUE(is_ok) << "All estimates in allocated REs should be 1 (path version).";
+
+        value = cf_t(0, 0);
+        is_ok = true;
+        config.rb_mask.for_each(0, config.rb_mask.size(), check_symbol, false);
+        ASSERT_TRUE(is_ok) << "All estimates in non-allocated REs should be 0 (path version).";
       }
     }
   }
+}
+
+// Creates random values for the dummy port channel estimators.
+static void fill_dummy_values(span<port_channel_estimator_spy::placeholders> dummy_values, unsigned nof_layers)
+{
+  // Exponential distribution for positive values, uniform (-1, 1) distibution for the rest.
+  std::mt19937                          rgen(0);
+  std::exponential_distribution<float>  exp(1.0);
+  std::uniform_real_distribution<float> uniform(-10.0, 10.0);
+
+  bool set_cfo = (uniform(rgen) > 0);
+  for (auto& dv : dummy_values) {
+    dv.rsrp.resize(nof_layers);
+    for (auto& rsrp : dv.rsrp) {
+      rsrp = exp(rgen);
+    }
+    dv.epre             = exp(rgen);
+    dv.noise_var        = exp(rgen);
+    dv.snr_linear       = exp(rgen);
+    dv.time_alignment_s = uniform(rgen);
+    dv.cfo_Hz.reset();
+    if (set_cfo) {
+      dv.cfo_Hz = uniform(rgen);
+    }
+  }
+}
+
+// Creates a CSI report from the values in the dummy port channel estiamtors.
+static channel_state_information expected_csi(span<const port_channel_estimator_spy::placeholders> dummy_values)
+{
+  float                epre          = 0.0F;
+  float                rsrp          = 0;
+  float                noise         = 0.0F;
+  float                best_path_snr = -std::numeric_limits<float>::infinity();
+  float                best_ta       = 0.0F;
+  std::optional<float> best_cfo      = std::nullopt;
+  std::vector<float>   rsrp_l0;
+
+  for (const auto& dv : dummy_values) {
+    epre += dv.epre;
+    noise += dv.noise_var;
+
+    float rsrp_help = dv.rsrp[0];
+    rsrp += rsrp_help;
+    rsrp_l0.push_back(rsrp_help);
+
+    float snr_help = dv.snr_linear;
+    if (snr_help > best_path_snr) {
+      best_path_snr = snr_help;
+      best_ta       = dv.time_alignment_s;
+      best_cfo      = dv.cfo_Hz;
+    }
+  }
+
+  channel_state_information csi;
+  epre /= static_cast<float>(dummy_values.size());
+  csi.set_epre(convert_power_to_dB(epre));
+
+  csi.set_time_alignment(phy_time_unit::from_seconds(best_ta));
+
+  if (best_cfo.has_value()) {
+    csi.set_cfo(*best_cfo);
+  }
+
+  csi.set_rsrp_lin(rsrp_l0);
+
+  float snr = rsrp / noise;
+  csi.set_sinr_dB(channel_state_information::sinr_type::channel_estimator, convert_power_to_dB(snr));
+  return csi;
+}
+
+TEST_P(DmrsPuschEstimatorFixture, Interface)
+{
+  // This test verifies the results interface of the dmrs_pusch_estimator. The port channel estimators are replaced with
+  // dummy versions that return preset values for all estimated metrics. The test checks whether the values retrieved
+  // through the dmrs_pusch_estimator_results interface are compatible with the values in the dummy port channel
+  // estimators. The getter methods get_symbol_ch_estimate and get_path_ch_estimate are testsd in the previous test.
+
+  // Create actual channel estimator.
+  std::unique_ptr<dmrs_pusch_estimator> estimator = estimator_interface_factory->create();
+  ASSERT_TRUE(estimator);
+
+  dmrs_pusch_estimator::configuration config = GetParam().config;
+
+  unsigned nof_layers = config.get_nof_tx_layers();
+  fill_dummy_values(dummy_values, nof_layers);
+
+  // Run the estimator - it won't do anything except creating the interface.
+  dmrs_pusch_estimator_notifier_spy notifier;
+  estimator->estimate(notifier, grid, config);
+
+  // Assert the notifier has been called.
+  ASSERT_TRUE(notifier.has_notified()) << "The estimator notifier was not called.";
+  const dmrs_pusch_estimator_results& results = notifier.get_results();
+
+  unsigned nof_ports = config.rx_ports.size();
+  for (unsigned i_port = 0; i_port != nof_ports; ++i_port) {
+    // Check RSRP per layer and port.
+    for (unsigned i_layer = 0; i_layer != nof_layers; ++i_layer) {
+      float       rsrp = dummy_values[i_port].rsrp[i_layer];
+      std::string msg  = fmt::format("RSRP mismatch for port {}, layer {}.", i_port, i_layer);
+      ASSERT_EQ(results.get_rsrp(i_port, i_layer), rsrp) << msg;
+      ASSERT_EQ(results.get_rsrp_dB(i_port, i_layer), convert_power_to_dB(rsrp)) << msg;
+    }
+
+    // Check noise variance.
+    std::string msg = fmt::format("Noise variance mismatch for port {}.", i_port);
+    ASSERT_EQ(results.get_noise_variance(i_port), dummy_values[i_port].noise_var) << msg;
+    ASSERT_EQ(results.get_noise_variance_dB(i_port), convert_power_to_dB(dummy_values[i_port].noise_var)) << msg;
+
+    // Check EPRE.
+    msg = fmt::format("EPRE mismatch for port {}.", i_port);
+    ASSERT_EQ(results.get_epre(i_port), dummy_values[i_port].epre) << msg;
+    ASSERT_EQ(results.get_epre_dB(i_port), convert_power_to_dB(dummy_values[i_port].epre)) << msg;
+
+    // Check SNR.
+    msg = fmt::format("SNR mismatch for port {}.", i_port);
+    ASSERT_EQ(results.get_snr(i_port), dummy_values[i_port].snr_linear) << msg;
+    ASSERT_EQ(results.get_snr_dB(i_port), convert_power_to_dB(dummy_values[i_port].snr_linear)) << msg;
+
+    // Check time alignment.
+    msg      = fmt::format("Time alignment mismatch for port {}.", i_port);
+    float ta = dummy_values[i_port].time_alignment_s;
+    ASSERT_EQ(results.get_time_alignment(i_port), phy_time_unit::from_seconds(ta)) << msg;
+
+    // Check CFO.
+    msg = fmt::format("CFO mismatch for port {}.", i_port);
+    ASSERT_EQ(results.get_cfo_Hz(i_port), dummy_values[i_port].cfo_Hz) << msg;
+  }
+
+  // Check layer-specific values: RSRP and average SNR.
+  for (unsigned i_layer = 0; i_layer != nof_layers; ++i_layer) {
+    static_vector<float, MAX_PORTS> rsrp_layer = results.get_rsrp_all_ports(i_layer);
+    ASSERT_EQ(rsrp_layer.size(), nof_ports) << "rsrp_layer size does not match the number of configured ports.";
+
+    float all_rsrp  = 0;
+    float all_noise = 0;
+    for (unsigned i_port = 0; i_port != nof_ports; ++i_port) {
+      float       rsrp = dummy_values[i_port].rsrp[i_layer];
+      std::string msg  = fmt::format("RSRP mismatch for port {}, layer {}.", i_port, i_layer);
+      ASSERT_EQ(rsrp_layer[i_port], rsrp) << msg;
+
+      all_rsrp += dummy_values[i_port].rsrp[i_layer];
+      all_noise += dummy_values[i_port].noise_var;
+    }
+
+    std::string msg = fmt::format("Average SNR mismatch for, layer {}.", i_layer);
+    ASSERT_EQ(results.get_layer_average_snr(i_layer), all_rsrp / all_noise) << msg;
+  }
+
+  // Check CSI.
+  channel_state_information csi_exp = expected_csi(dummy_values);
+  channel_state_information csi;
+  results.get_channel_state_information(csi);
+
+  ASSERT_EQ(csi.get_epre_dB(), csi_exp.get_epre_dB()) << "CSI EPRE mismatch.";
+  ASSERT_EQ(csi.get_port_rsrp_dB(), csi_exp.get_port_rsrp_dB()) << "CSI RSRP mismatch.";
+  ASSERT_EQ(csi.get_sinr_dB(), csi_exp.get_sinr_dB()) << "CSI SNR mismatch.";
+  ASSERT_EQ(csi.get_time_alignment(), csi_exp.get_time_alignment()) << "CSI TA mismatch.";
+  ASSERT_EQ(csi.get_cfo_Hz(), csi_exp.get_cfo_Hz()) << "CSI CFO mismatch.";
 }
 
 // Creates test suite with all the test cases.
