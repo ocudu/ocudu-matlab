@@ -40,6 +40,9 @@ function [test, runner] = runOCUDUunittest(blockName, testType, opt)
     outputPath = [pwd '/testvectorOutputs'];
     extParams = Parameter.fromData('outputPath', {outputPath}, 'RandomDefault', {~opt.RandomShuffle});
 
+    % Normally, use the default runner that shows all diagnostics.
+    runner = matlab.unittest.TestRunner.withDefaultPlugins;
+
     if ~strcmp(blockName, 'all')
         unittestClass = name2Class(blockName);
         nrPHYtestvectorTests = TestSuite.fromClass(unittestClass, ...
@@ -47,21 +50,19 @@ function [test, runner] = runOCUDUunittest(blockName, testType, opt)
         if isempty(nrPHYtestvectorTests)
             warning('No ''%s'' tests for the ''%s'' block.', testType, blockName);
         end
-
-        % When running the tests for one block only, use the default runner that
-        % shows all diagnostics.
-        runner = matlab.unittest.TestRunner.withDefaultPlugins;
     else
         nrPHYtestvectorTests = TestSuite.fromFolder('.', 'Tag', testType, ...
             'ExternalParameters', extParams);
 
         % When running the tests for all blocks, replace the DiagnosticsOutputPlugin
         % with a modified version that does not show diagnostics caused by failed
-        % assumptions.
-        runner = matlab.unittest.TestRunner.withNoPlugins;
-        runner.addPlugin(ocuduTest.plugins.ocuduDiagnosticsOutputPlugin);
-        runner.addPlugin(matlab.unittest.plugins.TestRunProgressPlugin.withVerbosity("Concise"));
-        runner.addPlugin(matlab.unittest.plugins.DiagnosticsRecordingPlugin);
+        % assumptions, if supported.
+        if ~isMATLABReleaseOlderThan('R2024b')
+            runner = matlab.unittest.TestRunner.withNoPlugins;
+            runner.addPlugin(ocuduTest.plugins.ocuduDiagnosticsOutputPlugin);
+            runner.addPlugin(matlab.unittest.plugins.TestRunProgressPlugin.withVerbosity("Concise"));
+            runner.addPlugin(matlab.unittest.plugins.DiagnosticsRecordingPlugin);
+        end
     end
     if nargout >= 1
         test = nrPHYtestvectorTests;
