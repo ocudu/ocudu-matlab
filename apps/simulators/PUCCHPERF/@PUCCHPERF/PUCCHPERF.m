@@ -82,7 +82,7 @@
 %   Remark: The simulation loop is heavily based on the <a href="https://www.mathworks.com/help/5g/ug/nr-pucch-block-error-rate.html">NR PUCCH Block Error Rate</a> MATLAB example by MathWorks.
 
 %
-%   Copyright 2021-2025 Software Radio Systems Limited
+%   Copyright 2021-2026 Software Radio Systems Limited
 %
 %   By using this file, you agree to the terms and conditions set
 %   forth in the LICENSE file which can be found at the top level of
