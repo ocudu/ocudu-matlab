@@ -67,8 +67,7 @@ std::ostream& operator<<(std::ostream& os, span<const prach_occasion_info> occas
 
 std::ostream& operator<<(std::ostream& os, const test_case_t& params)
 {
-  return os << fmt::format("dplx_mode={} prach_config_index={} pusch_scs={} "
-                           "active_slots={} nof_slots_period={} "
+  return os << fmt::format("dplx_mode={} prach_config_index={} pusch_scs={} active_slots={} nof_slots_period={} "
                            "crbs={} nof_subframes={} symbols={}",
                            to_string(params.dplx_mode),
                            params.prach_config_index,
@@ -96,19 +95,20 @@ make_custom_sched_cell_configuration_request(subcarrier_spacing scs_common,
                                              uint16_t           zcz,
                                              uint8_t            nof_fd_ra)
 {
-  cell_config_builder_params params = {
-      .pci = pci, .scs_common = scs_common, .channel_bw_mhz = ocudu::bs_channel_bandwidth::MHz20, .band = band};
+  cell_config_builder_params params = {.pci        = pci,
+                                       .scs_common = scs_common,
+                                       .dl_carrier{.carrier_bw = ocudu::bs_channel_bandwidth::MHz20, .band = band}};
 
   // For TDD, set DL ARFCN according to the band.
   if (not band_helper::is_paired_spectrum(band)) {
     if (band_helper::get_freq_range(band) == frequency_range::FR1) {
-      params.dl_f_ref_arfcn = 520002;
+      params.dl_carrier.arfcn_f_ref = 520002;
     } else {
-      params.dl_f_ref_arfcn = 2074171;
+      params.dl_carrier.arfcn_f_ref = 2074171;
     }
   }
   if (band_helper::get_freq_range(band) == frequency_range::FR2) {
-    params.channel_bw_mhz = bs_channel_bandwidth::MHz100;
+    params.dl_carrier.carrier_bw = bs_channel_bandwidth::MHz100;
   }
   sched_cell_configuration_request_message sched_req =
       sched_config_helper::make_default_sched_cell_configuration_request(params);
@@ -117,8 +117,7 @@ make_custom_sched_cell_configuration_request(subcarrier_spacing scs_common,
   sched_req.ul_cfg_common.init_ul_bwp.rach_cfg_common.value().rach_cfg_generic.zero_correlation_zone_config = zcz;
   sched_req.ul_cfg_common.init_ul_bwp.rach_cfg_common.value().rach_cfg_generic.msg1_fdm                     = nof_fd_ra;
 
-  // NOTE: For this test we modify the TDD pattern so that we can test several
-  // PRACH configuration indices.
+  // NOTE: For this test we modify the TDD pattern so that we can test several PRACH configuration indices.
   if (not band_helper::is_paired_spectrum(band)) {
     sched_req.tdd_ul_dl_cfg_common.value().pattern1.nof_dl_slots = 0;
     sched_req.tdd_ul_dl_cfg_common.value().pattern1.nof_ul_slots = 10;
@@ -144,7 +143,7 @@ protected:
     if (scs_common > subcarrier_spacing::kHz60) {
       band = nr_band::n261;
     } else if (scs_common == subcarrier_spacing::kHz30) {
-      band = nr_band::n78;
+      band = nr_band::n41;
     }
 
     frequency_range fr                 = band_helper::get_freq_range(band);
@@ -154,8 +153,7 @@ protected:
     const ofdm_symbol_range& symbols   = params.symbols;
     uint8_t                  nof_fd_ra = static_cast<uint8_t>(crbs.size());
 
-    // Set the actual bitset size to the number of slots per period for this
-    // testcase.
+    // Set the actual bitset size to the number of slots per period for this testcase.
     active_slots = bounded_bitset<max_nof_slots_per_period>(nof_slots_period);
 
     // Convert the active slots set in the testcase into a bounded bitset.
@@ -184,8 +182,8 @@ protected:
     // Make scheduler resource grid.
     res_grid = std::make_unique<cell_resource_allocator>(*cell_cfg);
 
-    // Configure initial and end slot. The test shall run for the maximum PRACH
-    // System Frame Number (SFN) period which is 16 frames.
+    // Configure initial and end slot. The test shall run for the maximum PRACH System Frame Number (SFN) period which
+    // is 16 frames.
     slot_begin = slot_point(to_numerology_value(scs_common), 0);
     slot_end   = slot_begin + nof_frames_period * slot_begin.nof_slots_per_frame();
 
@@ -221,8 +219,7 @@ protected:
   /// Gets the PRACH scheduler expected results for the last executed slot.
   span<const prach_occasion_info> get_expected_prach_sched_result(slot_point slot) const
   {
-    // Return the expected occasions if the slot matches with an active PRACH
-    // slot.
+    // Return the expected occasions if the slot matches with an active PRACH slot.
     if (active_slots.test(slot.system_slot() % nof_slots_period)) {
       return expected_occasions;
     }
@@ -233,8 +230,7 @@ protected:
   static constexpr interval<unsigned> preamble_index_range = interval<unsigned>(0, 64);
   /// Maximum number of frames in a PRACH period.
   static constexpr unsigned nof_frames_period = 16;
-  /// Maximum number of slots in a PRACH period, based on the maximum subcarrier
-  /// spacing supported.
+  /// Maximum number of slots in a PRACH period, based on the maximum subcarrier spacing supported.
   static constexpr unsigned max_nof_slots_per_period =
       get_nof_slots_per_subframe(subcarrier_spacing::kHz120) * NOF_SUBFRAMES_PER_FRAME * nof_frames_period;
 
