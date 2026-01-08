@@ -62,6 +62,8 @@ version check:
   stage: ci
   extends: .version increased
   rules:
+    - if: $CI_MERGE_REQUEST_LABELS =~ /ci-no-container/
+      when: never
     - if: $ON_MR
       changes:
         - Dockerfile
@@ -73,6 +75,8 @@ publish container:
   stage: ci
   extends: .docker-builder-matlab
   rules:
+    - if: $CI_MERGE_REQUEST_LABELS =~ /ci-no-container/
+      when: never
     - if: $ON_MR
       changes:
         - Dockerfile
