@@ -97,7 +97,7 @@ TEST_P(PrachDetectorFixture, FromVector)
   // ASSERT_TRUE(validator->is_valid(config));
   const prach_detector::configuration& config = params.context.config;
   if (!validator->is_valid(config)) {
-    GTEST_SKIP() << "Unsupported PRACH configuration.";
+    GTEST_SKIP() << fmt::format("Unsupported PRACH configuration: {}.", config);
   }
 
   // Get preamble information.
