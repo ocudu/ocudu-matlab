@@ -71,7 +71,7 @@ classdef ocuduPRACHDetectorUnittest < ocuduTest.ocuduBlockUnittest
         DuplexMode = {'FDD', 'TDD', 'TDD-FR2'}
 
         %Preamble formats.
-        PreambleFormat = {'0', '1', '2', '3', 'A1', 'A2', 'A3', 'B4', 'C0'}
+        PreambleFormat = {'0', '1', '2', '3', 'A1', 'A2', 'A3', 'B4', 'C0', 'C2'}
 
         %Zero-correlation zone boolean flag. Set to false for no cyclic shift
         %   and set to true for cyclic shift. The final value of the zero-configuration
@@ -154,7 +154,7 @@ classdef ocuduPRACHDetectorUnittest < ocuduTest.ocuduBlockUnittest
             import ocuduLib.phy.helpers.ocuduConfigurePRACH
 
             obj.assumeTrue(~strcmp(DuplexMode, 'TDD-FR2') || ismember(PreambleFormat, {'A1', 'B4'}), ...
-                'Only short formats allowed in FR2.');
+                'Only short formats A1 and B4 currently allowed in FR2.');
 
             restrictedSet = obj.RestrictedSet;
             rbOffset = obj.RBOffset;
@@ -268,8 +268,19 @@ classdef ocuduPRACHDetectorUnittest < ocuduTest.ocuduBlockUnittest
                 obj.assertEqual(10 * log10(preamblePowers(pp)), 0, 'Wrong estimated preamble power.', AbsTol=3);
             end
 
+            % The number of sequence replicas in a PRACH preamble is, in general, equal to the number of
+            % OFDM symbols spanned by the PRACH occasion.
+            L = obj.prach.PRACHDuration;
+
+            % For PRACH Format C2, however, the PRACH duration is inflated by two symbols to account
+            % for the long CP (one entire sequence) and the guard band. (MATLAB already deals with
+            % the issue in case of Format C0.)
+            if strcmp(obj.prach.Format, 'C2')
+                L = L - 2;
+            end
+
             % Reshape grid with PRACH symbols.
-            grid = reshape(grid, obj.prach.LRA, obj.prach.PRACHDuration, nAntennas);
+            grid = reshape(grid, obj.prach.LRA, L, nAntennas);
 
             % Write the generated PRACH sequence into a binary file.
             obj.saveDataFile('_test_input', TestID, ...
@@ -295,8 +306,8 @@ classdef ocuduPRACHDetectorUnittest < ocuduTest.ocuduBlockUnittest
             % PRACH detector configuration.
             ocuduPRACHDetectorConfig = {...
                 obj.prach.SequenceIndex, ...        % root_sequence_index
-                ocuduPRACHFormat, ...                 % format
-                ocuduRestrictedSet, ...               % restricted_set
+                ocuduPRACHFormat, ...               % format
+                ocuduRestrictedSet, ...             % restricted_set
                 obj.prach.ZeroCorrelationZone, ...  % zero_correlation_zone
                 obj.StartPreambleIndex, ...         % start_preamble_index
                 obj.NofPreamblesIndices, ...        % nof_preamble_indices
@@ -316,13 +327,13 @@ classdef ocuduPRACHDetectorUnittest < ocuduTest.ocuduBlockUnittest
                 rssi, ...                               % rssi_dB
                 'phy_time_unit::from_seconds(0.0)', ... % time_resolution
                 'phy_time_unit::from_seconds(0.0)', ... % time_advance_max
-                {ocuduPreambleIndication}, ...            % preambles
+                {ocuduPreambleIndication}, ...          % preambles
                 };
 
             truedelayString = sprintf('phy_time_unit::from_seconds(%g)', obj.TrueDelay);
             ocuduContext = {
                 ocuduPRACHDetectorConfig, ...  % config
-                truedelayString, ...         % true PRACH delay
+                truedelayString, ...           % true PRACH delay
                 ocuduPrachDetectionResult, ... % result
                 };
 
@@ -374,8 +385,19 @@ classdef ocuduPRACHDetectorUnittest < ocuduTest.ocuduBlockUnittest
                 % Generate PRACH grid.
                 PRACHGrid = obj.generatePRACH(nAntennas);
 
+                % The number of sequence replicas in a PRACH preamble is, in general, equal to the number of
+                % OFDM symbols spanned by the PRACH occasion.
+                L = obj.prach.PRACHDuration;
+
+                % For PRACH Format C2, however, the PRACH duration is inflated by two symbols to account
+                % for the long CP (one entire sequence) and the guard band. (MATLAB already deals with
+                % the issue in case of Format C0.)
+                if strcmp(obj.prach.Format, 'C2')
+                    L = L - 2;
+                end
+
                 % Reshape grid with PRACH symbols.
-                PRACHGrid = reshape(PRACHGrid, obj.prach.LRA, obj.prach.PRACHDuration, nAntennas);
+                PRACHGrid = reshape(PRACHGrid, obj.prach.LRA, L, nAntennas);
 
                 try
                     % Run the PRACH detector.

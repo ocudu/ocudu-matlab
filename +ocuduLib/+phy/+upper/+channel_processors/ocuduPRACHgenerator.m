@@ -111,6 +111,15 @@ winfo.PRACHSymbolsInfo = prachInfoSym;
 winfo.PRACHIndices = prachIndices;
 winfo.PRACHIndicesInfo = prachInfoInd;
 
+% With PRACH format C2, the CP length N_CP^RA is equal to the symbol length: as such, MATLAB treats it as
+% a normal symbol, setting the CP length to zero (or to a small number of samples due to the crossing
+% of the PRACH preamble with the 0ms and 0.5ms time marks within a frame, see the definition of N_CP,l^RA
+% in TS38.211 Section 5.3.2). We prefer to make it consistent with the other formats and work remove the CP.
+if strcmp(prach.Format, 'C2')
+    winfo.PRACHSymbols = winfo.PRACHSymbols(prach.LRA+1:end);
+    winfo.PRACHIndices = winfo.PRACHIndices(prach.LRA+1:end);
+end
+
 % Generate the PRACH waveform for this slot.
 [waveform, prachOFDMInfo] = nrPRACHOFDMModulate(carrier, prach, prachGrid, 'Windowing', 0);
 
@@ -120,8 +129,8 @@ if prachOFDMInfo.OffsetLength > 0
     prachOFDMInfo.OffsetLength = 0;
 end
 
-% Capture the OFDM modulation info
+% Capture the OFDM modulation info.
 gridset.Info = prachOFDMInfo;
 
-% Capture the resource grid
+% Capture the resource grid.
 gridset.ResourceGrid = prachGrid;

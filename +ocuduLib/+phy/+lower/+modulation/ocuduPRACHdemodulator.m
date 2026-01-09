@@ -56,6 +56,12 @@ function PRACHSymbols = ocuduPRACHdemodulator(carrier, prach, gridInfo, waveform
     % Select the starting symbol within the slot.
     startSymbolWithinSlot = mod(prach.SymbolLocation, length(gridInfo.SymbolLengths));
 
+    % For PRACH Format C2, the nominal CP length is the same as the symbol length and
+    % MATLAB treats it as an extra symbol. We discard it.
+    if strcmp(prach.Format, 'C2')
+        startSymbolWithinSlot = startSymbolWithinSlot + 1;
+    end
+
     % Calculate the offset of the PRACH within the slot.
     symbolOffset = sum(gridInfo.SymbolLengths(1:startSymbolWithinSlot));
 
