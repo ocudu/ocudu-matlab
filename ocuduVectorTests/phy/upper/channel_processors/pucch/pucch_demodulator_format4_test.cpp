@@ -9,10 +9,7 @@
  */
 
 #include "pucch_demodulator_format4_test_data.h"
-#include "ocudu/adt/to_array.h"
 #include "ocudu/ocuduvec/conversion.h"
-#include "ocudu/phy/support/support_factories.h"
-#include "ocudu/phy/upper/channel_processors/channel_processor_factories.h"
 #include "ocudu/phy/upper/channel_processors/pucch/factories.h"
 #include "ocudu/phy/upper/channel_processors/pucch/pucch_demodulator.h"
 #include "ocudu/phy/upper/equalization/equalization_factories.h"
@@ -132,8 +129,8 @@ protected:
     // Prepare the resource grid.
     symbol_slot_mask dmrs_symb_mask = get_pucch_formats3_4_dmrs_symbol_mask(
         config.nof_symbols, config.second_hop_prb.has_value(), config.additional_dmrs);
-    unsigned nof_test_symbols =
-        test_case.context.config.rx_ports.size() * (config.nof_symbols - dmrs_symb_mask.count()) * NRE;
+    unsigned nof_test_symbols = test_case.context.config.rx_ports.size() *
+                                (config.nof_symbols - dmrs_symb_mask.count()) * NOF_SUBCARRIERS_PER_RB;
 
     std::vector<resource_grid_reader_spy::expected_entry_t> grid_entries = test_case.symbols.read();
     ASSERT_EQ(grid_entries.size(), nof_test_symbols)

@@ -12,7 +12,6 @@
 #include "resource_grid_test_doubles.h"
 #include "ocudu/phy/generic_functions/generic_functions_factories.h"
 #include "ocudu/phy/lower/modulation/modulation_factories.h"
-#include "ocudu/support/test_utils.h"
 #include <fmt/ostream.h>
 #include <gtest/gtest.h>
 
@@ -65,7 +64,7 @@ protected:
 TEST_P(ofdm_modulator_tester, vector)
 {
   const test_case_t& test_case = GetParam();
-  unsigned           nsubc     = test_case.test_config.config.bw_rb * NRE;
+  unsigned           nsubc     = test_case.test_config.config.bw_rb * NOF_SUBCARRIERS_PER_RB;
 
   // Load the input data.
   const std::vector<resource_grid_writer_spy::expected_entry_t> data = test_case.data.read();

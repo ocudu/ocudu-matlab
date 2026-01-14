@@ -141,7 +141,7 @@ TEST_P(ChannelEstFixture, test)
   ASSERT_EQ(grid_entries.size(), nof_dmrs_pilots * nof_cdms) << fmt::format(
       "Number of received pilots mismatch: configured {}, read {}.", nof_dmrs_pilots, grid_entries.size());
 
-  unsigned nof_allocated_res = nof_allocatd_rblocks * NRE * cfg.nof_symbols;
+  unsigned nof_allocated_res = nof_allocatd_rblocks * NOF_SUBCARRIERS_PER_RB * cfg.nof_symbols;
 
   std::vector<resource_grid_reader_spy::expected_entry_t> expected_estimates = test_params.estimates.read();
   ASSERT_EQ(expected_estimates.size(), nof_allocated_res * nof_layers)

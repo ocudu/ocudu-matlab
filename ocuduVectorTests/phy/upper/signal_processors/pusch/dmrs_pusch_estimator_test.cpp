@@ -199,7 +199,7 @@ TEST_P(DmrsPuschEstimatorFixture, Creation)
   ASSERT_TRUE(notifier.has_notified()) << "The estimator notifier was not called.";
   const dmrs_pusch_estimator_results& results = notifier.get_results();
 
-  unsigned             nof_re = config.rb_mask.size() * NRE;
+  unsigned             nof_re = config.rb_mask.size() * NOF_SUBCARRIERS_PER_RB;
   std::vector<cbf16_t> symbol_est(nof_re, {0, 0});
   std::vector<cbf16_t> path_est(nof_re * config.nof_symbols, {0, 0});
   for (unsigned i_port = 0; i_port != ch_estimate_dims.nof_rx_ports; ++i_port) {
@@ -232,8 +232,8 @@ TEST_P(DmrsPuschEstimatorFixture, Creation)
         bool                is_ok = true;
         span<const cbf16_t> symbol_span(symbol_est);
         auto                check_symbol = [&symbol_span, &value, &is_ok](unsigned i_prb) {
-          unsigned            i_re        = i_prb * NRE;
-          span<const cbf16_t> current_prb = span<const cbf16_t>(symbol_span).subspan(i_re, NRE);
+          unsigned            i_re = i_prb * NOF_SUBCARRIERS_PER_RB;
+          span<const cbf16_t> current_prb = span<const cbf16_t>(symbol_span).subspan(i_re, NOF_SUBCARRIERS_PER_RB);
           is_ok = is_ok && std::all_of(current_prb.begin(), current_prb.end(), [value](cbf16_t a) {
                     return (std::abs(to_cf(a) - value) < tolerance);
                   });

@@ -9,10 +9,10 @@
  */
 
 #include "transform_precoder_test_data.h"
-#include "ocudu/phy/constants.h"
 #include "ocudu/phy/generic_functions/generic_functions_factories.h"
 #include "ocudu/phy/generic_functions/transform_precoding/transform_precoder.h"
 #include "ocudu/phy/generic_functions/transform_precoding/transform_precoding_factories.h"
+#include "ocudu/ran/resource_block.h"
 #include <gtest/gtest.h>
 
 using namespace ocudu;
@@ -97,7 +97,7 @@ TEST_P(TransformPrecodingFixture, FromVector)
 
   // Extract number of resource blocks.
   unsigned M_rb = test_case.M_rb;
-  unsigned M_sc = M_rb * NRE;
+  unsigned M_sc = M_rb * NOF_SUBCARRIERS_PER_RB;
 
   // Read precoder inputs and outputs.
   const std::vector<cf_t>  deprecode_data_input     = test_case.deprecode_data_input.read();

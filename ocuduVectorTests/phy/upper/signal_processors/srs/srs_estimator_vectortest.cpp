@@ -10,7 +10,6 @@
 
 #include "resource_grid_test_doubles.h"
 #include "srs_estimator_test_data.h"
-#include "ocudu/adt/bounded_bitset.h"
 #include "ocudu/phy/generic_functions/generic_functions_factories.h"
 #include "ocudu/phy/upper/signal_processors/srs/formatters.h"
 #include "ocudu/phy/upper/signal_processors/srs/srs_estimator.h"
@@ -63,7 +62,7 @@ protected:
     ASSERT_NE(sequence_generator_factory, nullptr);
 
     std::shared_ptr<srs_estimator_factory> srs_est_factory =
-        create_srs_estimator_generic_factory(sequence_generator_factory, ta_estimator_factory, MAX_RB);
+        create_srs_estimator_generic_factory(sequence_generator_factory, ta_estimator_factory, MAX_NOF_PRBS);
     ASSERT_NE(srs_est_factory, nullptr);
 
     estimator = srs_est_factory->create();

@@ -118,7 +118,7 @@ private:
     pusch_decoder_factory_sw_config.decoder_factory   = ldpc_decoder_factory;
     pusch_decoder_factory_sw_config.dematcher_factory = ldpc_rate_dematcher_factory;
     pusch_decoder_factory_sw_config.segmenter_factory = segmenter_rx_factory;
-    pusch_decoder_factory_sw_config.nof_prb           = MAX_RB;
+    pusch_decoder_factory_sw_config.nof_prb           = MAX_NOF_PRBS;
     pusch_decoder_factory_sw_config.nof_layers        = pusch_constants::MAX_NOF_LAYERS;
 
     return create_pusch_decoder_factory_sw(pusch_decoder_factory_sw_config);
@@ -216,7 +216,7 @@ private:
                                const std::string&                      eal_arguments)
   {
     if (decoder_type == "empty") {
-      return create_pusch_decoder_empty_factory(MAX_RB, pusch_constants::MAX_NOF_LAYERS);
+      return create_pusch_decoder_empty_factory(MAX_NOF_PRBS, pusch_constants::MAX_NOF_LAYERS);
     }
 
     if (decoder_type == "generic") {

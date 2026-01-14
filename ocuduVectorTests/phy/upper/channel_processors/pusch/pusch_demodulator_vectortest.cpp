@@ -97,11 +97,11 @@ protected:
     ASSERT_TRUE(dft_factory);
 
     std::shared_ptr<transform_precoder_factory> precoding_factory =
-        create_dft_transform_precoder_factory(dft_factory, MAX_RB);
+        create_dft_transform_precoder_factory(dft_factory, MAX_NOF_PRBS);
     ASSERT_TRUE(precoding_factory);
 
     std::shared_ptr<pusch_demodulator_factory> pusch_demod_factory = create_pusch_demodulator_factory_sw(
-        equalizer_factory, precoding_factory, demod_factory, evm_calc_factory, prg_factory, MAX_RB, true);
+        equalizer_factory, precoding_factory, demod_factory, evm_calc_factory, prg_factory, MAX_NOF_PRBS, true);
     ASSERT_TRUE(pusch_demod_factory);
 
     // Create actual PUSCH demodulator.
@@ -141,7 +141,7 @@ TEST_P(PuschDemodulatorFixture, PuschDemodulatorUnittest)
 
   // Prepare channel estimates.
   channel_estimate::channel_estimate_dimensions ce_dims;
-  ce_dims.nof_prb       = estimates.get_dimension_size(ch_dims::subcarrier) / NRE;
+  ce_dims.nof_prb       = estimates.get_dimension_size(ch_dims::subcarrier) / NOF_SUBCARRIERS_PER_RB;
   ce_dims.nof_symbols   = estimates.get_dimension_size(ch_dims::symbol);
   ce_dims.nof_rx_ports  = estimates.get_dimension_size(ch_dims::rx_port);
   ce_dims.nof_tx_layers = estimates.get_dimension_size(ch_dims::tx_layer);

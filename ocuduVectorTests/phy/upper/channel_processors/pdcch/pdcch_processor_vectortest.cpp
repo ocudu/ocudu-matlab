@@ -90,7 +90,7 @@ TEST_P(PdcchProcessorFixture, FromVector)
 
   const test_case_t& test_case = GetParam();
 
-  unsigned max_prb   = MAX_RB;
+  unsigned max_prb   = MAX_NOF_PRBS;
   unsigned max_symb  = test_case.config.coreset.start_symbol_index + test_case.config.coreset.duration;
   unsigned max_ports = test_case.config.dci.precoding.get_nof_ports();
 
