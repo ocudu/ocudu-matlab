@@ -170,7 +170,7 @@ create_pucch_processor()
   channel_estimate_dimensions.nof_tx_layers = 1;
   channel_estimate_dimensions.nof_rx_ports  = 4;
   channel_estimate_dimensions.nof_symbols   = MAX_NSYMB_PER_SLOT;
-  channel_estimate_dimensions.nof_prb       = MAX_RB;
+  channel_estimate_dimensions.nof_prb       = MAX_NOF_PRBS;
 
   std::shared_ptr<pucch_processor_factory> processor_factory = create_pucch_processor_factory_sw(
       dmrs_factory, detector_factory, demodulator_factory, uci_dec_factory, channel_estimate_dimensions);

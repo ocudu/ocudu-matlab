@@ -162,9 +162,11 @@ void MexFunction::method_step(ArgumentList outputs, ArgumentList inputs)
     }
 
     if (i_layer < 2) {
-      dmrs_pattern.re_pattern = bounded_bitset<NRE>(in_re_pattern_cdm0.cbegin(), in_re_pattern_cdm0.cend());
+      dmrs_pattern.re_pattern =
+          bounded_bitset<NOF_SUBCARRIERS_PER_RB>(in_re_pattern_cdm0.cbegin(), in_re_pattern_cdm0.cend());
     } else {
-      dmrs_pattern.re_pattern = bounded_bitset<NRE>(in_re_pattern_cdm1.cbegin(), in_re_pattern_cdm1.cend());
+      dmrs_pattern.re_pattern =
+          bounded_bitset<NOF_SUBCARRIERS_PER_RB>(in_re_pattern_cdm1.cbegin(), in_re_pattern_cdm1.cend());
     }
   }
 
@@ -239,8 +241,11 @@ void MexFunction::method_step(ArgumentList outputs, ArgumentList inputs)
     ch_estimate.set_snr(ch_est_results.get_snr(), i_port);
   }
 
-  TypedArray<cf_t> ch_est_out = factory.createArray<cf_t>(
-      {static_cast<size_t>(ch_est_dims.nof_prb * NRE), ch_est_dims.nof_symbols, nof_rx_ports, nof_layers});
+  TypedArray<cf_t> ch_est_out =
+      factory.createArray<cf_t>({static_cast<size_t>(ch_est_dims.nof_prb * NOF_SUBCARRIERS_PER_RB),
+                                 ch_est_dims.nof_symbols,
+                                 nof_rx_ports,
+                                 nof_layers});
   span<cf_t> ch_est_out_view = to_span(ch_est_out);
   for (unsigned i_layer = 0; i_layer != nof_layers; ++i_layer) {
     for (unsigned i_port = 0; i_port != nof_rx_ports; ++i_port) {
