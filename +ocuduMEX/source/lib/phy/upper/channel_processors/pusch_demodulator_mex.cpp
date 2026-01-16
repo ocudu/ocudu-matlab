@@ -12,6 +12,7 @@
 #include "ocudu_matlab/support/matlab_to_ocudu.h"
 #include "ocudu_matlab/support/resource_grid.h"
 #include "ocudu_matlab/support/to_span.h"
+#include "ocudu/phy/upper/channel_estimation.h"
 #include "ocudu/phy/upper/channel_processors/pusch/pusch_codeword_buffer.h"
 #include "ocudu/phy/upper/channel_processors/pusch/pusch_demodulator_notifier.h"
 #include <optional>
@@ -88,6 +89,77 @@ private:
   void on_end_stats(const demodulation_stats& stats_) override { stats = stats_; }
 
   std::optional<demodulation_stats> stats;
+};
+
+class dmrs_pusch_estimator_results_mock : public dmrs_pusch_estimator_results
+{
+public:
+  dmrs_pusch_estimator_results_mock(const channel_estimate& ch_est_) : ch_est(ch_est_) {}
+
+  float get_noise_variance(unsigned rx_port) const override { return ch_est.get_noise_variance(rx_port); }
+
+  float get_rsrp(unsigned rx_port, unsigned tx_layer = 0) const override { return ch_est.get_rsrp(rx_port, tx_layer); }
+
+  static_vector<float, MAX_PORTS> get_rsrp_all_ports(unsigned tx_layer = 0) const override
+  {
+    unsigned                        nof_rx_ports = ch_est.size().nof_rx_ports;
+    static_vector<float, MAX_PORTS> out(nof_rx_ports);
+    span<const float>               r = ch_est.get_rsrp_all_ports(tx_layer);
+    for (unsigned i_port = 0; i_port != nof_rx_ports; ++i_port) {
+      out[i_port] = r[i_port];
+    }
+    return out;
+  }
+
+  float get_epre(unsigned rx_port) const override { return ch_est.get_epre(rx_port); }
+
+  float get_snr(unsigned rx_port) const override { return ch_est.get_snr(rx_port); }
+
+  float get_layer_average_snr(unsigned tx_layer = 0) const override { return ch_est.get_layer_average_snr(tx_layer); }
+
+  phy_time_unit get_time_alignment(unsigned rx_port) const override { return ch_est.get_time_alignment(rx_port); }
+
+  std::optional<float> get_cfo_Hz(unsigned rx_port) const override { return ch_est.get_cfo_Hz(rx_port); }
+
+  void
+  get_symbol_ch_estimate(span<cbf16_t> estimates, unsigned i_symbol, unsigned rx_port, unsigned tx_layer) const override
+  {
+    span<const cbf16_t> c = ch_est.get_symbol_ch_estimate(i_symbol, rx_port, tx_layer);
+    ocuduvec::copy(estimates, c);
+  }
+
+  void get_symbol_ch_estimate(span<cbf16_t>                              estimates,
+                              unsigned                                   i_symbol,
+                              unsigned                                   rx_port,
+                              unsigned                                   tx_layer,
+                              const bounded_bitset<MAX_NOF_SUBCARRIERS>& re_mask) const override
+  {
+    span<const cbf16_t> c = ch_est.get_symbol_ch_estimate(i_symbol, rx_port, tx_layer);
+    ocudu_assert(c.size() == re_mask.size(), "Wrong RE mask size {}, expected {}.", re_mask.size(), c.size());
+    ocudu_assert(estimates.size() == re_mask.count(),
+                 "The output size {} does not match the number {} of active REs in the mask.",
+                 estimates.size(),
+                 re_mask.count());
+
+    span<cbf16_t> tmp = estimates;
+    re_mask.for_each(0, re_mask.size(), [&c, &tmp](unsigned i_re) {
+      // Copy RE.
+      tmp.front() = c[i_re];
+
+      // Advance buffer.
+      tmp = tmp.last(tmp.size() - 1);
+    });
+
+    ocudu_assert(tmp.empty(), "Missing {} REs.", tmp.size());
+  }
+
+  void get_channel_state_information(channel_state_information& csi) const override
+  {
+    ch_est.get_channel_state_information(csi);
+  }
+
+private:
+  const channel_estimate& ch_est;
 };
 
 } // namespace
@@ -243,6 +315,8 @@ void MexFunction::method_step(ArgumentList outputs, ArgumentList inputs)
     }
   }
 
+  dmrs_pusch_estimator_results_mock est_results(chan_estimates);
+
   // Compute expected soft output bit number.
   unsigned nof_expected_soft_output_bits = in_dem_cfg["NumOutputLLR"][0];
 
@@ -253,7 +327,7 @@ void MexFunction::method_step(ArgumentList outputs, ArgumentList inputs)
   // Demodulate the PUSCH transmission.
   pusch_demodulator_notifier_spy notifier;
   demodulator->demodulate(
-      sch_data.get_buffer(), notifier.get_notifier(), grid->get_reader(), chan_estimates, demodulator_config);
+      sch_data.get_buffer(), notifier.get_notifier(), grid->get_reader(), est_results, demodulator_config);
 
   outputs[0] = out;
 }
