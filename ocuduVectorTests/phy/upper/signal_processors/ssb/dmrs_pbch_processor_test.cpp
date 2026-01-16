@@ -10,6 +10,7 @@
 
 #include "dmrs_pbch_processor_test_data.h"
 #include "ocudu/phy/upper/signal_processors/ssb/factories.h"
+#include "ocudu/ran/ssb/ssb_properties.h"
 
 using namespace ocudu;
 
@@ -27,7 +28,7 @@ int main()
 
   for (const test_case_t& test_case : dmrs_pbch_processor_test_data) {
     // Create resource grid
-    resource_grid_writer_spy grid(test_case.config.ports.size(), SSB_DURATION_NSYMB, SSB_BW_RB);
+    resource_grid_writer_spy grid(test_case.config.ports.size(), NOF_SSB_SYMB, NOF_SSB_PRBS);
 
     // Map DMRS-PBCH using the test case arguments
     dmrs_pbch->map(grid, test_case.config);

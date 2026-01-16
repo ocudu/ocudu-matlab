@@ -64,7 +64,7 @@ int main()
   for (const test_case_t& test_case : ssb_processor_test_data) {
     // The test data was generated with 64 ports, the symbol indexes are relative to half frame and the bandwidth is
     // limited to the SSB.
-    resource_grid_writer_spy grid(64, MAX_NSYMB_PER_SLOT * 5, SSB_BW_RB);
+    resource_grid_writer_spy grid(64, MAX_NSYMB_PER_SLOT * 5, NOF_SSB_PRBS);
 
     // Process PDU
     ssb->process(grid, test_case.config);
