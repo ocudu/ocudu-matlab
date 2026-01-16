@@ -20,6 +20,7 @@
 %   DMRSConfigurationType - PUSCH DM-RS configuration type.
 %   Modulation            - PUSCH Modulation scheme.
 %   NumRxPorts            - Number of receive antenna ports for PUSCH.
+%   ChannelSize           - Channel dimensions [n. of Rx antenna ports, n. of Tx layers].
 %
 %   ocuduPUSCHDemodulatorUnittest Methods (TestTags = {'testvector'}):
 %
@@ -425,6 +426,7 @@ classdef ocuduPUSCHDemodulatorUnittest < ocuduTest.ocuduBlockUnittest
                 obj.pusch.DMRS.NumCDMGroupsWithoutData, ... % nof_cdm_groups_without_data
                 obj.pusch.NID, ...                          % n_id
                 obj.pusch.NumLayers, ...                    % nof_tx_layers
+                'std::nullopt', ...                         % dc_position
                 obj.pusch.TransformPrecoding == 1, ...      % enable_transform_precoding
                 portsString, ...                            % rx_ports
                 };
