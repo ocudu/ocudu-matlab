@@ -57,6 +57,14 @@ private:
   void get_symbol_ch_estimate(span<cbf16_t> symbol, unsigned i_symbol, unsigned tx_layer) const override {}
 
   // See the port_channel_estimator_results interface for documentation.
+  void get_symbol_ch_estimate(span<cbf16_t>                              symbol,
+                              unsigned                                   i_symbol,
+                              unsigned                                   tx_layer,
+                              const bounded_bitset<MAX_NOF_SUBCARRIERS>& re_mask) const override
+  {
+  }
+
+  // See the port_channel_estimator_results interface for documentation.
   float get_epre() const override { return dummy_values.epre; }
 
   // See the port_channel_estimator_results interface for documentation.

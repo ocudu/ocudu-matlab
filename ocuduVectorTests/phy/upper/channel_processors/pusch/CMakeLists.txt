@@ -29,11 +29,14 @@ add_test(pusch_decoder_early_stop_test pusch_decoder_test -e1 -i6)
 
 add_executable(pusch_demodulator_vectortest pusch_demodulator_vectortest.cpp)
 target_link_libraries(pusch_demodulator_vectortest
-        ocudu_channel_processors
+        ocudu_pusch_demodulator
         ocudu_channel_equalizer
+        ocudu_channel_modulation
+        ocudu_dft
         ocudu_phy_support
         ocudulog
         ocudu_upper_phy_support
+        ocudu_sequence_generators
         ocudu_transform_precoding
         gtest
         gtest_main)
