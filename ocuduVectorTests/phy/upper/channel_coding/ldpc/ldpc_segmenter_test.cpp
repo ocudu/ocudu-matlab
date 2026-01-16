@@ -50,6 +50,9 @@ std::ostream& operator<<(std::ostream& os, span<uint8_t> data)
 
 namespace {
 
+// Placeholder for filler bits.
+constexpr uint8_t FILLER_BIT = 254;
+
 using LDPCSegmenterParams = test_case_t;
 
 class LDPCSegmenterFixture : public ::testing::TestWithParam<LDPCSegmenterParams>

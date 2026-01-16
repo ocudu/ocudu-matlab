@@ -78,6 +78,9 @@ std::ostream& operator<<(std::ostream& os, const bit_buffer& data)
 
 namespace {
 
+// Placeholder for filler bits.
+constexpr uint8_t FILLER_BIT = 254;
+
 /// Implements the LDPC encoder buffer interface.
 class ldpc_encoder_buffer_impl : public ldpc_encoder_buffer
 {

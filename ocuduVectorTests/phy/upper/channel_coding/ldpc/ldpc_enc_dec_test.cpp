@@ -47,10 +47,11 @@ namespace {
 
 // Fixed log-likelihood ratio amplitude.
 constexpr log_likelihood_ratio LLRS_AMPL = 10;
+// Placeholder for filler bits.
+constexpr uint8_t FILLER_BIT = 254;
+
 // Transforms hard bits into log-likelihood ratios (with fixed amplitude).
-const auto compute_llrs = [](uint8_t b) {
-  return ((b == ldpc::FILLER_BIT) ? LLRS_AMPL : log_likelihood_ratio::copysign(LLRS_AMPL, 1 - 2 * b));
-};
+const auto compute_llrs = [](uint8_t b) { return log_likelihood_ratio::copysign(LLRS_AMPL, 1 - 2 * b); };
 
 // Checks whether two messages are equal: filler bits are counted as logical zeros.
 const auto is_msg_equal = [](uint8_t a, uint8_t b) { return ((a == b) || ((a == 0) && (b == FILLER_BIT))); };
@@ -126,7 +127,7 @@ protected:
 
     // Remove filler bits from messages.
     std::transform(messages.begin(), messages.end(), messages.begin(), [](uint8_t bit) {
-      if (bit == ldpc::FILLER_BIT) {
+      if (bit == FILLER_BIT) {
         return uint8_t{0};
       }
       return bit;
@@ -134,7 +135,7 @@ protected:
 
     // Remove filler bits from codeblocks.
     std::transform(codeblocks.begin(), codeblocks.end(), codeblocks.begin(), [](uint8_t bit) {
-      if (bit == ldpc::FILLER_BIT) {
+      if (bit == FILLER_BIT) {
         return uint8_t{0};
       }
       return bit;
