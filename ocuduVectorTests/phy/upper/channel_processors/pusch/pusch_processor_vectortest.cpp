@@ -14,8 +14,8 @@
 #include "ocudu/phy/upper/channel_processors/pusch/factories.h"
 #include "ocudu/phy/upper/channel_processors/pusch/formatters.h"
 #include "ocudu/phy/upper/equalization/equalization_factories.h"
+#include "ocudu/ran/sch/sch_segmentation.h"
 #include "ocudu/support/executors/inline_task_executor.h"
-#include "ocudu/support/math/math_utils.h"
 #ifdef HWACC_PUSCH_ENABLED
 #include "ocudu/hal/dpdk/bbdev/bbdev_acc.h"
 #include "ocudu/hal/dpdk/bbdev/bbdev_acc_factory.h"
@@ -426,9 +426,9 @@ TEST_P(PuschProcessorFixture, PuschProcessorVectortest)
   std::vector<uint8_t> data(expected_data.size());
 
   // Prepare buffer.
-  rx_buffer_spy    rm_buffer_spy(ldpc::MAX_CODEBLOCK_SIZE,
-                              ldpc::compute_nof_codeblocks(units::bytes(expected_data.size()).to_bits(),
-                                                           config.codeword.value().ldpc_base_graph));
+  rx_buffer_spy rm_buffer_spy(
+      ldpc::MAX_CODEBLOCK_SIZE,
+      compute_nof_codeblocks(units::bytes(expected_data.size()).to_bits(), config.codeword.value().ldpc_base_graph));
   unique_rx_buffer rm_buffer(rm_buffer_spy);
 
   // Make sure the configuration is valid.
@@ -524,7 +524,7 @@ TEST_P(PuschProcessorFixture, PuschProcessorVectortestZero)
   // Prepare buffer.
   rx_buffer_spy rm_buffer_spy(
       ldpc::MAX_CODEBLOCK_SIZE,
-      ldpc::compute_nof_codeblocks(units::bytes(data.size()).to_bits(), config.codeword.value().ldpc_base_graph));
+      compute_nof_codeblocks(units::bytes(data.size()).to_bits(), config.codeword.value().ldpc_base_graph));
   unique_rx_buffer rm_buffer(rm_buffer_spy);
 
   // Make sure the configuration is valid.

@@ -23,8 +23,8 @@
 #include "ocudu/phy/upper/channel_processors/pusch/pusch_decoder_buffer.h"
 #include "ocudu/phy/upper/rx_buffer_pool.h"
 #include "ocudu/phy/upper/unique_rx_buffer.h"
-#include "ocudu/support/math/math_utils.h"
-#include "ocudu/support/test_utils.h"
+#include "ocudu/ran/sch/sch_segmentation.h"
+#include "ocudu/support/ocudu_test.h"
 #ifdef HWACC_PUSCH_ENABLED
 #include "ocudu/hal/dpdk/bbdev/bbdev_acc.h"
 #include "ocudu/hal/dpdk/bbdev/bbdev_acc_factory.h"
@@ -288,7 +288,7 @@ int main(int argc, char** argv)
     // Recall that llrs_all contains all retransmissions concatenated.
     unsigned cws = llrs_all.size() / nof_retx;
 
-    unsigned nof_codeblocks = ldpc::compute_nof_codeblocks(tbs, cfg.base_graph);
+    unsigned nof_codeblocks = compute_nof_codeblocks(tbs, cfg.base_graph);
 
     // The codeword is the concatenation of codeblocks. However, since codeblock sizes can vary slightly, we add some
     // extra margin.
