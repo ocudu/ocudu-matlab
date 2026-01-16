@@ -11,13 +11,12 @@
 #include "pusch_decoder_mex.h"
 #include "ocudu_matlab/support/matlab_to_ocudu.h"
 #include "ocudu_matlab/support/to_span.h"
-#include "ocudu/phy/upper/channel_coding/ldpc/ldpc.h"
 #include "ocudu/phy/upper/channel_processors/pusch/pusch_decoder_buffer.h"
 #include "ocudu/phy/upper/channel_processors/pusch/pusch_decoder_notifier.h"
 #include "ocudu/phy/upper/channel_processors/pusch/pusch_decoder_result.h"
 #include "ocudu/phy/upper/rx_buffer_pool.h"
 #include "ocudu/phy/upper/trx_buffer_identifier.h"
-#include "ocudu/ran/sch/modulation_scheme.h"
+#include "ocudu/ran/sch/sch_segmentation.h"
 #include "ocudu/support/units.h"
 #include "fmt/format.h"
 #include <memory>
@@ -163,7 +162,7 @@ void MexFunction::method_step(ArgumentList outputs, ArgumentList inputs)
   trx_buffer_identifier buf_id(in_buf_id["RNTI"][0], in_buf_id["HARQProcessID"][0]);
 
   unsigned nof_codeblocks       = in_buf_id["NumCodeblocks"][0];
-  unsigned nof_codeblocks_check = ldpc::compute_nof_codeblocks(tbs, cfg.base_graph);
+  unsigned nof_codeblocks_check = compute_nof_codeblocks(tbs, cfg.base_graph);
   if (nof_codeblocks != nof_codeblocks_check) {
     mex_abort("Softbuffer ({}) requested with {} codeblocks, but the codeword has {} codeblocks.",
               buf_id,
