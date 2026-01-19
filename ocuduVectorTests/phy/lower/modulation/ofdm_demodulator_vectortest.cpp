@@ -10,6 +10,7 @@
 
 #include "ofdm_demodulator_test_data.h"
 #include "resource_grid_test_doubles.h"
+#include "ocudu/phy/antenna_ports.h"
 #include "ocudu/phy/generic_functions/generic_functions_factories.h"
 #include "ocudu/phy/lower/modulation/modulation_factories.h"
 #include <fmt/ostream.h>

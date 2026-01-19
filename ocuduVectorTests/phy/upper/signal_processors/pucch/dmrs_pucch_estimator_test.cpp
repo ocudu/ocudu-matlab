@@ -10,6 +10,7 @@
 
 #include "dmrs_pucch_estimator_test_data.h"
 #include "resource_grid_test_doubles.h"
+#include "ocudu/phy/antenna_ports.h"
 #include "ocudu/phy/upper/signal_processors/pucch/factories.h"
 #include "fmt/ostream.h"
 #include <gtest/gtest.h>

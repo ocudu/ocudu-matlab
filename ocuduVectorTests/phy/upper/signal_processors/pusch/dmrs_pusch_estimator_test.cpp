@@ -12,6 +12,7 @@
 #include "dmrs_pusch_estimator_test_data.h"
 #include "resource_grid_test_doubles.h"
 #include "ocudu/ocuduvec/zero.h"
+#include "ocudu/phy/antenna_ports.h"
 #include "ocudu/phy/upper/channel_estimation.h"
 #include "ocudu/phy/upper/signal_processors/pusch/factories.h"
 #include "ocudu/support/executors/inline_task_executor.h"

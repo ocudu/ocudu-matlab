@@ -15,6 +15,7 @@
 /// vectors.
 
 #include "port_channel_estimator_test_data.h"
+#include "ocudu/phy/antenna_ports.h"
 #include "ocudu/phy/upper/channel_estimation.h"
 #include "ocudu/phy/upper/signal_processors/channel_estimator/factories.h"
 #include "ocudu/phy/upper/signal_processors/channel_estimator/port_channel_estimator_parameters.h"

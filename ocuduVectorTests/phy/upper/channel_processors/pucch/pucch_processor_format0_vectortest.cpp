@@ -11,6 +11,7 @@
 #include "pucch_detector_test_doubles.h"
 #include "pucch_processor_format0_test_data.h"
 #include "pucch_processor_test_fixture.h"
+#include "ocudu/phy/antenna_ports.h"
 #include "ocudu/phy/upper/channel_processors/channel_processor_formatters.h"
 #include "ocudu/phy/upper/channel_processors/pucch/formatters.h"
 #include "ocudu/ran/pucch/pucch_constants.h"
