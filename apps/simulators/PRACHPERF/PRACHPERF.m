@@ -431,14 +431,28 @@ classdef PRACHPERF < matlab.System
 
                     [waveform, gridset, winfo] = ocuduLib.phy.upper.channel_processors.ocuduPRACHgenerator(carrier, prach);
 
-                    % Set PRACH timing offset in microseconds as per TS 38.141-1 Figure 8.4.1.4.2-2
+                    % Set PRACH timing offset in microseconds as per TS38.141-1 Figure 8.4.1.4.2-2
                     % and Figure 8.4.1.4.2-3.
                     if (prach.LRA == 839) % Long preamble, values as in Figure 8.4.1.4.2-2.
                         baseOffset = ((winfo.PRACHSymbolsInfo.NumCyclicShifts/2)/prach.LRA)/prach.SubcarrierSpacing*1e3; % (microseconds)
                         timingOffset = baseOffset + mod(iOccasion - 1, 10)/10; % (microseconds)
                     else % Short preamble, values as in Figure 8.4.1.4.2-3.
+                        % Compute the delay equivalent to NumCyclicShifts.
+                        delayNumCyclicShifts = winfo.PRACHSymbolsInfo.NumCyclicShifts/prach.LRA;
+                        if (delayNumCyclicShifts == 0)
+                            % NumCyclicShifts == 0 means that we can use the entire symbol.
+                            delayNumCyclicShifts = 1;
+                        end
+                        delayNumCyclicShifts = delayNumCyclicShifts/prach.SubcarrierSpacing*1e3; % (microseconds)
+
+                        % Set the maximum timing offset for the simulations: pick the minimum between 1us (which corresponds
+                        % to the value in the TS) and 1/4 of the maximum delay. We need this because, otherwise,
+                        % the timingOffset will be too long for small values of NunCyclicShifts (not included in
+                        % the TS tests). Note that 1us is smaller than 1/4 of delayNumCyclicShifts at the NumCyclicShifts
+                        % set by the TS, for all SCSs (i.e., 15, 30 and 120 kHz).
+                        maxTimingOffset = min(1, delayNumCyclicShifts / 4);
                         baseOffset = 0; % (microseconds)
-                        timingOffset = baseOffset + mod(iOccasion - 1, 9)/10; % (microseconds)
+                        timingOffset = baseOffset + mod(iOccasion - 1, 9)/10 * maxTimingOffset; % (microseconds)
                     end
                     sampleDelay = fix(timingOffset / 1e6 * ofdmInfo.SampleRate);
 

@@ -149,7 +149,7 @@ function PRACHthresholds(filename, format, scs)
             % outside "fineBounds", but the probability should be negligible.
             maxPFA = min(targetPFA * 10, 1);
             minPFA = targetPFA / 4;
-            [~, ~, fineBounds, fineValues] = estimateThreshold([0, 1], targetPFA * [10, -1], ...
+            [~, ~, fineBounds, fineValues] = estimateThreshold([0, 2], targetPFA * [10, -1], ...
                 [minPFA, maxPFA], snr, ceil(runsFA/10), true);
 
             % Fine search for the threshold: the resulting PFA should fall in the
