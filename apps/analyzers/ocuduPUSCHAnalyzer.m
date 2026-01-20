@@ -100,7 +100,7 @@ end
 
 % Make sure equalized zeros translate to soft zeros. This is especially important
 % for the REs that were nulled out to remove the DC from the grid.
-zerosInd = (equalized == 0);
+zerosInd = (equalized(:, 1) == 0);
 bps = ocuduLib.phy.helpers.ocuduGetBitsSymbol(pusch.Modulation);
 cwZerosInd = repelem(zerosInd, bps);
 rxcw(cwZerosInd) = 0;
