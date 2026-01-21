@@ -92,7 +92,7 @@ classdef ocuduMultiPortChannelEstimator < matlab.System
                 refSym                   (:, :)     double {mustBeNumeric}
                 config.PortIndices       (:, 1)     double {mustBeInteger, mustBeNonnegative} = 0
                 config.CyclicPrefix      (1, :)     char   {mustBeMember(config.CyclicPrefix, {'normal', 'extended'})} = 'normal'
-                config.SubcarrierSpacing (1, 1)     double {mustBeMember(config.SubcarrierSpacing, [15 30])} = 15
+                config.SubcarrierSpacing (1, 1)     double {mustBeMember(config.SubcarrierSpacing, [15 30 120])} = 15
                 config.HoppingIndex                 double = []
                 config.BetaScaling       (1, 1)     double {mustBePositive} = 1
             end

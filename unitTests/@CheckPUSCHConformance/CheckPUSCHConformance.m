@@ -1,7 +1,8 @@
 %CheckPUSCHConformance Battery of conformance tests for the PUSCH.
 %   This class, based on the matlab.unittest.TestCase framework, performs a battery
 %   of conformance tests on the PUSCH. Specifically, the tests are a subset of
-%   those described in TS38.104 Section 8.2 and TS38.141 Section 8.2, plus some
+%   those described in TS38.104 Section 8.2 and TS38.141-1 Section 8.2 (for FR1),
+%   in TS38.104 Section 11.2.2 and TS38.141-2 Section 8.2 (for FR2), plus some
 %   custom tests. The tests consist in running a short simulation and ensuring
 %   that the estimated throughput is above the required value.
 %
@@ -11,16 +12,17 @@
 %
 %   CheckPUSCHConformance Properties (TestParameter):
 %
-%   TestConfigTable8_2_1_2_1  - PUSCH test configurations - Type A, 5 MHz channel bandwidth, 15 kHz SCS.
-%   TestConfigTable8_2_1_2_2  - PUSCH test configurations - Type A, 10 MHz channel bandwidth, 15 kHz SCS.
-%   TestConfigTable8_2_1_2_3  - PUSCH test configurations - Type A, 20 MHz channel bandwidth, 15 kHz SCS.
-%   TestConfigTable8_2_1_2_4  - PUSCH test configurations - Type A, 10 MHz channel bandwidth, 30 kHz SCS.
-%   TestConfigTable8_2_1_2_5  - PUSCH test configurations - Type A, 20 MHz channel bandwidth, 30 kHz SCS.
-%   TestConfigTable8_2_1_2_6  - PUSCH test configurations - Type A, 40 MHz channel bandwidth, 30 kHz SCS.
-%   TestConfigTable8_2_1_2_7  - PUSCH test configurations - Type A, 100 MHz channel bandwidth, 30 kHz SCS.
-%   TestConfigTable8_2_2_2_x  - PUSCH test configurations - Type A, transform precoding enabled.
-%   TestConfigCustom          - PUSCH test configurations - Type A, custom cases.
-%   NumLayers                 - Number of transmission layers (1 to 4, only for custom tests).
+%   TestConfigTable8_2_1_2_1     - PUSCH test configurations - Type A, 5 MHz channel bandwidth, 15 kHz SCS.
+%   TestConfigTable8_2_1_2_2     - PUSCH test configurations - Type A, 10 MHz channel bandwidth, 15 kHz SCS.
+%   TestConfigTable8_2_1_2_3     - PUSCH test configurations - Type A, 20 MHz channel bandwidth, 15 kHz SCS.
+%   TestConfigTable8_2_1_2_4     - PUSCH test configurations - Type A, 10 MHz channel bandwidth, 30 kHz SCS.
+%   TestConfigTable8_2_1_2_5     - PUSCH test configurations - Type A, 20 MHz channel bandwidth, 30 kHz SCS.
+%   TestConfigTable8_2_1_2_6     - PUSCH test configurations - Type A, 40 MHz channel bandwidth, 30 kHz SCS.
+%   TestConfigTable8_2_1_2_7     - PUSCH test configurations - Type A, 100 MHz channel bandwidth, 30 kHz SCS.
+%   TestConfigTable8_2_2_2_x     - PUSCH test configurations - Type A, transform precoding enabled.
+%   TestConfigTable11_2_2_1_2_3  - PUSCH test configurations - Type B, 50 MHz channel bandwidth, 120 kHz SCS.
+%   TestConfigCustom             - PUSCH test configurations - Type A, custom cases.
+%   NumLayers                    - Number of transmission layers (1 to 4, only for custom tests).
 %
 %   CheckPUSCHConformance Methods (Test, TestTags = {'conformance'}), each running
 %      a the tests from the corresponding configuration table:
@@ -33,6 +35,7 @@
 %   checkPUSCHconformanceTable8_2_1_2_6
 %   checkPUSCHconformanceTable8_2_1_2_7
 %   checkPUSCHconformanceTable8_2_2_2_x
+%   checkPUSCHconformanceTable11_2_2_1_2_3
 %   checkPUSCHconformanceCustom
 %
 %   Example
@@ -112,6 +115,12 @@ classdef CheckPUSCHConformance < matlab.unittest.TestCase
         %   the FRC and the target SNR.
         %   Cases from TS38.104 V15.19.0 Tables 8.2.2.2-1 and 8.2.2.2-2.
         TestConfigTable8_2_2_2_x = CheckPUSCHConformance.createTestConfigTable8_2_2_2_x()
+        %PUSCH test configurations - Type B, 50 MHz channel bandwidth, 120 kHz SCS.
+        %   Defines, for each test, the DelayProfile, the DelaySpread and the
+        %   MaximumDopplerShift of the channel, the number of Rx antennas NRxAnts,
+        %   the FRC and the target SNR.
+        %   Cases from TS38.104 V15.19.0 Table 11.2.2.1.2-3.
+        TestConfigTable11_2_2_1_2_3 = CheckPUSCHConformance.createTestConfigTable11_2_2_1_2_3()
         %PUSCH test configurations - Type A, custom cases.
         %   Defines, for each test, the DelayProfile, the DelaySpread and the
         %   MaximumDopplerShift of the channel, the number of Rx antennas NRxAnts,
@@ -196,6 +205,13 @@ classdef CheckPUSCHConformance < matlab.unittest.TestCase
             checkPUSCHconformance(obj, TestConfigTable8_2_2_2_x);
         end
 
+        function checkPUSCHconformanceTable11_2_2_1_2_3(obj, TestConfigTable11_2_2_1_2_3)
+        %Verifies that the target throughput is achieved for the given PUSCH configuration.
+        %   Tests specified in TS38.104 V15.19.0 Table 11.2.2.1.2-3.
+
+            checkPUSCHconformance(obj, TestConfigTable11_2_2_1_2_3);
+        end
+
         function checkPUSCHconformanceCustom(obj, TestConfigCustom, NumLayers)
         %Verifies that the target throughput is achieved for the given PUSCH configuration.
         %   Custom test cases.
@@ -274,7 +290,21 @@ classdef CheckPUSCHConformance < matlab.unittest.TestCase
             pp.NRxAnts = TestConfig.NRxAnts;
             pp.NumLayers = TestConfig.NTxAnts;
             pp.DelayProfile = TestConfig.DelayProfile;
-            pp.DelaySpread = TestConfig.DelaySpread;
+            if isfield(TestConfig, 'DelaySpread')
+                pp.DelaySpread = TestConfig.DelaySpread;
+            end
+            if (frc.SubcarrierSpacing ~= 120)
+                pp.MappingType = 'A';
+                pp.SymbolAllocation = [0, 14];
+            else
+                pp.MappingType = 'B';
+                pp.SymbolAllocation = [0, 10];
+            end
+            if isfield(TestConfig, 'DMRSAdditionalPosition')
+                pp.DMRSAdditionalPosition = TestConfig.DMRSAdditionalPosition;
+            else
+                pp.DMRSAdditionalPosition = 1;
+            end
             pp.MaximumDopplerShift = TestConfig.MaximumDopplerShift;
             pp.FadingTimeEvolution = 'Slot independent';
             pp.PerfectChannelEstimator = false;
@@ -295,8 +325,8 @@ classdef CheckPUSCHConformance < matlab.unittest.TestCase
             % Restore warnings.
             warning(puschblerwarn);
 
-            mu = frc.SubcarrierSpacing / 15 - 1;
-            nFrames = 400 / 2^mu;
+            mu = log2(frc.SubcarrierSpacing / 15);
+            nFrames = 480 / 2^mu;
             try
                 pp(TestConfig.SNR, nFrames);
             catch ME
@@ -348,6 +378,7 @@ classdef CheckPUSCHConformance < matlab.unittest.TestCase
         testConfig = createTestConfigTable8_2_1_2_6()
         testConfig = createTestConfigTable8_2_1_2_7()
         testConfig = createTestConfigTable8_2_2_2_x()
+        testConfig = createTestConfigTable11_2_2_1_2_3()
         testConfig = createTestConfigCustom()
     end % of methods (Access=private, Static)
 end % of classdef CheckConformance < matlab.unittest.TestCase
