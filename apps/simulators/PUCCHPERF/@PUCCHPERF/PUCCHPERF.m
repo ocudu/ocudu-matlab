@@ -105,7 +105,7 @@ classdef PUCCHPERF < matlab.System
         %Bandwidth in number of resource blocks.
         NSizeGrid (1, 1) double {mustBeInteger, mustBePositive} = 25
         %Subcarrier spacing in kHz (15, 30).
-        SubcarrierSpacing (1, 1) double {mustBeMember(SubcarrierSpacing, [15, 30])} = 15
+        SubcarrierSpacing (1, 1) double {mustBeMember(SubcarrierSpacing, [15, 30, 120])} = 15
         %Cell identity.
         NCellID (1, 1) double {mustBeReal, mustBeInteger, mustBeInRange(NCellID, 0, 1007)} = 1
         %PUCCH allocated PRBs.
@@ -135,7 +135,7 @@ classdef PUCCHPERF < matlab.System
         %Number of CSI Part 2 bits.
         NumCSI2Bits double {mustBeInteger, mustBeInRange(NumCSI2Bits, 0, 1706)} = 0
         %Channel delay profile ('AWGN'(no delay), 'TDL-C'(rural scenario), 'TDLC300' (simplified rural scenario)).
-        DelayProfile (1, :) char {mustBeMember(DelayProfile, {'AWGN', 'TDL-C', 'TDLC300'})} = 'AWGN'
+        DelayProfile (1, :) char {mustBeMember(DelayProfile, {'AWGN', 'TDL-C', 'TDLA30', 'TDLC300'})} = 'AWGN'
         %Delay spread in seconds (TDL-C delay profile only).
         DelaySpread (1, 1) double {mustBeReal, mustBeNonnegative} = 300e-9
         %Maximum Doppler shift in hertz (TDL-C and TDLC300 delay profile only).
