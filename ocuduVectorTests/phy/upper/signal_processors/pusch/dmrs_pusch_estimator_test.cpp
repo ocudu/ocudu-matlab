@@ -200,31 +200,22 @@ TEST_P(DmrsPuschEstimatorFixture, Creation)
   ASSERT_TRUE(notifier.has_notified()) << "The estimator notifier was not called.";
   const dmrs_pusch_estimator_results& results = notifier.get_results();
 
-  unsigned             nof_re = config.rb_mask.size() * NOF_SUBCARRIERS_PER_RB;
+  unsigned             first_re      = config.rb_mask.find_lowest() * NOF_SUBCARRIERS_PER_RB;
+  unsigned             nof_re        = config.rb_mask.size() * NOF_SUBCARRIERS_PER_RB;
+  unsigned             nof_re_active = config.rb_mask.count() * NOF_SUBCARRIERS_PER_RB;
   std::vector<cbf16_t> symbol_est(nof_re, {0, 0});
-  std::vector<cbf16_t> path_est(nof_re * config.nof_symbols, {0, 0});
   for (unsigned i_port = 0; i_port != ch_estimate_dims.nof_rx_ports; ++i_port) {
     for (unsigned i_layer = 0; i_layer != ch_estimate_dims.nof_tx_layers; ++i_layer) {
-      // Get the channel estimates for the entire rx_port - tx_layer path.
-      results.get_path_ch_estimate(path_est, i_port, i_layer);
-      span<const cbf16_t> path_est_span(path_est);
-
       for (unsigned i_symbol = config.first_symbol; i_symbol != ch_estimate_dims.nof_symbols; ++i_symbol) {
+        span<cbf16_t> estimate_values = span<cbf16_t>(symbol_est).subspan(first_re, nof_re_active);
         // Get the channel estimates for the current OFDM symbol.
-        results.get_symbol_ch_estimate(symbol_est, i_symbol, i_port, i_layer);
-
-        // Isolate the current ODFM symbol from the path view.
-        span<const cbf16_t> path_symbol = path_est_span.first(nof_re);
-        path_est_span                   = path_est_span.last(path_est_span.size() - nof_re);
+        results.get_symbol_ch_estimate(estimate_values, i_symbol, i_port, i_layer);
 
         if (i_port != i_layer) {
           ASSERT_TRUE(std::all_of(symbol_est.begin(), symbol_est.end(), [](cbf16_t a) {
             return (a.real.value() == 0) && (a.imag.value() == 0);
           })) << "REs should be zero on cross paths.";
 
-          ASSERT_TRUE(std::all_of(path_symbol.begin(), path_symbol.end(), [](cbf16_t a) {
-            return (a.real.value() == 0) && (a.imag.value() == 0);
-          })) << "REs should be zero on cross paths (path version).";
           continue;
         }
 
@@ -246,18 +237,6 @@ TEST_P(DmrsPuschEstimatorFixture, Creation)
         is_ok = true;
         config.rb_mask.for_each(0, config.rb_mask.size(), check_symbol, false);
         ASSERT_TRUE(is_ok) << "All estimates in non-allocated REs should be 0.";
-
-        // Check the symbol as part of the retrieved path.
-        symbol_span = path_symbol;
-        value       = cf_t(1, 0);
-        is_ok       = true;
-        config.rb_mask.for_each(0, config.rb_mask.size(), check_symbol);
-        ASSERT_TRUE(is_ok) << "All estimates in allocated REs should be 1 (path version).";
-
-        value = cf_t(0, 0);
-        is_ok = true;
-        config.rb_mask.for_each(0, config.rb_mask.size(), check_symbol, false);
-        ASSERT_TRUE(is_ok) << "All estimates in non-allocated REs should be 0 (path version).";
       }
     }
   }
