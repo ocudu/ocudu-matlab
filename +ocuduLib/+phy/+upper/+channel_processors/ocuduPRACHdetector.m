@@ -1,12 +1,15 @@
 %ocuduPRACHdetector Detects the 5G NR PRACH preamble in a PRACH occasion.
-%   [INDICES, OFFSETS, NMETRICS, POWERS, RSSI] = ocuduPRACHdetector(CARRIER, PRACH, GRID, IGNORECFO)
+%   [INDICES, OFFSETS, NMETRICS, POWERS, RSSI] = ocuduPRACHdetector(CARRIER, PRACH, GRID)
 %   detects the 5G NR PRACH preambles in GRID. GRID is a matrix (one column per
 %   RX antenna port) with the baseband symbols corresponding to one PRACH occasion,
 %   that is it may contain a number of copies of the preamble depending on the
 %   format. CARRIER is an nrCarrierConfig object with the carrier configuration.
 %   PRACH is an nrPRACHConfig object with the PRACH configuration (the
-%   PreambleIndex field is ignored). The boolean flag IGNORECFO tells the detector
-%   whether to assume that the signal is affected by CFO (false) or not (true).
+%   PreambleIndex field is ignored).
+%
+%   [...] = ocuduPRACHdetector(CARRIER, PRACH, GRID, IGNORECFO, THRESHOLD) also
+%   allows the user to specify an IGNORECFO flag and a detection THRESHOLD different
+%   from the default ones for the given configuration.
 %
 %   The function returns INDICES and OFFSETS, that is a 64-entry boolean mask of
 %   the detected Preamble indices and the corresponding offsets in microseconds,
@@ -21,7 +24,7 @@
 %   the distribution.
 %
 
-function [indices, offsets, normMetrics, preamblePowers, rssi] = ocuduPRACHdetector(carrier, prachConf, grid, ignoreCFO, newThreshold)
+function [indices, offsets, normMetrics, preamblePowers, rssi] = ocuduPRACHdetector(carrier, prachConf, grid, newIgnoreCFO, newThreshold)
     assert(prachConf.RestrictedSet == "UnrestrictedSet", "ocudu_matlab:ocuduPRACHdetector",...
         "Only unrestricted sets are supported.");
 
@@ -39,22 +42,24 @@ function [indices, offsets, normMetrics, preamblePowers, rssi] = ocuduPRACHdetec
     LRA = prach.LRA;
     halfLRA = (LRA - 1) / 2;
 
-    % Rearrange signal to have a single replica per column. If "ignoreCFO", the
-    % replicas from the same antennas are combined together.
-    preambles = preprocess(grid, LRA, ignoreCFO);
-
     nAntennas = size(grid, 2);
-    nReplicas = size(preambles, 2);
 
     % Set the margin around the detection window (useful for computing reference
     % power).
     % Detection threshold. The detector is inspired by the GLRT test, but it's
     % not exactly that one - threshold must be tuned by simulation.
-    [winMargin, threshold] = getThreshold(prach, nAntennas, carrier.SubcarrierSpacing, ignoreCFO);
+    [winMargin, threshold, ignoreCFO] = getThreshold(prach, nAntennas, carrier.SubcarrierSpacing);
 
     if ((nargin == 5) && isfinite(newThreshold))
         threshold = newThreshold;
+        ignoreCFO = newIgnoreCFO;
     end
+
+    % Rearrange signal to have a single replica per column. If "ignoreCFO", the
+    % replicas from the same antennas are combined together.
+    preambles = preprocess(grid, LRA, ignoreCFO);
+
+    nReplicas = size(preambles, 2);
 
     Nfft = fftsize(prach.Format);
 
@@ -266,7 +271,7 @@ end
 
 % Returns the window margin and the detection threshold for the given PRACH configuration,
 % number of antennas, subcarrier spacing, and CFO flag.
-function [winMargin, threshold] = getThreshold(prach, nAntennas, scs, ignoreCFO)
+function [winMargin, threshold, ignoreCFO] = getThreshold(prach, nAntennas, scs)
     % assert(nAntennas <= 2, 'ocudu_matlab:ocuduPRACHdetector', 'Only 2 antennas supported at the moment.');
 
     Configurations = [ ...
@@ -1820,6 +1825,12 @@ function [winMargin, threshold] = getThreshold(prach, nAntennas, scs, ignoreCFO)
          % For long PRACH formats, the PUSCH SCS is not important, set it to 15.
          scs = 15;
      end
+
+     % We can ignore the effect of the CFO and combine the preamble symbols in FR1, except for long format 2.
+     % Conversely, we must take CFO into account (and process symbols separately) in FR2 or when using
+     % long format 2.
+     ignoreCFO = true; % ((scs ~= 120) && ~strcmp(prach.Format, '2'));
+
      NCS = getNCS(prach);
      confString = sprintf("Ant%d_SCS%d_F%s_NCS%d_noCFO%d", nAntennas, scs, prach.Format, NCS, ignoreCFO);
 

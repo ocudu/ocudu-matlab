@@ -261,7 +261,7 @@ classdef ocuduPRACHDetectorUnittest < ocuduTest.ocuduBlockUnittest
             % Generate PRACH grid.
             grid = obj.generatePRACH(nAntennas);
 
-            [ix, delays, normMetrics, preamblePowers, rssi] = ocuduLib.phy.upper.channel_processors.ocuduPRACHdetector(obj.carrier, obj.prach, grid, true);
+            [ix, delays, normMetrics, preamblePowers, rssi] = ocuduLib.phy.upper.channel_processors.ocuduPRACHdetector(obj.carrier, obj.prach, grid);
             pp = obj.prach.PreambleIndex + 1;
             obj.assertTrue(ix(pp), sprintf('Transmitted preamble %d not detected.', pp - 1));
             if ~strcmp(DuplexMode, 'TDD-FR2')
