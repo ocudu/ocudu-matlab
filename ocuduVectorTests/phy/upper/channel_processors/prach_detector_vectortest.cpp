@@ -176,7 +176,7 @@ TEST_P(PrachDetectorFixture, FromVector)
   ASSERT_NEAR(expected_result.rssi_dB, result.rssi_dB, std::abs(result.rssi_dB) / 100);
 
   // Measured preamble power should be around 0 dB: allow two dB tolerance.
-  ASSERT_NEAR(expected_result.preambles.front().preamble_power_dB, result.preambles.front().preamble_power_dB, 0.3F);
+  ASSERT_NEAR(expected_result.preambles.front().preamble_power_dB, preamble_indication.preamble_power_dB, 0.3F);
 }
 
 // Creates test suite that combines all possible parameters. Denote zero_correlation_zone exceeds the maximum by one.
