@@ -12,8 +12,14 @@ Nightly:
   ref: main
   active: true
 
-Weekly:
-  cron: "00 6 * * 6"
+WeeklyEven:
+  cron: "00 6 * * sat%2"
+  cron_timezone: "Europe/Madrid"
+  ref: main
+  active: true
+
+WeeklyOdd:
+  cron: "00 6 * * sat%2+1"
   cron_timezone: "Europe/Madrid"
   ref: main
   active: true
