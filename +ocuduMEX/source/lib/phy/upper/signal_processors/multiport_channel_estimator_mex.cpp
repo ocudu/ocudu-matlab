@@ -229,8 +229,16 @@ void MexFunction::method_step(ArgumentList outputs, ArgumentList inputs)
       for (unsigned i_symbol = cfg.first_symbol, last_symbol = cfg.first_symbol + cfg.nof_symbols;
            i_symbol != last_symbol;
            ++i_symbol) {
-        ch_est_results.get_symbol_ch_estimate(
-            ch_estimate.get_symbol_ch_estimate(i_symbol, i_port, i_layer), i_symbol, i_layer);
+        const port_channel_estimator::layer_dmrs_pattern& dmrs_pattern_layer = cfg.dmrs_pattern[i_layer];
+        const crb_bitmap& rb_mask  = ((dmrs_pattern_layer.hopping_symbol_index.has_value()) &&
+                                     (i_symbol >= *dmrs_pattern_layer.hopping_symbol_index))
+                                         ? dmrs_pattern_layer.rb_mask2
+                                         : dmrs_pattern_layer.rb_mask;
+        unsigned          first_re = rb_mask.find_lowest() * NOF_SUBCARRIERS_PER_RB;
+        unsigned          nof_re   = rb_mask.count() * NOF_SUBCARRIERS_PER_RB;
+        span<cbf16_t>     estimate_values =
+            ch_estimate.get_symbol_ch_estimate(i_symbol, 0, i_layer).subspan(first_re, nof_re);
+        ch_est_results.get_symbol_ch_estimate(estimate_values, i_symbol, i_layer);
       }
       ch_estimate.set_rsrp(ch_est_results.get_rsrp(i_layer), i_port, i_layer);
       ch_estimate.set_time_alignment(ch_est_results.get_time_alignment(), i_port, i_layer);
