@@ -237,7 +237,7 @@ void MexFunction::method_step(ArgumentList outputs, ArgumentList inputs)
         unsigned          first_re = rb_mask.find_lowest() * NOF_SUBCARRIERS_PER_RB;
         unsigned          nof_re   = rb_mask.count() * NOF_SUBCARRIERS_PER_RB;
         span<cbf16_t>     estimate_values =
-            ch_estimate.get_symbol_ch_estimate(i_symbol, 0, i_layer).subspan(first_re, nof_re);
+            ch_estimate.get_symbol_ch_estimate(i_symbol, i_port, i_layer).subspan(first_re, nof_re);
         ch_est_results.get_symbol_ch_estimate(estimate_values, i_symbol, i_layer);
       }
       ch_estimate.set_rsrp(ch_est_results.get_rsrp(i_layer), i_port, i_layer);
