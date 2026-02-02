@@ -94,7 +94,14 @@ private:
 class dmrs_pusch_estimator_results_mock : public dmrs_pusch_estimator_results
 {
 public:
-  dmrs_pusch_estimator_results_mock(const channel_estimate& ch_est_) : ch_est(ch_est_) {}
+  dmrs_pusch_estimator_results_mock(const channel_estimate& ch_est_, const crb_bitmap& rb_mask_) :
+    ch_est(ch_est_), rb_mask(rb_mask_)
+  {
+    ocudu_assert(ch_est.size().nof_prb == rb_mask.size(),
+                 "Channel estimate size {} and RB mask size do not match.",
+                 ch_est.size().nof_prb,
+                 rb_mask.size());
+  }
 
   float get_noise_variance(unsigned rx_port) const override { return ch_est.get_noise_variance(rx_port); }
 
@@ -134,17 +141,22 @@ public:
                               unsigned                                   tx_layer,
                               const bounded_bitset<MAX_NOF_SUBCARRIERS>& re_mask) const override
   {
-    span<const cbf16_t> c = ch_est.get_symbol_ch_estimate(i_symbol, rx_port, tx_layer);
-    ocudu_assert(c.size() == re_mask.size(), "Wrong RE mask size {}, expected {}.", re_mask.size(), c.size());
+    span<const cbf16_t> c                  = ch_est.get_symbol_ch_estimate(i_symbol, rx_port, tx_layer);
+    unsigned            expected_mask_size = rb_mask.count() * NOF_SUBCARRIERS_PER_RB;
+    ocudu_assert(re_mask.size() == expected_mask_size,
+                 "Wrong RE mask size {}, expected {}.",
+                 re_mask.size(),
+                 expected_mask_size);
     ocudu_assert(estimates.size() == re_mask.count(),
                  "The output size {} does not match the number {} of active REs in the mask.",
                  estimates.size(),
                  re_mask.count());
 
-    span<cbf16_t> tmp = estimates;
-    re_mask.for_each(0, re_mask.size(), [&c, &tmp](unsigned i_re) {
+    span<cbf16_t>       tmp      = estimates;
+    span<const cbf16_t> c_useful = c.subspan(rb_mask.find_lowest() * NOF_SUBCARRIERS_PER_RB, expected_mask_size);
+    re_mask.for_each(0, re_mask.size(), [&c_useful, &tmp](unsigned i_re) {
       // Copy RE.
-      tmp.front() = c[i_re];
+      tmp.front() = c_useful[i_re];
 
       // Advance buffer.
       tmp = tmp.last(tmp.size() - 1);
@@ -160,6 +172,7 @@ public:
 
 private:
   const channel_estimate& ch_est;
+  const crb_bitmap&       rb_mask;
 };
 
 } // namespace
@@ -315,7 +328,7 @@ void MexFunction::method_step(ArgumentList outputs, ArgumentList inputs)
     }
   }
 
-  dmrs_pusch_estimator_results_mock est_results(chan_estimates);
+  dmrs_pusch_estimator_results_mock est_results(chan_estimates, demodulator_config.rb_mask);
 
   // Compute expected soft output bit number.
   unsigned nof_expected_soft_output_bits = in_dem_cfg["NumOutputLLR"][0];
