@@ -237,6 +237,28 @@ TEST_P(DmrsPuschEstimatorFixture, Creation)
         is_ok = true;
         config.rb_mask.for_each(0, config.rb_mask.size(), check_symbol, false);
         ASSERT_TRUE(is_ok) << "All estimates in non-allocated REs should be 0.";
+
+        // Get the channel estimates for the current OFDM symbol according to a mask.
+        re_prb_mask active_re_per_prb_dmrs = config.get_dmrs_type().get_dmrs_prb_mask(2);
+        crb_bitmap  rb_mask_useful =
+            config.rb_mask.slice(config.rb_mask.find_lowest(), config.rb_mask.find_highest() + 1);
+        bounded_bitset<MAX_NOF_SUBCARRIERS> re_mask_dmrs =
+            rb_mask_useful.kronecker_product<NOF_SUBCARRIERS_PER_RB>(active_re_per_prb_dmrs);
+
+        static_vector<cbf16_t, MAX_NOF_SUBCARRIERS> estimate_values_mask(re_mask_dmrs.count());
+        results.get_symbol_ch_estimate(estimate_values_mask, i_symbol, i_port, i_layer, re_mask_dmrs);
+
+        // Check the masked retrieve symbol.
+        value                             = cf_t(1, 0);
+        is_ok                             = true;
+        span<cbf16_t> span_mask           = estimate_values_mask;
+        auto          check_masked_symbol = [&span_mask, &estimate_values, &is_ok](unsigned i_re) {
+          is_ok     = is_ok && (std::abs(to_cf(span_mask.front()) - to_cf(estimate_values[i_re])) < tolerance);
+          span_mask = span_mask.last(span_mask.size() - 1);
+        };
+        re_mask_dmrs.for_each(0, re_mask_dmrs.size(), check_masked_symbol);
+        ASSERT_TRUE(span_mask.empty()) << "Not all estimates in the masked case have been checked.";
+        ASSERT_TRUE(is_ok) << "Not all masked estimates are correct.";
       }
     }
   }
