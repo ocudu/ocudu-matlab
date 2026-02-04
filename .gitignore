@@ -9,3 +9,5 @@
 # clang-tidy and clang-format inherited from OCUDU
 /ocuduVectorTests/.clang-format
 /ocuduVectorTests/.clang-tidy
+# OCUDU binary test vectors.
+/ocuduVectorTests/**/*.tar.gz
