@@ -9,9 +9,9 @@
  */
 
 #include "prach_detector_test_data.h"
-#include "ocudu/phy/lower/modulation/modulation_factories.h"
-#include "ocudu/phy/upper/channel_processors/channel_processor_factories.h"
-#include "ocudu/phy/upper/channel_processors/channel_processor_formatters.h"
+#include "ocudu/phy/generic_functions/generic_functions_factories.h"
+#include "ocudu/phy/upper/channel_processors/prach/factories.h"
+#include "ocudu/phy/upper/channel_processors/prach/formatters.h"
 #include "ocudu/ran/prach/prach_preamble_information.h"
 #include "fmt/ostream.h"
 #include <gtest/gtest.h>

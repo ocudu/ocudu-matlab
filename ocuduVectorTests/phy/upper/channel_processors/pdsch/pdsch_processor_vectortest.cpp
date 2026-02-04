@@ -11,10 +11,9 @@
 #include "pdsch_processor_test_data.h"
 #include "pdsch_processor_test_doubles.h"
 #include "ocudu/phy/support/support_factories.h"
-#include "ocudu/phy/upper/channel_processors/channel_processor_formatters.h"
 #include "ocudu/phy/upper/channel_processors/pdsch/factories.h"
 #include "ocudu/phy/upper/channel_processors/pdsch/formatters.h"
-#include "ocudu/ran/pdsch/pdsch_constants.h"
+#include "ocudu/phy/upper/channel_processors/prach/formatters.h"
 #include "ocudu/support/executors/task_worker_pool.h"
 #ifdef HWACC_PDSCH_ENABLED
 #include "ocudu/hal/dpdk/bbdev/bbdev_acc.h"
@@ -29,6 +28,11 @@
 using namespace ocudu;
 
 static std::string eal_arguments = "pdsch_processor_vectortest";
+
+// Number of concurrent threads.
+static constexpr unsigned NOF_CONCURRENT_THREADS = 16;
+static constexpr unsigned CB_BATCH_LENGTH        = 4;
+
 #ifdef HWACC_PDSCH_ENABLED
 static bool                            skip_hwacc_test = false;
 static std::unique_ptr<dpdk::dpdk_eal> dpdk_interface  = nullptr;
@@ -78,10 +82,6 @@ std::ostream& operator<<(std::ostream& os, const test_case_t& test_case)
 namespace {
 
 using PdschProcessorParams = std::tuple<std::string, test_case_t>;
-
-// Number of concurrent threads.
-static constexpr unsigned NOF_CONCURRENT_THREADS = 16;
-static constexpr unsigned CB_BATCH_LENGTH        = 4;
 
 class PdschProcessorFixture : public ::testing::TestWithParam<PdschProcessorParams>
 {

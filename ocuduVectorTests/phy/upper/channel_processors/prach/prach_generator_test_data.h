@@ -13,7 +13,7 @@
 // This file was generated using the following MATLAB class on 11-12-2025 (seed 0):
 //   + "ocuduPRACHGeneratorUnittest.m"
 
-#include "ocudu/phy/upper/channel_processors/prach_generator.h"
+#include "ocudu/phy/upper/channel_processors/prach/prach_generator.h"
 #include "ocudu/support/file_vector.h"
 
 namespace ocudu {

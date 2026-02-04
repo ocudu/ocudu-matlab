@@ -11,8 +11,6 @@
 #include "pucch_demodulator_format2_test_data.h"
 #include "ocudu/ocuduvec/conversion.h"
 #include "ocudu/phy/antenna_ports.h"
-#include "ocudu/phy/support/support_factories.h"
-#include "ocudu/phy/upper/channel_processors/channel_processor_factories.h"
 #include "ocudu/phy/upper/channel_processors/pucch/factories.h"
 #include "ocudu/phy/upper/channel_processors/pucch/pucch_demodulator.h"
 #include "ocudu/phy/upper/equalization/equalization_factories.h"

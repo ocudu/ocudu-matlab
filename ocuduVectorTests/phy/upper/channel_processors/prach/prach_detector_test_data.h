@@ -14,7 +14,7 @@
 //   + "ocuduPRACHDetectorUnittest.m"
 
 #include "prach_buffer_test_doubles.h"
-#include "ocudu/phy/upper/channel_processors/prach_detector.h"
+#include "ocudu/phy/upper/channel_processors/prach/prach_detector.h"
 #include "ocudu/support/file_tensor.h"
 
 namespace ocudu {

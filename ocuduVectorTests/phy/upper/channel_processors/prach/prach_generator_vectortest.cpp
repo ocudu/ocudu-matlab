@@ -9,10 +9,7 @@
  */
 
 #include "prach_generator_test_data.h"
-#include "ocudu/phy/lower/modulation/modulation_factories.h"
-#include "ocudu/phy/support/support_factories.h"
-#include "ocudu/phy/upper/channel_processors/channel_processor_factories.h"
-#include "ocudu/ran/prach/prach_preamble_information.h"
+#include "ocudu/phy/upper/channel_processors/prach/factories.h"
 #include "fmt/ostream.h"
 #include <gtest/gtest.h>
 

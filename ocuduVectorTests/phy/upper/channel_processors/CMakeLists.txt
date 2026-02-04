@@ -12,17 +12,4 @@ add_subdirectory(pucch)
 add_subdirectory(pusch)
 add_subdirectory(ssb)
 add_subdirectory(uci)
-
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test_data)
-set(TEST_DATA_DIR ${CMAKE_CURRENT_BINARY_DIR}/test_data)
-
-set_directory_properties(PROPERTIES LABELS "phy")
-
-add_executable(prach_detector_vectortest prach_detector_vectortest.cpp)
-target_link_libraries(prach_detector_vectortest ocudu_channel_processors ocudu_dft ocudu_phy_support ocudulog gtest gtest_main)
-target_include_directories(prach_detector_vectortest PRIVATE ${CMAKE_SOURCE_DIR}/tests/unittests/phy/support)
-add_test_vector(prach_detector_vectortest prach_detector_test_data.tar.gz "")
-
-add_executable(prach_generator_vectortest prach_generator_vectortest.cpp)
-target_link_libraries(prach_generator_vectortest ocudu_channel_processors ocudu_dft ocudulog gtest gtest_main)
-add_test_vector(prach_generator_vectortest prach_generator_test_data.tar.gz "")
+add_subdirectory(prach)
