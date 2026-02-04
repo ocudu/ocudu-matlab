@@ -15,9 +15,8 @@
 
 #include "ocudu_matlab/ocudu_mex_dispatcher.h"
 #include "ocudu/phy/generic_functions/generic_functions_factories.h"
-#include "ocudu/phy/support/support_factories.h"
-#include "ocudu/phy/upper/channel_processors/channel_processor_factories.h"
-#include "ocudu/phy/upper/channel_processors/prach_detector.h"
+#include "ocudu/phy/upper/channel_processors/prach/factories.h"
+#include "ocudu/phy/upper/channel_processors/prach/prach_detector.h"
 
 /// \brief Factory method for a PRACH detector.
 ///

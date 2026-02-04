@@ -13,7 +13,8 @@ matlab_add_mex(
 )
 
 target_link_libraries(prach_detector_mex
-        ocudu::ocudu_channel_processors
+        ocudu::ocudu_prach_detector
+        ocudu::ocudu_phy_support
         ocudu::ocudu_dft)
 
 install(TARGETS prach_detector_mex

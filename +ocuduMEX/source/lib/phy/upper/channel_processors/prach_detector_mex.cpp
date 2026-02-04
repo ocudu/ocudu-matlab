@@ -10,7 +10,8 @@
 
 #include "prach_detector_mex.h"
 #include "ocudu_matlab/support/matlab_to_ocudu.h"
-#include "ocudu/phy/upper/channel_processors/channel_processor_formatters.h"
+#include "ocudu/phy/support/support_factories.h"
+#include "ocudu/phy/upper/channel_processors/prach/formatters.h"
 
 using matlab::mex::ArgumentList;
 using namespace matlab::data;
