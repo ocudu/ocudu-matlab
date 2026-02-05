@@ -52,7 +52,7 @@ classdef ocuduPRACHGeneratorUnittest < ocuduTest.ocuduBlockUnittest
         ocuduBlock = 'prach_generator'
 
         %Type of the tested block.
-        ocuduBlockType = 'phy/upper/channel_processors'
+        ocuduBlockType = 'phy/upper/channel_processors/prach'
     end
 
     properties (ClassSetupParameter)
@@ -90,7 +90,7 @@ classdef ocuduPRACHGeneratorUnittest < ocuduTest.ocuduBlockUnittest
         %addTestIncludesToHeaderFile Adds include directives to the test header file.
 
             fprintf(fileID, [...
-                '#include "ocudu/phy/upper/channel_processors/prach_generator.h"\n'...
+                '#include "ocudu/phy/upper/channel_processors/prach/prach_generator.h"\n'...
                 '#include "ocudu/support/file_vector.h"\n'...
                 ]);
         end

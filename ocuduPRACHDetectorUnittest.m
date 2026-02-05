@@ -55,7 +55,7 @@ classdef ocuduPRACHDetectorUnittest < ocuduTest.ocuduBlockUnittest
         ocuduBlock = 'prach_detector'
 
         %Type of the tested block.
-        ocuduBlockType = 'phy/upper/channel_processors'
+        ocuduBlockType = 'phy/upper/channel_processors/prach'
     end
 
     properties (ClassSetupParameter)
@@ -113,7 +113,7 @@ classdef ocuduPRACHDetectorUnittest < ocuduTest.ocuduBlockUnittest
 
             fprintf(fileID, [...
                 '#include "prach_buffer_test_doubles.h"\n'...
-                '#include "ocudu/phy/upper/channel_processors/prach_detector.h"\n'...
+                '#include "ocudu/phy/upper/channel_processors/prach/prach_detector.h"\n'...
                 '#include "ocudu/support/file_tensor.h"\n'...
                 ]);
         end
