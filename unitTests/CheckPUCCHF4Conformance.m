@@ -130,6 +130,7 @@ classdef CheckPUCCHF4Conformance < matlab.unittest.TestCase
             pp.FrequencyHopping = 'intraSlot';
             % The PUCCHPERF object takes care of picking the last PRBs in the second hop.
             pp.NumACKBits = 22;
+            pp.NRxAnts = TestConfig.NRxAnts;
             if (TestConfig.SubcarrierSpacing ~= 120)
                 pp.DelayProfile = 'TDLC300';
                 pp.MaximumDopplerShift = 100;
