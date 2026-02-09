@@ -179,8 +179,7 @@ build test vectors:
   rules:
     - if: $ON_MR
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Nightly/
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /WeeklyEven/
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /WeeklyOdd/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Weekly/
       variables:
         RANDOM_TESTS: "true"
   needs:
@@ -213,8 +212,8 @@ build and run vector unit tests:
   rules:
     - if: $ON_MR
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Nightly/
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /WeeklyEven/
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /WeeklyOdd/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Weekly/
+      when: always
       variables:
         COMPARE_HEADERS: "False"
   needs:
@@ -253,8 +252,7 @@ build ocudu with export on:
   rules:
     - if: $ON_MR
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Nightly/
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /WeeklyEven/
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /WeeklyOdd/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Weekly/
   script:
     - *download_ocudu
     - build_ocudu
@@ -321,8 +319,7 @@ build mex full tests:
     RANDOM_TESTS: "false"
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Nightly/
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /WeeklyEven/
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /WeeklyOdd/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Weekly/
       variables:
         RANDOM_TESTS: "true"
   script:
