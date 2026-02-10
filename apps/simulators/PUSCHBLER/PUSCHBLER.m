@@ -1282,9 +1282,10 @@ function validateNumLayers(simParameters)
 
     % When using OCUDU components (ImplementationType is 'ocudu' or 'both'), check that
     % the number of layers is supported by the available MEX libraries.
-    if (~strcmp(simParameters.ImplementationType, 'matlab') && (numlayers > ocuduMEX.phy.ocuduPUSCHCapabilitiesMEX().NumLayers))
+    maxLayers = 4;
+    if (~strcmp(simParameters.ImplementationType, 'matlab') && (numlayers > maxLayers))
         error(['The number of layers (%d) is larger than the number of layers supported ', ...
-              'by the current MEX version (%d).'], numlayers, ocuduMEX.phy.ocuduPUSCHCapabilitiesMEX().NumLayers);
+              'by the current MEX version (%d).'], numlayers, maxLayers);
     end
 
     % Display a warning if the maximum possible rank of the channel equals

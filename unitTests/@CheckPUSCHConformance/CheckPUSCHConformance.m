@@ -244,7 +244,7 @@ classdef CheckPUSCHConformance < matlab.unittest.TestCase
             % Avoid multi-layer tests if not supported by the MEX functions.
             % Note: The TS38.104 specifies the number of layers to be equal to the number
             % of Tx antennas.
-            maxLayers = ocuduMEX.phy.ocuduPUSCHCapabilitiesMEX().NumLayers;
+            maxLayers = 4;
             obj.assumeGreaterThanOrEqual(maxLayers, TestConfig.NTxAnts, ...
                 sprintf('The current MEX version does not support more than %d layers, requested %d.', maxLayers, TestConfig.NTxAnts));
 

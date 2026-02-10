@@ -469,13 +469,12 @@ classdef ocuduPUSCHDemodulatorUnittest < ocuduTest.ocuduBlockUnittest
         %   recovered soft bits are coinciding with those originally transmitted.
 
             import ocuduMEX.phy.ocuduPUSCHDemodulator
-            import ocuduMEX.phy.ocuduPUSCHCapabilitiesMEX
             import ocuduLib.phy.generic_functions.transform_precoding.ocuduTransformDeprecode
             import ocuduLib.phy.upper.channel_modulation.ocuduDemodulator
             import ocuduLib.phy.upper.equalization.ocuduChannelEqualizer
             import ocuduTest.helpers.approxbf16
 
-            mexLayers = ocuduPUSCHCapabilitiesMEX().NumLayers;
+            mexLayers = 4;
             obj.assumeGreaterThanOrEqual(mexLayers, ChannelSize(2), ...
                 sprintf('The current MEX version only works with max. %d layers, requested %d.', mexLayers, ChannelSize(2)));
 

@@ -53,20 +53,6 @@ install(TARGETS pusch_demodulator_mex
 )
 
 matlab_add_mex(
-    NAME ocuduPUSCHCapabilitiesMEX
-    SRC  pusch_processor_capabilities_mex.cpp
-    R2018a
-)
-
-target_link_libraries(ocuduPUSCHCapabilitiesMEX
-    ocudu::ocudu_pusch_processor
-)
-
-install(TARGETS ocuduPUSCHCapabilitiesMEX
-    DESTINATION "+phy"
-)
-
-matlab_add_mex(
     NAME pucch_processor_mex
     SRC  pucch_processor_mex.cpp
     R2018a
