@@ -57,7 +57,7 @@
 %   PreambleIndex           - Preamble index within cell of the target preamble (0...63).
 %   NCS                     - Cyclic shift width.
 %   PUSCHSubcarrierSpacing  - PUSCH subcarrier spacing in kHz (15, 30, 120).
-%   DelayProfile            - Channel delay profile ('AWGN', 'TDLC300').
+%   DelayProfile            - Channel delay profile ('AWGN', 'TDLA30', 'TDLC300', 'NTN-TDLA100').
 %   NumReceiveAntennas      - Number of receive antennas.
 %   FrequencyOffset         - Frequency offset in Hz.
 %   TimeErrorTolerance      - Time error tolerance in microseconds.
@@ -112,9 +112,9 @@ classdef PRACHPERF < matlab.System
         %PUSCH subcarrier spacing in kHz (15, 30, 120).
         %   Default is 15 kHz.
         PUSCHSubcarrierSpacing (1, 1) double {mustBeMember(PUSCHSubcarrierSpacing, [15 30 120])} = 15
-        %Channel delay profile ('AWGN', 'TDLA30', 'TDLC300').
+        %Channel delay profile ('AWGN', 'TDLA30', 'TDLC300', 'NTN-TDLA100').
         %   Default is 'AWGN'.
-        DelayProfile (1, :) char {mustBeMember(DelayProfile, {'AWGN', 'TDLA30', 'TDLC300'})} = 'AWGN'
+        DelayProfile (1, :) char {mustBeMember(DelayProfile, {'AWGN', 'TDLA30', 'TDLC300', 'NTN-TDLA100'})} = 'AWGN'
         %Number of receive antennas.
         %   Default is 2.
         NumReceiveAntennas (1, 1) double {mustBeInteger, mustBePositive, mustBeFinite} = 2
@@ -305,8 +305,12 @@ classdef PRACHPERF < matlab.System
                 obj.Channel.DelayProfile = obj.DelayProfile;      % Delay profile
                 if strcmp(obj.DelayProfile, 'TDLC300')
                     obj.Channel.MaximumDopplerShift = 100.0;          % Maximum Doppler shift in Hz
-                else % if strcmp(obj.DelayProfile, 'TDLA30')
+                elseif strcmp(obj.DelayProfile, 'TDLA30')
                     obj.Channel.MaximumDopplerShift = 300.0;          % Maximum Doppler shift in Hz
+                elseif strcmp(obj.DelayProfile, 'NTN-TDLA100')
+                    obj.Channel.MaximumDopplerShift = 200.0;          % Maximum Doppler shift in Hz
+                else
+                    error('ocudu_matlab:PRACHPERF', 'Unsupported delay profile %s.', obj.DelayProfile);
                 end
                 obj.Channel.SampleRate = obj.OFDMInfo.SampleRate; % Input signal sample rate in Hz
                 obj.Channel.MIMOCorrelation = "Low";              % MIMO correlation
