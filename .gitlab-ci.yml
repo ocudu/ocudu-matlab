@@ -286,7 +286,7 @@ build ocudu with export on:
       mkdir -p build
       cd build
       cmake -GNinja -DOCUDU_BINARY_DIR="$OCUDU_DIR/build" -DMatlab_ROOT_DIR="/opt/matlab/" ..
-      ninja install
+      ninja -j $(( $(nproc) - 2 )) install
     - cd ${CI_PROJECT_DIR}
   after_script:
     - |
