@@ -13,8 +13,12 @@
 %
 %   The function returns INDICES and OFFSETS, that is a 64-entry boolean mask of
 %   the detected Preamble indices and the corresponding offsets in microseconds,
-%   respectively. It also returns the valuse of the detecion metrics (normalized
+%   respectively. It also returns the values of the detection NMETRICS (normalized
 %   with respect to the detection threshold), the preamble POWERS and the signal RSSI (in dB).
+%   Note that, except NMETRICS, all outputs have finite values only at the positions
+%   where INDICES is true, while all other entries are set to NaN. Output NMETRICS,
+%   conversely, reports the normalized metrics computed for all the preamble indices,
+%   independently of whether they were successfully detected or not.
 
 %
 %   Copyright 2021-2026 Software Radio Systems Limited
@@ -137,12 +141,12 @@ function [indices, offsets, normMetrics, preamblePowers, rssi] = ocuduPRACHdetec
             % the adjacent window. We discard peaks that fall in the last
             % 1/5 of the detection window.
             [m, delay] = max(metricGlobal);
+            pos = (iSequence - 1) * info.nShifts + iWindow;
+            normMetrics(pos) = m / threshold;
             if (m > threshold) && (delay < length(metricGlobal) * 0.8)
-                pos = (iSequence - 1) * info.nShifts + iWindow;
                 indices(pos) = true;
                 d = delay + winStart - 1;
                 offsets(pos) = (d / Nfft - mod(LRA - info.WinStart(iWindow), LRA) / LRA) / prach.SubcarrierSpacing * 1000;
-                normMetrics(pos) = m / threshold;
                 powerNormalization = LRA * nReplicas;
                 preamblePowers(pos) = sum(winScalar(delay, :)) / powerNormalization;
             end

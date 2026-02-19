@@ -69,6 +69,8 @@
 %   ImplementationType      - PRACH detector implementation type('matlab', 'ocudu'). Default is 'matlab'.
 %   QuickSimulation         - Quick-simulation flag: set to true to stop each point
 %                             after 100 failures (tunable).
+%   ExplorationMode         - PRACH detector exploration-mode flag. Default is false.
+%   ExplorationFileName     - Exploration log file. Default is '/tmp/prachperf.bin'.
 %
 %   When the simulation is over, the object allows access to the following
 %   results properties (depending on TestType).
@@ -134,9 +136,16 @@ classdef PRACHPERF < matlab.System
         %Custom detection threshold (only for ImplementationType 'matlab').
         %   If NaN, the detector uses the default threshold value.
         DetectionThreshold (1, 1) double = NaN
-        %PRACH detector implementation type('matlab', 'ocudu'). Default is 'matlab'.
+        %PRACH detector implementation type ('matlab', 'ocudu'). Default is 'matlab'.
         %   Both implementations refer to the same algorithm, but the 'ocudu' one runs the MEX version.
         ImplementationType (1, :) char {mustBeMember(ImplementationType, {'matlab', 'ocudu'})} = 'matlab'
+        %PRACH detector exploration-mode flag. Default is false.
+        %   When true, PRACHPERF records all the computed detection metrics. Only applies when
+        %   ImplementationType == 'matlab'.
+        ExplorationMode (1, 1) logical = false
+        %Exploration log file. Default is '/tmp/prachperf.bin'.
+        %   Path for the binary file where the detection metrics in exploration mode are stored.
+        ExplorationFileName (1, :) char {mustBeNonzeroLengthText} = '/tmp/prachperf.bin'
     end
 
     properties (Access = private, Hidden)
@@ -150,9 +159,12 @@ classdef PRACHPERF < matlab.System
         Channel
 
         %Counter for the mean time offset estimation error.
-        TimingAvg;
+        TimingAvg
         %Counter for the variance of the time offset estimation error.
-        TimingVar;
+        TimingVar
+
+        %Binary log file for exploration mode.
+        ExplorationFile
     end % of properties (Access = private, Hidden)
 
     properties (Access = private, Dependent, Hidden)
@@ -232,6 +244,18 @@ classdef PRACHPERF < matlab.System
             if ((obj.PUSCHSubcarrierSpacing == 120) && strcmp(obj.DelayProfile, 'TDLC300'))
                 warning('Testing heavy fading channels in FR2 is not recommended.');
             end
+        end
+
+        function checkExplorationandImplementation(obj)
+            % Cannot run exploration mode with ImplementationType == 'ocudu'.
+            assert(~obj.ExplorationMode || strcmp(obj.ImplementationType, 'matlab'), ...
+                'Cannot run exploration mode with the MEX OCUDU detector.');
+        end
+
+        function checkExplorationFile(obj)
+            % The filename should poin to a valid foler.
+            p = fileparts(obj.ExplorationFileName);
+            assert(isfolder(p), 'The folder %s does not exist.', p);
         end
     end % of methods (Access = private)
 
@@ -324,6 +348,10 @@ classdef PRACHPERF < matlab.System
                 obj.Channel.NormalizeChannelOutputs = true;       % Normalize for receive antennas
             end
 
+            if obj.ExplorationMode
+                [obj.ExplorationFile, errmsg] = fopen(obj.ExplorationFileName, 'w');
+                assert(obj.ExplorationFile > 0, 'Cannot create file %s: %s', obj.ExplorationFileName, errmsg);
+            end
         end % of function setupImpl(obj)
 
         function validatePropertiesImpl(obj)
@@ -331,6 +359,8 @@ classdef PRACHPERF < matlab.System
             checkNCSandFormat(obj);
             checkSCSandFormat(obj);
             checkSCSandDelayProfile(obj);
+            checkExplorationandImplementation(obj);
+            checkExplorationFile(obj);
         end
 
         function stepImpl(obj, SNRdB, nPRACHOccasions)
@@ -461,8 +491,12 @@ classdef PRACHPERF < matlab.System
                         offsets(prachResults.PreambleIndices + 1) = prachResults.TimeAdvance * 1e6;
                     else
                         % PRACH detection for all cell preamble indices.
-                        [indicesMask, offsets] = ocuduLib.phy.upper.channel_processors.ocuduPRACHdetector(carrier, prachRx, ...
+                        [indicesMask, offsets, metrics] = ocuduLib.phy.upper.channel_processors.ocuduPRACHdetector(carrier, prachRx, ...
                             prachDemodulated, ignoreCFO, detectionThreshold);
+
+                        if obj.ExplorationMode
+                            fwrite(obj.ExplorationFile, metrics, 'double');
+                        end
                     end
 
                     % Test for preamble detection.
@@ -546,6 +580,10 @@ classdef PRACHPERF < matlab.System
                     flag = isempty(obj.TimingAvg) || ~obj.isDetectionTest || ~obj.isLocked;
                 case {'DetectionThreshold', 'IgnoreCFO'}
                     flag = ~strcmp(obj.ImplementationType, 'matlab');
+                case 'ExplorationMode'
+                    flag = ~strcmp(obj.ImplementationType, 'matlab');
+                case 'ExplorationFileName'
+                    flag = ~obj.ExplorationMode;
                 otherwise
                     flag = false;
             end
@@ -587,6 +625,11 @@ classdef PRACHPERF < matlab.System
         function releaseImpl(obj)
             % Release internal system objects.
             release(obj.Channel);
+
+            % Close the log file if in exploration mode.
+            if obj.ExplorationMode
+                fclose(obj.ExplorationFile);
+            end
         end
 
         function s= saveObjectImpl(obj)
