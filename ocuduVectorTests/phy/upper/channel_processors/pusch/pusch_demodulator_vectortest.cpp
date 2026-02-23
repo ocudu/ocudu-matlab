@@ -8,6 +8,7 @@
  *
  */
 
+#include "compare_sequences.h"
 #include "pusch_codeword_buffer_test_doubles.h"
 #include "pusch_demodulator_notifier_test_doubles.h"
 #include "pusch_demodulator_test_data.h"
@@ -21,7 +22,7 @@
 namespace ocudu {
 
 // Maximum allowed error.
-constexpr log_likelihood_ratio::value_type LLR_MAX_ERROR = 1;
+constexpr int LLR_MAX_ERROR = 1;
 
 std::ostream& operator<<(std::ostream& os, const test_case_t& test_case)
 {
@@ -53,14 +54,6 @@ std::ostream& operator<<(std::ostream& os, const bit_buffer& data)
 {
   fmt::print(os, "{}", data);
   return os;
-}
-
-bool operator==(span<const log_likelihood_ratio> lhs, span<const log_likelihood_ratio> rhs)
-{
-  return std::equal(
-      lhs.begin(), lhs.end(), rhs.begin(), rhs.end(), [](log_likelihood_ratio lhs_, log_likelihood_ratio rhs_) {
-        return log_likelihood_ratio::abs(lhs_ - rhs_) <= LLR_MAX_ERROR;
-      });
 }
 
 } // namespace ocudu
@@ -254,7 +247,12 @@ TEST_P(PuschDemodulatorFixture, PuschDemodulatorUnittest)
   ASSERT_NEAR(status.sinr_dB.value(), test_case.context.sinr_dB, 0.5);
 
   // Assert demodulated soft bits matches.
-  ASSERT_EQ(span<const log_likelihood_ratio>(codeword), codeword_buffer.get_data());
+  error_type<std::string> llrs_ok = compare_sequences(
+      span<const log_likelihood_ratio>(codeword),
+      codeword_buffer.get_data(),
+      [](log_likelihood_ratio a, log_likelihood_ratio b) { return std::abs(a.to_int() - b.to_int()); },
+      LLR_MAX_ERROR);
+  ASSERT_TRUE(llrs_ok.has_value()) << llrs_ok.error();
 
   // Assert descrambled soft bits matches.
   ASSERT_EQ(bit_buffer(scrambling_seq), codeword_buffer.get_scrambling_seq());

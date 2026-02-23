@@ -28,6 +28,7 @@ add_test_vector(pusch_decoder_test pusch_decoder_test_data.tar.gz "-e0 -i2")
 add_test(pusch_decoder_early_stop_test pusch_decoder_test -e1 -i6)
 
 add_executable(pusch_demodulator_vectortest pusch_demodulator_vectortest.cpp)
+target_include_directories(pusch_demodulator_vectortest PRIVATE ${OCUDU_VECTORTESTS_DIR}/support)
 target_link_libraries(pusch_demodulator_vectortest
         ocudu_pusch_demodulator
         ocudu_channel_equalizer
