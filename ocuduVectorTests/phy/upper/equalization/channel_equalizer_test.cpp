@@ -9,6 +9,8 @@
  */
 
 #include "channel_equalizer_test_data.h"
+#include "compare_sequences.h"
+#include "ocudu/adt/expected.h"
 #include "ocudu/ocuduvec/copy.h"
 #include "ocudu/ocuduvec/zero.h"
 #include "ocudu/phy/support/re_buffer.h"
@@ -49,33 +51,30 @@ std::ostream& operator<<(std::ostream& os, span<const float> data)
   return os;
 }
 
-bool operator==(span<const cf_t> left, span<const cf_t> right)
-{
-  return std::equal(left.begin(), left.end(), right.begin(), right.end(), [](cf_t value0, cf_t value1) {
-    // If one of the parts is not normal, then all parts must be equal.
-    if (!std::isnormal(value0.real()) || !std::isnormal(value0.imag()) || !std::isnormal(value1.real()) ||
-        !std::isnormal(value1.imag())) {
-      return value0 == value1;
-    }
-    float absolute_error = std::abs(value0 - value1);
-    float relative_error = absolute_error / std::abs(value0);
-    return (relative_error <= max_abs_eq_symbol_error);
-  });
-}
-
-bool operator==(span<const float> left, span<const float> right)
-{
-  return std::equal(left.begin(), left.end(), right.begin(), right.end(), [](float value0, float value1) {
-    if (std::isinf(value0) || std::isinf(value1) || std::isnan(value0) || std::isnan(value1)) {
-      return value0 == value1;
-    }
-    float absolute_error = std::abs(value0 - value1);
-    float relative_error = absolute_error / std::abs(value0);
-    return (relative_error <= max_abs_eq_nvar_error);
-  });
-}
-
 } // namespace ocudu
+
+static auto compare_eq_symbols = [](cf_t left, cf_t right) {
+  // If one of the inputs is not normal, the two inputs must be exactly the same. Return an error equal to infinity if
+  // not to make sure it's bigger than the tolerance.
+  if (!std::isnormal(left.real()) || !std::isnormal(left.imag()) || !std::isnormal(right.real()) ||
+      !std::isnormal(right.imag())) {
+    return (left == right) ? 0.0F : std::numeric_limits<float>::infinity();
+  }
+  float absolute_error = std::abs(left - right);
+  float relative_error = absolute_error / std::abs(left);
+  return relative_error;
+};
+
+static auto compare_nvars = [](float left, float right) {
+  // If one of the inputs is not normal, the two inputs must be exactly the same. Return an error equal to infinity if
+  // not to make sure it's bigger than the tolerance.
+  if (std::isinf(left) || std::isinf(right) || std::isnan(left) || std::isnan(right)) {
+    return (left == right) ? 0.0F : std::numeric_limits<float>::infinity();
+  }
+  float absolute_error = std::abs(left - right);
+  float relative_error = absolute_error / std::abs(left);
+  return relative_error;
+};
 
 namespace {
 
@@ -168,8 +167,17 @@ TEST_P(ChannelEqualizerFixture, ChannelEqualizerTest)
       eq_symbols_actual, eq_noise_vars_actual, rx_symbols, test_ch_estimates, test_noise_vars, t_case.context.scaling);
 
   // Assert results.
-  ASSERT_EQ(span<const cf_t>(eq_symbols_expected), span<const cf_t>(eq_symbols_actual));
-  ASSERT_EQ(span<const float>(eq_noise_vars_expected), span<const float>(eq_noise_vars_actual));
+  error_type<std::string> eq_symbols_ok = compare_sequences(span<const cf_t>(eq_symbols_actual),
+                                                            span<const cf_t>(eq_symbols_expected),
+                                                            compare_eq_symbols,
+                                                            max_abs_eq_symbol_error);
+  ASSERT_TRUE(eq_symbols_ok.has_value()) << eq_symbols_ok.error();
+
+  error_type<std::string> eq_noise_ok = compare_sequences(span<const float>(eq_noise_vars_actual),
+                                                          span<const float>(eq_noise_vars_expected),
+                                                          compare_nvars,
+                                                          max_abs_eq_nvar_error);
+  ASSERT_TRUE(eq_noise_ok.has_value()) << eq_noise_ok.error();
 }
 
 TEST_P(ChannelEqualizerFixture, ChannelEqualizerAllZeroNvar)
@@ -189,8 +197,17 @@ TEST_P(ChannelEqualizerFixture, ChannelEqualizerAllZeroNvar)
       eq_symbols_actual, eq_noise_vars_actual, rx_symbols, test_ch_estimates, test_noise_vars, t_case.context.scaling);
 
   // Assert results.
-  ASSERT_EQ(span<const cf_t>(eq_symbols_expected), span<const cf_t>(eq_symbols_actual));
-  ASSERT_EQ(span<const float>(eq_noise_vars_expected), span<const float>(eq_noise_vars_actual));
+  error_type<std::string> eq_symbols_ok = compare_sequences(span<const cf_t>(eq_symbols_actual),
+                                                            span<const cf_t>(eq_symbols_expected),
+                                                            compare_eq_symbols,
+                                                            max_abs_eq_symbol_error);
+  ASSERT_TRUE(eq_symbols_ok.has_value()) << eq_symbols_ok.error();
+
+  error_type<std::string> eq_noise_ok = compare_sequences(span<const float>(eq_noise_vars_actual),
+                                                          span<const float>(eq_noise_vars_expected),
+                                                          compare_nvars,
+                                                          max_abs_eq_nvar_error);
+  ASSERT_TRUE(eq_noise_ok.has_value()) << eq_noise_ok.error();
 }
 
 TEST_P(ChannelEqualizerFixture, ChannelEqualizerOneZeroNvar)
@@ -236,8 +253,17 @@ TEST_P(ChannelEqualizerFixture, ChannelEqualizerZeroEst)
       eq_symbols_actual, eq_noise_vars_actual, rx_symbols, test_ch_estimates, test_noise_vars, t_case.context.scaling);
 
   // Assert results.
-  ASSERT_EQ(span<const cf_t>(eq_symbols_expected), span<const cf_t>(eq_symbols_actual));
-  ASSERT_EQ(span<const float>(eq_noise_vars_expected), span<const float>(eq_noise_vars_actual));
+  error_type<std::string> eq_symbols_ok = compare_sequences(span<const cf_t>(eq_symbols_actual),
+                                                            span<const cf_t>(eq_symbols_expected),
+                                                            compare_eq_symbols,
+                                                            max_abs_eq_symbol_error);
+  ASSERT_TRUE(eq_symbols_ok.has_value()) << eq_symbols_ok.error();
+
+  error_type<std::string> eq_noise_ok = compare_sequences(span<const float>(eq_noise_vars_actual),
+                                                          span<const float>(eq_noise_vars_expected),
+                                                          compare_nvars,
+                                                          max_abs_eq_nvar_error);
+  ASSERT_TRUE(eq_noise_ok.has_value()) << eq_noise_ok.error();
 }
 
 TEST_P(ChannelEqualizerFixture, ChannelEqualizerInfNvar)
@@ -257,8 +283,17 @@ TEST_P(ChannelEqualizerFixture, ChannelEqualizerInfNvar)
       eq_symbols_actual, eq_noise_vars_actual, rx_symbols, test_ch_estimates, test_noise_vars, t_case.context.scaling);
 
   // Assert results.
-  ASSERT_EQ(span<const cf_t>(eq_symbols_expected), span<const cf_t>(eq_symbols_actual));
-  ASSERT_EQ(span<const float>(eq_noise_vars_expected), span<const float>(eq_noise_vars_actual));
+  error_type<std::string> eq_symbols_ok = compare_sequences(span<const cf_t>(eq_symbols_actual),
+                                                            span<const cf_t>(eq_symbols_expected),
+                                                            compare_eq_symbols,
+                                                            max_abs_eq_symbol_error);
+  ASSERT_TRUE(eq_symbols_ok.has_value()) << eq_symbols_ok.error();
+
+  error_type<std::string> eq_noise_ok = compare_sequences(span<const float>(eq_noise_vars_actual),
+                                                          span<const float>(eq_noise_vars_expected),
+                                                          compare_nvars,
+                                                          max_abs_eq_nvar_error);
+  ASSERT_TRUE(eq_noise_ok.has_value()) << eq_noise_ok.error();
 }
 
 TEST_P(ChannelEqualizerFixture, ChannelEqualizerInfEst)
@@ -289,8 +324,17 @@ TEST_P(ChannelEqualizerFixture, ChannelEqualizerInfEst)
       eq_symbols_actual, eq_noise_vars_actual, rx_symbols, test_ch_estimates, test_noise_vars, t_case.context.scaling);
 
   // Assert results.
-  ASSERT_EQ(span<const cf_t>(eq_symbols_expected), span<const cf_t>(eq_symbols_actual));
-  ASSERT_EQ(span<const float>(eq_noise_vars_expected), span<const float>(eq_noise_vars_actual));
+  error_type<std::string> eq_symbols_ok = compare_sequences(span<const cf_t>(eq_symbols_actual),
+                                                            span<const cf_t>(eq_symbols_expected),
+                                                            compare_eq_symbols,
+                                                            max_abs_eq_symbol_error);
+  ASSERT_TRUE(eq_symbols_ok.has_value()) << eq_symbols_ok.error();
+
+  error_type<std::string> eq_noise_ok = compare_sequences(span<const float>(eq_noise_vars_actual),
+                                                          span<const float>(eq_noise_vars_expected),
+                                                          compare_nvars,
+                                                          max_abs_eq_nvar_error);
+  ASSERT_TRUE(eq_noise_ok.has_value()) << eq_noise_ok.error();
 }
 
 TEST_P(ChannelEqualizerFixture, ChannelEqualizerNanNvar)
@@ -310,8 +354,17 @@ TEST_P(ChannelEqualizerFixture, ChannelEqualizerNanNvar)
       eq_symbols_actual, eq_noise_vars_actual, rx_symbols, test_ch_estimates, test_noise_vars, t_case.context.scaling);
 
   // Assert results.
-  ASSERT_EQ(span<const cf_t>(eq_symbols_expected), span<const cf_t>(eq_symbols_actual));
-  ASSERT_EQ(span<const float>(eq_noise_vars_expected), span<const float>(eq_noise_vars_actual));
+  error_type<std::string> eq_symbols_ok = compare_sequences(span<const cf_t>(eq_symbols_actual),
+                                                            span<const cf_t>(eq_symbols_expected),
+                                                            compare_eq_symbols,
+                                                            max_abs_eq_symbol_error);
+  ASSERT_TRUE(eq_symbols_ok.has_value()) << eq_symbols_ok.error();
+
+  error_type<std::string> eq_noise_ok = compare_sequences(span<const float>(eq_noise_vars_actual),
+                                                          span<const float>(eq_noise_vars_expected),
+                                                          compare_nvars,
+                                                          max_abs_eq_nvar_error);
+  ASSERT_TRUE(eq_noise_ok.has_value()) << eq_noise_ok.error();
 }
 
 TEST_P(ChannelEqualizerFixture, ChannelEqualizerNanEst)
@@ -342,8 +395,17 @@ TEST_P(ChannelEqualizerFixture, ChannelEqualizerNanEst)
       eq_symbols_actual, eq_noise_vars_actual, rx_symbols, test_ch_estimates, test_noise_vars, t_case.context.scaling);
 
   // Assert results.
-  ASSERT_EQ(span<const cf_t>(eq_symbols_expected), span<const cf_t>(eq_symbols_actual));
-  ASSERT_EQ(span<const float>(eq_noise_vars_expected), span<const float>(eq_noise_vars_actual));
+  error_type<std::string> eq_symbols_ok = compare_sequences(span<const cf_t>(eq_symbols_actual),
+                                                            span<const cf_t>(eq_symbols_expected),
+                                                            compare_eq_symbols,
+                                                            max_abs_eq_symbol_error);
+  ASSERT_TRUE(eq_symbols_ok.has_value()) << eq_symbols_ok.error();
+
+  error_type<std::string> eq_noise_ok = compare_sequences(span<const float>(eq_noise_vars_actual),
+                                                          span<const float>(eq_noise_vars_expected),
+                                                          compare_nvars,
+                                                          max_abs_eq_nvar_error);
+  ASSERT_TRUE(eq_noise_ok.has_value()) << eq_noise_ok.error();
 }
 
 TEST_P(ChannelEqualizerFixture, ChannelEqualizerNegNvar)
@@ -363,8 +425,17 @@ TEST_P(ChannelEqualizerFixture, ChannelEqualizerNegNvar)
       eq_symbols_actual, eq_noise_vars_actual, rx_symbols, test_ch_estimates, test_noise_vars, t_case.context.scaling);
 
   // Assert results.
-  ASSERT_EQ(span<const cf_t>(eq_symbols_expected), span<const cf_t>(eq_symbols_actual));
-  ASSERT_EQ(span<const float>(eq_noise_vars_expected), span<const float>(eq_noise_vars_actual));
+  error_type<std::string> eq_symbols_ok = compare_sequences(span<const cf_t>(eq_symbols_actual),
+                                                            span<const cf_t>(eq_symbols_expected),
+                                                            compare_eq_symbols,
+                                                            max_abs_eq_symbol_error);
+  ASSERT_TRUE(eq_symbols_ok.has_value()) << eq_symbols_ok.error();
+
+  error_type<std::string> eq_noise_ok = compare_sequences(span<const float>(eq_noise_vars_actual),
+                                                          span<const float>(eq_noise_vars_expected),
+                                                          compare_nvars,
+                                                          max_abs_eq_nvar_error);
+  ASSERT_TRUE(eq_noise_ok.has_value()) << eq_noise_ok.error();
 }
 
 INSTANTIATE_TEST_SUITE_P(ChannelEqualizerTest,

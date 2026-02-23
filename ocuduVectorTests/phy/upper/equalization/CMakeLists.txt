@@ -18,4 +18,5 @@ target_link_libraries(
         ocudulog
         gtest
         gtest_main)
+target_include_directories(channel_equalizer_test PRIVATE ${OCUDU_VECTORTESTS_DIR}/support)
 add_test_vector(channel_equalizer_test channel_equalizer_test_data.tar.gz "")
