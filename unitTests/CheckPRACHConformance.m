@@ -151,6 +151,8 @@ classdef CheckPRACHConformance < matlab.unittest.TestCase
             pp.DelayProfile = TestConfig.DelayProfile;
             if strcmp(TestConfig.DelayProfile, 'AWGN')
                 pp.FrequencyOffset = 0;
+            elseif strcmp(TestConfig.DelayProfile, 'TDLA30')
+                pp.FrequencyOffset = 300;
             elseif strcmp(TestConfig.DelayProfile, 'TDLC300')
                 pp.FrequencyOffset = 400;
             elseif strcmp(TestConfig.DelayProfile, 'NTN-TDLA100')
@@ -170,12 +172,20 @@ classdef CheckPRACHConformance < matlab.unittest.TestCase
                 pp.PUSCHSubcarrierSpacing = 15;
                 pp.PreambleIndex = 0;
                 pp.SequenceIndex = 0;
-            else % TestConfig.Name constains 8.4.2.2-3
+            elseif contains(TestConfig.Name, '8.4.2.2-3')
                 pp.Format = TestConfig.Format;
                 pp.NCS = 46;
                 pp.PUSCHSubcarrierSpacing = 30;
                 pp.PreambleIndex = 0;
                 pp.SequenceIndex = 0;
+            elseif contains(TestConfig.Name, '11.4.2.2-2')
+                pp.Format = TestConfig.Format;
+                pp.NCS = 69;
+                pp.PUSCHSubcarrierSpacing = 120;
+                pp.PreambleIndex = 0;
+                pp.SequenceIndex = 0;
+            else
+                error('ocudu_matlab:CheckPRACHConformance', 'Unknwon test name %s.', TestConfig.Name);
             end % of if contains(TestConfig.Name, '8.4.2.2-1')
 
             pp.IgnoreCFO = true;
@@ -221,8 +231,12 @@ function tet = pickTimeErrorTolerance(prachFormat, delayProfile, scs)
         if strcmp(delayProfile, 'AWGN')
             if (scs == 15)
                 tet = 0.52;
-            else
+            elseif (scs == 30)
                 tet = 0.26;
+            elseif (scs == 120)
+                tet = 0.13;
+            else
+                error('ocudu_matlab:CheckPRACHConformance', 'Subcarrier spacing %d unsupported', scs);
             end % of if (scs == 15)
         elseif strcmp(delayProfile, 'TDLC300')
             if (scs == 15)
@@ -230,12 +244,17 @@ function tet = pickTimeErrorTolerance(prachFormat, delayProfile, scs)
             else
                 tet = 1.77;
             end % of if (scs == 15)
-        else % if strcmp(delayProfile, 'NTN-TDLA100')
+        elseif strcmp(delayProfile, 'TDLA30')
+            assert(scs == 120);
+            tet = 0.07;
+        elseif strcmp(delayProfile, 'NTN-TDLA100')
             if (scs == 15)
                 tet = 0.804;
             else
                 tet = 0.544;
             end % of if (scs == 15)
+        else
+            error('ocudu_matlab:CheckPRACHConformance', 'Delay profile %s unsupported', delayProfile);
         end % of if strcmp(delayProfile, 'AWGN')
     end % of if strcmp('prachFormat', '0')
 end % of function pickTimeErrorTolerance(delayProfile, prachFormat, scs)
@@ -613,6 +632,21 @@ function TestConfig = createTestConfig()
             'NRxAnts', 4, ...
             'Format', 'C2', ...
             'SNR', -10.4 ...
+        ) ...
+        ... Short PRACH 120 kHz
+        struct( ...
+            'Name', 'TS38.104 V15.19.0 Table 11.4.2.2-2 Row 1', ...
+            'DelayProfile', 'AWGN', ...
+            'NRxAnts', 2, ...
+            'Format', 'B4', ...
+            'SNR', -15.8 ...
+        ) ...
+        struct( ...
+            'Name', 'TS38.104 V15.19.0 Table 11.4.2.2-2 Row 2', ...
+            'DelayProfile', 'TDLA30', ...
+            'NRxAnts', 2, ...
+            'Format', 'B4', ...
+            'SNR', -7.5 ...
         ) ...
         ... Long PRACH NTN
         struct( ...
