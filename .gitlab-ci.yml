@@ -12,7 +12,7 @@ variables:
   OCUDU_DIR: &ocudu_dir ${CI_PROJECT_DIR}/ocudu
   OCUDU_REGISTRY_URI: ${CI_TEMPLATE_REGISTRY_HOST}/${OCUDU_PATH}
   MATLAB_RELEASE: r2024b
-  MATLAB_IMAGE_VERSION: 0.0.3
+  MATLAB_IMAGE_VERSION: 0.0.4
 
 include:
   - project: *ocudu_path
