@@ -20,8 +20,11 @@ using namespace ocudu;
 
 static bool is_stable_conf(const ocudu::prach_detector::configuration& conf)
 {
-  // Skip FR2 configurations, which are still experimental.
-  return (conf.ra_scs != prach_subcarrier_spacing::kHz120);
+  // For FR2, only format B4 with one or two antenna ports is fully supported.
+  if (conf.ra_scs == prach_subcarrier_spacing::kHz120) {
+    return ((conf.format == prach_format_type::B4) && (conf.nof_rx_ports <= 2));
+  }
+  return true;
 }
 
 namespace ocudu {
@@ -134,10 +137,12 @@ TEST_P(PrachDetectorFixture, FromVector)
     time_error_tolerance = phy_time_unit::from_seconds(0.52e-6F);
   } else if (config.ra_scs == prach_subcarrier_spacing::kHz30) {
     time_error_tolerance = phy_time_unit::from_seconds(0.26e-6F);
+  } else if (config.ra_scs == prach_subcarrier_spacing::kHz120) {
+    time_error_tolerance = phy_time_unit::from_seconds(0.07e-6F);
   }
 
   if (!is_stable_conf(config)) {
-    return;
+    GTEST_SKIP() << fmt::format("Skipping performance tests for unstable configuration {}", config);
   }
 
   // Assert the required preamble was found. The detector thresholds are tweaked to have a small FA probability when
