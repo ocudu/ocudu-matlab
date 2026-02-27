@@ -82,7 +82,6 @@ classdef ocuduSRSEstimatorUnittest < ocuduTest.ocuduBlockUnittest
             fprintf(fileID, '#include "resource_grid_test_doubles.h"\n');
             fprintf(fileID, '#include "ocudu/phy/upper/signal_processors/srs/srs_estimator_configuration.h"\n');
             fprintf(fileID, '#include "ocudu/phy/upper/signal_processors/srs/srs_estimator_result.h"\n');
-            fprintf(fileID, '#include "ocudu/ran/phy_time_unit.h"\n');
             fprintf(fileID, '#include "ocudu/support/file_vector.h"\n');
         end
 
@@ -258,7 +257,7 @@ classdef ocuduSRSEstimatorUnittest < ocuduTest.ocuduBlockUnittest
                 floor(nSlot / carrier.SlotsPerSubframe),...
                 rem(nSlot, carrier.SlotsPerSubframe)}, true);
 
-            hoppingConfigStr = 'srs_resource_configuration::group_or_sequence_hopping_enum::neither';
+            hoppingConfigStr = 'srs_group_or_sequence_hopping::neither';
 
             periodicityConfig = 'nullopt';
             if strcmp(srs.ResourceType, 'periodic')
@@ -266,8 +265,8 @@ classdef ocuduSRSEstimatorUnittest < ocuduTest.ocuduBlockUnittest
             end
 
             numSRSPortsStr = sprintf('srs_resource_configuration::one_two_four_enum(%d)', NumSRSPorts);
-            numSRSSymbolsStr = sprintf('srs_resource_configuration::one_two_four_enum(%d)', NumSRSSymbols);
-            combSizeStr = sprintf('srs_resource_configuration::comb_size_enum(%d)', KTC);
+            numSRSSymbolsStr = sprintf('srs_nof_symbols(%d)', NumSRSSymbols);
+            combSizeStr = sprintf('tx_comb_size(%d)', KTC);
 
             portsConfig = num2cell(0:NumRxPorts-1);
 
