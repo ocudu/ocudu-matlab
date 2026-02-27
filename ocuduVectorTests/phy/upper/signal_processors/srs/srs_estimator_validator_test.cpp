@@ -23,18 +23,18 @@ namespace {
 const srs_estimator_configuration base_config = {
     .slot     = {0, 130, 8, 0},
     .resource = {.nof_antenna_ports   = srs_resource_configuration::one_two_four_enum(2),
-                 .nof_symbols         = srs_resource_configuration::one_two_four_enum(1),
+                 .nof_symbols         = srs_nof_symbols(1),
                  .start_symbol        = 12,
                  .configuration_index = 17,
                  .sequence_id         = 647,
                  .bandwidth_index     = 2,
-                 .comb_size           = srs_resource_configuration::comb_size_enum(2),
+                 .comb_size           = tx_comb_size(2),
                  .comb_offset         = 1,
                  .cyclic_shift        = 1,
                  .freq_position       = 66,
                  .freq_shift          = 1,
                  .freq_hopping        = 3,
-                 .hopping             = srs_resource_configuration::group_or_sequence_hopping_enum::neither,
+                 .hopping             = srs_group_or_sequence_hopping::neither,
                  .periodicity         = std::nullopt},
     .ports    = {0}};
 
@@ -52,7 +52,7 @@ std::ostream& operator<<(std::ostream& os, const test_case_t& test_case)
 const std::vector<test_case_t> pdsch_processor_validator_test_data = {
     {[] {
        srs_estimator_configuration config = base_config;
-       config.resource.comb_size          = srs_resource_configuration::comb_size_enum::two;
+       config.resource.comb_size          = tx_comb_size(2);
        config.resource.comb_offset        = 2;
        return config;
      },
@@ -66,7 +66,7 @@ const std::vector<test_case_t> pdsch_processor_validator_test_data = {
      R"(The SRS estimator does not support frequency hopping\.)"},
     {[] {
        srs_estimator_configuration config = base_config;
-       config.resource.hopping            = srs_resource_configuration::group_or_sequence_hopping_enum::group_hopping;
+       config.resource.hopping            = srs_group_or_sequence_hopping::group_hopping;
        return config;
      },
      R"(The SRS estimator does not support group or sequence hopping\.)"},

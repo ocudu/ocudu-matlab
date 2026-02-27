@@ -13,7 +13,6 @@
 #include "ocudu/phy/upper/signal_processors/srs/formatters.h"
 #include "ocudu/phy/upper/signal_processors/srs/srs_estimator_configuration.h"
 #include "ocudu/phy/upper/signal_processors/srs/srs_estimator_factory.h"
-#include "fmt/ostream.h"
 #include "gtest/gtest.h"
 
 using namespace ocudu;
@@ -24,18 +23,18 @@ namespace {
 const srs_estimator_configuration base_config = {std::nullopt,
                                                  {0, 130, 8, 0},
                                                  {srs_resource_configuration::one_two_four_enum(2),
-                                                  srs_resource_configuration::one_two_four_enum(1),
+                                                  srs_nof_symbols(1),
                                                   12,
                                                   17,
                                                   647,
                                                   2,
-                                                  srs_resource_configuration::comb_size_enum(2),
+                                                  tx_comb_size(2),
                                                   1,
                                                   1,
                                                   66,
                                                   1,
                                                   3,
-                                                  srs_resource_configuration::group_or_sequence_hopping_enum::neither,
+                                                  srs_group_or_sequence_hopping::neither,
                                                   {}},
                                                  {0}};
 
