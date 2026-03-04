@@ -86,7 +86,7 @@ protected:
       ASSERT_NE(dft_factory, nullptr) << "Cannot create DFT processor factory";
 
       std::shared_ptr<transform_precoder_factory> precoding_factory =
-          create_dft_transform_precoder_factory(dft_factory, pucch_constants::FORMAT3_MAX_NPRB + 1);
+          create_dft_transform_precoder_factory(dft_factory, pucch_constants::f3::MAX_NOF_RBS + 1);
       ASSERT_NE(precoding_factory, nullptr) << "Cannot create transform precoder factory";
 
       // Create PUCCH demodulator factory.
@@ -122,7 +122,7 @@ protected:
 
     // Prepare the resource grid.
     unsigned nof_test_symbols = test_case.context.config.rx_ports.size() * test_case.context.config.nof_symbols *
-                                test_case.context.config.nof_prb * pucch_constants::FORMAT2_NOF_DATA_SC;
+                                test_case.context.config.nof_prb * pucch_constants::f2::NOF_DATA_SUBC_PER_RB;
 
     std::vector<resource_grid_reader_spy::expected_entry_t> grid_entries = test_case.symbols.read();
     ASSERT_EQ(grid_entries.size(), nof_test_symbols)

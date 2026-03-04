@@ -149,7 +149,7 @@ create_pucch_processor()
   std::shared_ptr<dmrs_pucch_estimator_factory> dmrs_factory = create_dmrs_pucch_estimator_factory_sw(
       prg_factory, lpapr_collection_factory, lpapr_generator_factory, estimator_factory);
   std::shared_ptr<transform_precoder_factory> precoding_factory =
-      create_dft_transform_precoder_factory(dft_factory, pucch_constants::FORMAT3_MAX_NPRB + 1);
+      create_dft_transform_precoder_factory(dft_factory, pucch_constants::f3::MAX_NOF_RBS + 1);
 
   std::shared_ptr<channel_equalizer_factory> equalizer_factory =
       create_channel_equalizer_generic_factory(channel_equalizer_algorithm_type::zf);
