@@ -255,7 +255,7 @@ classdef PRACHPERF < matlab.System
         function checkExplorationFile(obj)
             % The filename should poin to a valid foler.
             p = fileparts(obj.ExplorationFileName);
-            assert(isfolder(p), 'The folder %s does not exist.', p);
+            assert(isempty(p) || isfolder(p), 'The folder %s does not exist.', p);
         end
     end % of methods (Access = private)
 
