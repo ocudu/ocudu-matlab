@@ -12,7 +12,7 @@ target_link_libraries(prach_scheduler_vectortest
     ocudu_sched
     sched_test_doubles
     gtest
-    gtest_main)
+    ocudu_gtest_main)
 
 target_include_directories(prach_scheduler_vectortest PRIVATE ${CMAKE_SOURCE_DIR})
 
