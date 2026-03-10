@@ -64,10 +64,9 @@
 %   NumSRBits                    - Number of SR bits.
 %   NumCSI1Bits                  - Number of CSI Part 1 bits.
 %   NumCSI2Bits                  - Number of CSI Part 2 bits.
-%   DelayProfile                 - Channel delay profile ('AWGN'(no delay, no Doppler),
-%                                  'TDL-C'(rural scenario), 'TDLC300' (simplified rural scenario)).
+%   DelayProfile                 - Channel delay profile.
 %   DelaySpread                  - Delay spread in seconds (TDL-C delay profile only).
-%   MaximumDopplerShift          - Maximum Doppler shift in hertz (TDL-C and TDLC300 delay profile only).
+%   MaximumDopplerShift          - Maximum Doppler shift in hertz (not for 'AWGN' delay profile).
 %   ImplementationType           - PUCCH implementation type ('matlab', 'ocudu' or 'both').
 %   TestType                     - Test type ('Detection', 'False Alarm').
 %   QuickSimulation              - Quick-simulation flag: set to true to stop
@@ -134,11 +133,12 @@ classdef PUCCHPERF < matlab.System
         NumCSI1Bits double {mustBeInteger, mustBeInRange(NumCSI1Bits, 0, 1706)} = 0
         %Number of CSI Part 2 bits.
         NumCSI2Bits double {mustBeInteger, mustBeInRange(NumCSI2Bits, 0, 1706)} = 0
-        %Channel delay profile ('AWGN'(no delay), 'TDL-C'(rural scenario), 'TDLC300' (simplified rural scenario)).
-        DelayProfile (1, :) char {mustBeMember(DelayProfile, {'AWGN', 'TDL-C', 'TDLA30', 'TDLC300'})} = 'AWGN'
+        %Channel delay profile.
+        %   Available options are 'AWGN', 'TDLA30', 'TDL-C', 'TDLC300', and 'NTN-TDLA100'.
+        DelayProfile (1, :) char {mustBeMember(DelayProfile, {'AWGN', 'TDL-C', 'TDLA30', 'TDLC300', 'NTN-TDLA100'})} = 'AWGN'
         %Delay spread in seconds (TDL-C delay profile only).
         DelaySpread (1, 1) double {mustBeReal, mustBeNonnegative} = 300e-9
-        %Maximum Doppler shift in hertz (TDL-C and TDLC300 delay profile only).
+        %Maximum Doppler shift in hertz (not for AWGN delay profile).
         MaximumDopplerShift (1, 1) double {mustBeReal, mustBeNonnegative} = 100
         %PUCCH implementation type ('matlab', 'ocudu', 'both').
         ImplementationType (1, :) char {mustBeMember(ImplementationType, {'matlab', 'ocudu', 'both'})} = 'matlab'
@@ -296,7 +296,7 @@ classdef PUCCHPERF < matlab.System
         function flag = isInactivePropertyImpl(obj, property)
             switch property
                 case 'DelaySpread'
-                    flag = strcmp(obj.DelayProfile, 'AWGN') || strcmp(obj.DelayProfile, 'TDLC300');
+                    flag = ~strcmp(obj.DelayProfile, 'TDL-C');
                 case 'MaximumDopplerShift'
                     flag = strcmp(obj.DelayProfile, 'AWGN');
                 case 'Modulation'
