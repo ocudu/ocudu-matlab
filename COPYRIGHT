@@ -1,12 +1,8 @@
 Files: *
-Copyright: 2021-2025, Software Radio Systems Limited.
+Copyright: 2021-2026, Software Radio Systems Limited.
 License:   See LICENSE file
 
 The following files are used within OCUDU-matlab:
-
-Files:     apps/simulators/PUSCHBLER/HARQEntity.m
-           apps/simulators/PUSCHBLER/hSkipWeakTimingOffset.m
-Copyright: 2019-2021 The MathWorks, Inc.
 
 Files:     +ocuduMEX/source/docs/doxygen-awesome.css
 Copyright: 2021-2022 jothepro

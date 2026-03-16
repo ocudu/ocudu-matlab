@@ -1,0 +1,6 @@
+/\.git/
+/\.reuse/
+/REUSE\.toml$
+\.md$
+\.mdx$
+^\+ocuduMEX/source/docs/
