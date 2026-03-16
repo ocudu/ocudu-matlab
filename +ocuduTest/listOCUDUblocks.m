@@ -10,13 +10,8 @@
 %   BLOCKS = listOCUDUblocks('path') only returns a list of the paths (relative to
 %   the OCUDU root folder) where the tested blocks are located.
 
-%
-%   Copyright 2021-2026 Software Radio Systems Limited
-%
-%   By using this file, you agree to the terms and conditions set
-%   forth in the LICENSE file which can be found at the top level of
-%   the distribution.
-%
+% SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+% SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 function blocks = listOCUDUblocks(format)
     arguments

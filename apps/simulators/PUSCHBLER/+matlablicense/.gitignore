@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
 # This folder should be populated by the user with licensed software.
 # Therefore, ignore everything except this file.
 /*

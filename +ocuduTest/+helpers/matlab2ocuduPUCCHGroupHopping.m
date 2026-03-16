@@ -5,13 +5,8 @@
 %
 %   See also nrPUCCH0Config, nrPUCCH1Config, nrPUCCH2Config, nrPUCCH3Config, nrPUCCH4Config.
 
-%
-%   Copyright 2021-2026 Software Radio Systems Limited
-%
-%   By using this file, you agree to the terms and conditions set
-%   forth in the LICENSE file which can be found at the top level of
-%   the distribution.
-%
+% SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+% SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 function groupHoppingString = matlab2ocuduPUCCHGroupHopping(groupHopping)
     if strcmp(groupHopping, 'neither')

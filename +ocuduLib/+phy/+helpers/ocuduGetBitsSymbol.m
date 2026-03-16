@@ -5,13 +5,10 @@
 %   'pi/2-BPSK', 'QPSK', '16QAM', '64QAM' or '256QAM') or OCUDU convention (i.e.,
 %   'BPSK','PI_2_BPSK', 'QPSK', 'QAM16', 'QAM64' or 'QAM256').
 
-%
-%   Copyright 2021-2026 Software Radio Systems Limited
-%
-%   By using this file, you agree to the terms and conditions set
-%   forth in the LICENSE file which can be found at the top level of
-%   the distribution.
-%
+% SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+% SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+% Portions of this file may implement 3GPP specifications, which may be subject
+% to additional licensing requirements.
 
 function nBits = ocuduGetBitsSymbol(modulation)
     switch modulation

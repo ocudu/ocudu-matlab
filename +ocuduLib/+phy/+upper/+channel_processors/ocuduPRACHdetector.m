@@ -20,13 +20,10 @@
 %   conversely, reports the normalized metrics computed for all the preamble indices,
 %   independently of whether they were successfully detected or not.
 
-%
-%   Copyright 2021-2026 Software Radio Systems Limited
-%
-%   By using this file, you agree to the terms and conditions set
-%   forth in the LICENSE file which can be found at the top level of
-%   the distribution.
-%
+% SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+% SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+% Portions of this file may implement 3GPP specifications, which may be subject
+% to additional licensing requirements.
 
 function [indices, offsets, normMetrics, preamblePowers, rssi] = ocuduPRACHdetector(carrier, prachConf, grid, newIgnoreCFO, newThreshold)
     assert(prachConf.RestrictedSet == "UnrestrictedSet", "ocudu_matlab:ocuduPRACHdetector",...

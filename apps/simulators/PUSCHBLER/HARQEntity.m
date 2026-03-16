@@ -2,13 +2,8 @@
 %   This is actually only a wrapper for the MathWorks-copyrighted class HARQEntity, which can
 %   be obtained by MATLAB licensed users as part of the 5G Toolbox examples.
 
-%
-%   Copyright 2021-2026 Software Radio Systems Limited
-%
-%   By using this file, you agree to the terms and conditions set
-%   forth in the LICENSE file which can be found at the top level of
-%   the distribution.
-%
+% SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+% SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 function obj = HARQEntity(processorder, rvsequence)
     try

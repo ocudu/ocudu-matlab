@@ -1,13 +1,8 @@
 %Creates test configurations for PUSCH, Type A, 10 MHz channel bandwidth, 30 kHz SCS.
 %   These test cases are specified in TS38.104 V15.19.0 and V19.0.0, Table 8.2.1.2-4.
 
-%
-%   Copyright 2021-2026 Software Radio Systems Limited
-%
-%   By using this file, you agree to the terms and conditions set
-%   forth in the LICENSE file which can be found at the top level of
-%   the distribution.
-%
+% SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+% SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 function testConfig = createTestConfigTable8_2_1_2_4()
     testConfig = { ...

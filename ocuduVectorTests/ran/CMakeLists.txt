@@ -1,10 +1,5 @@
-#
-# Copyright 2021-2026 Software Radio Systems Limited
-#
-# By using this file, you agree to the terms and conditions set
-# forth in the LICENSE file which can be found at the top level of
-# the distribution.
-#
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 add_executable(pusch_tpmi_select_test pusch/pusch_tpmi_select_test.cpp)
 target_link_libraries(pusch_tpmi_select_test ocudu_ran ocudulog gtest gtest_main)
