@@ -346,15 +346,11 @@ classdef ocuduBlockUnittest < matlab.unittest.TestCase
         function addOpeningToHeaderFile(obj, fileID)
         %addOpeningToHeaderFile Adds opening guards to a test header file.
 
-            fprintf(fileID, '/*\n');
-            fprintf(fileID, ' *\n');
-            fprintf(fileID, ' * Copyright 2021-%d Software Radio Systems Limited\n', year(datetime('now', 'Format', 'yyyy')));
-            fprintf(fileID, ' *\n');
-            fprintf(fileID, ' * By using this file, you agree to the terms and conditions set\n');
-            fprintf(fileID, ' * forth in the LICENSE file which can be found at the top level of\n');
-            fprintf(fileID, ' * the distribution.\n');
-            fprintf(fileID, ' *\n');
-            fprintf(fileID, ' */\n');
+            fprintf(fileID, '// SPDX-FileCopyrightText: Copyright (C) 2021-%d Software Radio Systems Limited\n', ...
+                year(datetime('now', 'Format', 'yyyy')));
+            % REUSE-IgnoreStart
+            fprintf(fileID, '// SPDX-License-Identifier: BSD-3-Clause-Open-MPI\n');
+            % REUSE-IgnoreEnd
             fprintf(fileID, '\n');
             fprintf(fileID, '#pragma once\n');
             fprintf(fileID, '\n');
