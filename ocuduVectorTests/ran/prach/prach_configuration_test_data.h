@@ -10,7 +10,7 @@
 
 #pragma once
 
-// This file was generated using the following MATLAB class on 11-12-2025 (seed 0):
+// This file was generated using the following MATLAB class on 18-03-2026 (seed 0):
 //   + "ocuduPRACHConfigurationUnittest.m"
 
 #include "ocudu/ran/prach/prach_configuration.h"
@@ -539,6 +539,13 @@ static const std::vector<test_case_t> prach_configuration_test_data = {
   {frequency_range::FR1, duplex_mode::TDD, 253, {to_prach_format_type("A3/B3"), 1, {0}, {{3, 4, 8, 9}}, 0, 2, 2, 6}},
   {frequency_range::FR1, duplex_mode::TDD, 254, {to_prach_format_type("A3/B3"), 1, {0}, {{1, 3, 5, 7, 9}}, 0, 1, 2, 6}},
   {frequency_range::FR1, duplex_mode::TDD, 255, {to_prach_format_type("A3/B3"), 1, {0}, {{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}}, 2, 1, 2, 6}},
+  {frequency_range::FR1, duplex_mode::TDD, 256, {to_prach_format_type("0"), 16, {1}, {7}, 0, 0, 0, 0}},
+  {frequency_range::FR1, duplex_mode::TDD, 257, {to_prach_format_type("0"), 8, {1}, {7}, 0, 0, 0, 0}},
+  {frequency_range::FR1, duplex_mode::TDD, 258, {to_prach_format_type("0"), 4, {1}, {7}, 0, 0, 0, 0}},
+  {frequency_range::FR1, duplex_mode::TDD, 259, {to_prach_format_type("0"), 2, {0}, {7}, 0, 0, 0, 0}},
+  {frequency_range::FR1, duplex_mode::TDD, 260, {to_prach_format_type("0"), 2, {1}, {7}, 0, 0, 0, 0}},
+  {frequency_range::FR1, duplex_mode::TDD, 261, {to_prach_format_type("0"), 2, {0}, {2}, 0, 0, 0, 0}},
+  {frequency_range::FR1, duplex_mode::TDD, 262, {to_prach_format_type("0"), 2, {1}, {2}, 0, 0, 0, 0}},
   {frequency_range::FR2, duplex_mode::TDD, 0, {to_prach_format_type("A1"), 16, {1}, {{4,  9, 14, 19, 24, 29, 34, 39}}, 0, 2, 6, 2}},
   {frequency_range::FR2, duplex_mode::TDD, 1, {to_prach_format_type("A1"), 16, {1}, {{3,  7, 11, 15, 19, 23, 27, 31, 35, 39}}, 0, 1, 6, 2}},
   {frequency_range::FR2, duplex_mode::TDD, 2, {to_prach_format_type("A1"), 8, {{1, 2}}, {{9, 19, 29, 39}}, 0, 2, 6, 2}},
