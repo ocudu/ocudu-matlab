@@ -88,9 +88,9 @@ classdef ocuduPRACHConfigurationUnittest < ocuduTest.ocuduBlockUnittest
                 % Load the PRACH configuration table.
                 configTable = nrPRACHConfig.Tables.(tt);
 
-                % Remove empty rows and/or limit the table size to 256 rows.
+                % Remove empty rows.
                 configTable = configTable(~matches(configTable.PreambleFormat, '-'), :);
-                nConfigs = min(size(configTable, 1), 256);
+                nConfigs = size(configTable, 1);
 
                 % Set frequency range and duplex mode according to the selected table.
                 if (tt == "ConfigurationsFR1PairedSUL")
