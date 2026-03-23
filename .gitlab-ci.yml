@@ -464,4 +464,4 @@ build mex conformance odd:
           - ".falsealarm.+struct_4[0-3]\\)"          # TS38.104 V15.19.0 Table 8.4.2.2-3 (short 30 kHz)
           - ".falsealarm.+struct_4[4-7]\\)"          # TS38.104 V15.19.0 Table 8.4.2.2-3 (short 30 kHz)
           - ".falsealarm.+struct_(4[8-9]|5[0-1])\\)" # TS38.104 V15.19.0 Table 8.4.2.2-3 (short 30 kHz)
-          - ".flasealarm.+struct_5[2-3]\\)"          # TS38.104 V15.19.0 Table 11.4.2.2-2 (short 120 kHz)
+          - ".falsealarm.+struct_5[2-3]\\)"          # TS38.104 V15.19.0 Table 11.4.2.2-2 (short 120 kHz)
