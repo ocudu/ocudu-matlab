@@ -105,6 +105,7 @@ private:
   ///
   /// The method has one output. If the last input is empty, the output is a structure with fields
   ///   - \c isValid, a logical flag specifying whether the PUCCH transmission has been detected/decoded correctly.
+  ///   - \c Metric, the computed detection metric, normalized with respect to the detection threshold.
   ///   - \c HARQAckPayload, an \c int8 array of binary values corresponding to the HARQ ACK bits.
   ///   - \c SRPayload, an \c int8 array of binary values corresponding to the SR bits.
   ///   - \c CSI1Payload, an \c int8 array of binary values corresponding to the CSI Part 1 bits.

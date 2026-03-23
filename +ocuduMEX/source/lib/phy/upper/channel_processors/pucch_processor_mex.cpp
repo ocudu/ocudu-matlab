@@ -385,10 +385,16 @@ MexFunction::call_processor(const resource_grid_reader& grid_reader, const Struc
                 mux_f1.getNumberOfElements());
     }
 
-    StructArray out = factory.createStructArray(
-        {nof_pucchs, 1},
-        {"InitialCyclicShift", "OCCI", "isValid", "HARQAckPayload", "SRPayload", "CSI1Payload", "CSI2Payload"});
-    unsigned i_pucch = 0;
+    StructArray out     = factory.createStructArray({nof_pucchs, 1},
+                                                    {"InitialCyclicShift",
+                                                     "OCCI",
+                                                     "isValid",
+                                                     "Metric",
+                                                     "HARQAckPayload",
+                                                     "SRPayload",
+                                                     "CSI1Payload",
+                                                     "CSI2Payload"});
+    unsigned    i_pucch = 0;
     for (const auto& this_f1 : mux_f1) {
       unsigned ics  = this_f1["InitialCyclicShift"][0];
       unsigned occi = this_f1["OCCI"][0];
@@ -400,10 +406,12 @@ MexFunction::call_processor(const resource_grid_reader& grid_reader, const Struc
       out[i_pucch]["InitialCyclicShift"]   = factory.createScalar<double>(ics);
       out[i_pucch]["OCCI"]                 = factory.createScalar<double>(occi);
       out[i_pucch]["isValid"]              = factory.createScalar(result.message.get_status() == uci_status::valid);
-      out[i_pucch]["HARQAckPayload"]       = fill_message_fields(result.message.get_harq_ack_bits());
-      out[i_pucch]["SRPayload"]            = fill_message_fields(result.message.get_sr_bits());
-      out[i_pucch]["CSI1Payload"]          = fill_message_fields(result.message.get_csi_part1_bits());
-      out[i_pucch++]["CSI2Payload"]        = fill_message_fields(result.message.get_csi_part2_bits());
+      out[i_pucch]["Metric"]               = factory.createScalar(
+          result.detection_metric.has_value() ? *result.detection_metric : std::numeric_limits<float>::quiet_NaN());
+      out[i_pucch]["HARQAckPayload"] = fill_message_fields(result.message.get_harq_ack_bits());
+      out[i_pucch]["SRPayload"]      = fill_message_fields(result.message.get_sr_bits());
+      out[i_pucch]["CSI1Payload"]    = fill_message_fields(result.message.get_csi_part1_bits());
+      out[i_pucch++]["CSI2Payload"]  = fill_message_fields(result.message.get_csi_part2_bits());
     }
 
     return out;

@@ -34,6 +34,8 @@
 %
 %   'isValid'             - Boolean flag: true if the PUCCH transmission was
 %                           processed correctly.
+%   'Metric'              - The computed detection metric, normalized with respect to the
+%                           detection threshold.
 %   'HARQAckPayload'      - Column array of HARQ ACK bits (possibly empty, int8).
 %   'SRPayload'           - Column array of SR bits (possibly empty, int8).
 %   'CSI1Payload'         - Column array of CSI Part 1 bits (possibly empty, int8).
