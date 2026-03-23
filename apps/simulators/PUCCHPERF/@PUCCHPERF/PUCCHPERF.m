@@ -76,9 +76,6 @@
 %   results properties (depending on TestType).
 %   Counters    - Raw simulation data (e.g., SNR values or number of simulated transmissions).
 %   Statistics  - Derived simulation statistics (e.g., correct detection rate or BLER).
-%
-%
-%   Remark: The simulation loop is heavily based on the <a href="https://www.mathworks.com/help/5g/ug/nr-pucch-block-error-rate.html">NR PUCCH Block Error Rate</a> MATLAB example by MathWorks.
 
 %
 %   Copyright 2021-2026 Software Radio Systems Limited

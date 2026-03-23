@@ -116,8 +116,6 @@
 %   ThroughputOCUDU       - Throughput in Mbps (OCUDU case).
 %   BlockErrorRateMATLAB  - Transport block error rate (MATLAB case).
 %   BlockErrorRateOCUDU   - Transport block error rate (OCUDU case).
-%
-%   Remark: The simulation loop is heavily based on the <a href="https://www.mathworks.com/help/5g/ug/nr-pusch-throughput.html">NR PUSCH Throughput</a> MATLAB example by MathWorks.
 
 %
 %   Copyright 2021-2026 Software Radio Systems Limited

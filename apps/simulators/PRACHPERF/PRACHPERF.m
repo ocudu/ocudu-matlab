@@ -84,8 +84,6 @@
 %   ProbabilityFalseAlarm        - False-alarm probability (per SNR value).
 %   OffsetError                  - Mean and standard deviation of the estimation
 %                                  error of the timing offset (microseconds).
-%
-%   Remark: The simulation loop is heavily based on the <a href="https://www.mathworks.com/help/5g/ug/5g-nr-prach-detection-test.html">NR PRACH Detection and False Alarm Test</a> MATLAB example by MathWorks.
 
 %
 %   Copyright 2021-2026 Software Radio Systems Limited

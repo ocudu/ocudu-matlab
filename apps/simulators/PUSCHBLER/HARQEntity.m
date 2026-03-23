@@ -1,0 +1,29 @@
+%HARQEntity creates a manager for parallel HARQ processes.
+%   This is actually only a wrapper for the MathWorks-copyrighted class HARQEntity, which can
+%   be obtained by MATLAB licensed users as part of the 5G Toolbox examples.
+
+%
+%   Copyright 2021-2026 Software Radio Systems Limited
+%
+%   By using this file, you agree to the terms and conditions set
+%   forth in the LICENSE file which can be found at the top level of
+%   the distribution.
+%
+
+function obj = HARQEntity(processorder, rvsequence)
+    try
+        obj = matlablicense.HARQEntity(processorder, rvsequence);
+    catch
+        msg = [newline, ...
+               'The class HARQEntity is copyrighted by MathWorks and governed by the terms of the MATLAB software license agreement.', newline,  ...
+               'As such, it cannot be distributed together with the OCUDU-matlab software. If you are a licensed MATLAB user,', newline ...
+               'you can obtain a copy of "HARQEntity.m" by running the following command at the MATLAB Command Line:', newline ...
+               '   openExample(''5g/Modeling5GNRTransportChannelsWithHARQExample'')', newline, ...
+               'Then, copy file "HARQEntity.m" from the example directory (may depend on the system)', newline, ...
+               '   ~/Documents/MATLAB/Examples/R2025b/5g/Modeling5GNRTransportChannelsWithHARQExample/', newline, ...
+               'to the directory', newline, ...
+               '   apps/simulators/PUSCHBLER/+matlablicense/', newline, ...
+               'inside the OCUDU-matlab project directory and rerun the PUSCHBLER simulator.', newline];
+        error(msg);
+    end
+end
