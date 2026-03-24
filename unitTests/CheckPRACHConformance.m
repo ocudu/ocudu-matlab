@@ -162,7 +162,7 @@ classdef CheckPRACHConformance < matlab.unittest.TestCase
             end % of if strcmp(TestConfig.DelayProfile, 'AWGN')
 
             if contains(TestConfig.Name, '8.4.2.2-1')
-                pp.Format = '0';
+                pp.Format = TestConfig.Format;
                 pp.NCS = 13;
                 pp.PreambleIndex = 32;
                 pp.SequenceIndex = 22;
