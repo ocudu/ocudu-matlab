@@ -148,6 +148,8 @@ run matlab unit tests:
       artifacts: false
       optional: true
   script:
+    - &inject_matlab_file |
+      cp ${HARQ_ENTITY_PATH} ${CI_PROJECT_DIR}/apps/simulators/PUSCHBLER/HARQEntity.m
     - matlab -sd "./" -batch "addpath('.'); assertSuccess(runtests('unitTests', Tag='matlab code'))" -logfile matlablog.log
   artifacts:
     when: always
@@ -261,6 +263,7 @@ build ocudu with export on:
   tags:
     - matlab
   before_script:
+    - *inject_matlab_file
     - |
       cd /tmp
       mkdir influxdb2-client-${INFLUX_VERSION}-linux-amd64
