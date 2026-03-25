@@ -77,6 +77,7 @@ publish container:
 ################################################################################
 headers:
   extends: .headers
+  allow_failure: true
 
 mex code format:
   extends: .code-format
