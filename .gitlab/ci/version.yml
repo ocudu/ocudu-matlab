@@ -1,0 +1,3 @@
+variables:
+  MATLAB_RELEASE: r2024b
+  MATLAB_IMAGE_VERSION: 0.0.5

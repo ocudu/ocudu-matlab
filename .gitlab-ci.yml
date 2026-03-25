@@ -11,8 +11,6 @@ variables:
   OCUDU_REF: &ocudu_ref dev
   OCUDU_DIR: &ocudu_dir ${CI_PROJECT_DIR}/ocudu
   OCUDU_REGISTRY_URI: ${CI_TEMPLATE_REGISTRY_HOST}/${OCUDU_PATH}
-  MATLAB_RELEASE: r2024b
-  MATLAB_IMAGE_VERSION: 0.0.4
 
 include:
   - project: *ocudu_path
@@ -30,6 +28,7 @@ include:
   - project: *ocudu_path
     ref: *ocudu_ref
     file: .gitlab/ci-shared/version_check.yml
+  - local: .gitlab/ci/version.yml
 
 stages:
   - ci
@@ -43,17 +42,6 @@ stages:
 ################################################################################
 # CI
 ################################################################################
-.docker-builder-matlab:
-  extends: .docker-builder
-  tags:
-    - ${PLATFORM}-docker
-  variables:
-    NAME: ${MATLAB_RELEASE}
-    VERSION: ${MATLAB_IMAGE_VERSION}
-    BUILD_ARGS: MATLAB_RELEASE=${MATLAB_RELEASE};MATLAB_USER=${MATLAB_USER}
-    KUBERNETES_EPHEMERAL_STORAGE_REQUEST: "80Gi"
-    KUBERNETES_EPHEMERAL_STORAGE_LIMIT: "80Gi"
-
 version check:
   stage: ci
   extends: .version increased
@@ -64,12 +52,12 @@ version check:
       changes:
         - Dockerfile
   variables:
-    FILE_PATH: .gitlab-ci.yml
+    FILE_PATH: .gitlab/ci/version.yml
     VARIABLE_NAME: MATLAB_IMAGE_VERSION
 
 publish container:
   stage: ci
-  extends: .docker-builder-matlab
+  extends: .docker-builder
   rules:
     - if: $CI_MERGE_REQUEST_LABELS =~ /ci-no-container/
       when: never
@@ -77,6 +65,11 @@ publish container:
       changes:
         - Dockerfile
   variables:
+    NAME: ${MATLAB_RELEASE}
+    VERSION: ${MATLAB_IMAGE_VERSION}
+    BUILD_ARGS: MATLAB_RELEASE=${MATLAB_RELEASE};MATLAB_USER=${MATLAB_USER}
+    KUBERNETES_EPHEMERAL_STORAGE_REQUEST: "80Gi"
+    KUBERNETES_EPHEMERAL_STORAGE_LIMIT: "80Gi"
     MODE: publish
 
 ################################################################################
@@ -145,7 +138,7 @@ vector include guards:
 ################################################################################
 run matlab unit tests:
   stage: matlab unit tests
-  image: 166552988672.dkr.ecr.eu-west-1.amazonaws.com/ci/matlab_image/${MATLAB_RELEASE}:${MATLAB_IMAGE_VERSION}
+  image: ${CI_REGISTRY_IMAGE}/${MATLAB_RELEASE}:${MATLAB_IMAGE_VERSION}
   tags:
     - matlab
   rules:
@@ -167,7 +160,7 @@ run matlab unit tests:
 ################################################################################
 build test vectors:
   stage: test vectors
-  image: 166552988672.dkr.ecr.eu-west-1.amazonaws.com/ci/matlab_image/${MATLAB_RELEASE}:${MATLAB_IMAGE_VERSION}
+  image: ${CI_REGISTRY_IMAGE}/${MATLAB_RELEASE}:${MATLAB_IMAGE_VERSION}
   tags:
     - matlab
   variables:
@@ -262,7 +255,7 @@ build ocudu with export on:
 
 .build mex:
   stage: mex
-  image: 166552988672.dkr.ecr.eu-west-1.amazonaws.com/ci/matlab_image/${MATLAB_RELEASE}:${MATLAB_IMAGE_VERSION}
+  image: ${CI_REGISTRY_IMAGE}/${MATLAB_RELEASE}:${MATLAB_IMAGE_VERSION}
   variables:
     INFLUX_VERSION: 2.7.5
   tags:
