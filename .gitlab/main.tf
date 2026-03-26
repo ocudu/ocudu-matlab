@@ -183,7 +183,7 @@ module "settings" {
       cron        = "30 2 * * 2-6"
       timezone    = "Europe/Madrid"
       ref         = "refs/heads/main"
-      active      = false
+      active      = true
       variables   = {}
     },
     weekly_even = {
@@ -191,7 +191,7 @@ module "settings" {
       cron        = "00 6 * * sat%2"
       timezone    = "Europe/Madrid"
       ref         = "refs/heads/main"
-      active      = false
+      active      = true
       variables   = {}
     },
     weekly_odd = {
@@ -199,7 +199,7 @@ module "settings" {
       cron        = "00 6 * * sat%2+1"
       timezone    = "Europe/Madrid"
       ref         = "refs/heads/main"
-      active      = false
+      active      = true
       variables   = {}
     }
   }
