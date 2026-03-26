@@ -23,6 +23,12 @@ include:
   - project: *ocudu_path
     ref: *ocudu_ref
     file: .gitlab/ci-shared/version_check.yml
+  - project: $[[ inputs.ocudu_path ]]
+    ref: $[[ inputs.ocudu_ref ]]
+    file: .gitlab/ci-shared/gitlab_settings/.gitlab-ci.yml
+    inputs:
+      ocudu_path: $[[ inputs.ocudu_path ]]
+      ocudu_ref: $[[ inputs.ocudu_ref ]]    
   - local: .gitlab/ci/version.yml
 
 stages:
