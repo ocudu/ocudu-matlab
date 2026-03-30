@@ -211,7 +211,7 @@ title('CSI-RS for Tracking (4 PCI Offsets)');
 % * TS38.214: Physical layer procedures for data (Section 5.1.6.1)
 % * TS38.331: RRC (System Information and CSI-RS Configuration)
 %
-% OCUDU Documentation: https://docs.ocudu.com/projects/project/en/latest/tutorials/source/matlab/source/index.html#
+% OCUDU Documentation: https://docs.ocudu.org/user_manual/tutorials/matlab
 
 %% Helper function: Render Resource Grid
 % Visualizes CSI-RS placement in a single resource block (12 subcarriers × 14 symbols)

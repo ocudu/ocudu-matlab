@@ -1,27 +1,15 @@
-/*
- *
- * Copyright 2021-2026 Software Radio Systems Limited
- *
- * By using this file, you agree to the terms and conditions set
- * forth in the LICENSE file which can be found at the top level of
- * the distribution.
- *
- */
-
 /*!
 \mainpage
 
-\e OCUDU-matlab, developed by [SRS](https://www.srs.io), provides a number of
-MATLAB-based tools for testing and benchmarking the [OCUDU
-Project](https://www.ocudu.com) software.
+<em>OCUDU MATLAB</em> provides a number of MATLAB-based tools for testing and benchmarking the [OCUDU software](https://gitlab.com/ocudu/ocudu).
 
 The project includes utilities for generating the test vectors used for testing
-in the OCUDU Project, MEX wrappers of a number of OCUDU PHY components,
+in the OCUDU software, MEX wrappers of a number of OCUDU PHY components,
 end-to-end simulators, and analysis tools for the baseband captures obtained
 with the OCUDU gNB.
 
-This is the API documentation for the OCUDU-matlab MEX files, generated from
+This is the API documentation for the OCUDU MATLAB MEX files, generated from
 the source code by [Doxygen](https://www.doxygen.nl/). For all information
-about the OCUDU-matlab project, please visit the [OCUDU-matlab main page](https://github.com/ocudu/OCUDU_matlab).
+about the OCUDU MATLAB project, please visit the [OCUDU MATLAB main page](https://gitlab.com/ocudu/ocudu_elements/ocudu-matlab).
 
 */
