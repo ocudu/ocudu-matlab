@@ -4,15 +4,15 @@ The software in this folder provides vector tests for a number of components of 
 
 ## Build Instructions
 
-Clone both the OCUDU and the OCUDU-matlab repositories (if needed).
+Clone both the OCUDU and the *OCUDU MATLAB* repositories (if needed).
 ```bash
 $ git clone https://gitlab.com/ocudu/ocudu
-$ git clone ???/ocudu_matlab
+$ git clone https://gitlab.com/ocudu/ocudu_elements/ocudu-matlab
 ```
 
-Run MATLAB from the `ocudu_matlab` directory.
+Run MATLAB from the `ocudu-matlab` directory.
 ```bash
-$ cd ocudu_matlab
+$ cd ocudu-matlab
 $ matlab
 ```
 
@@ -28,7 +28,7 @@ Move to the OCUDU working directory and import the plugin as a symbolic link.
 ```bash
 $ cd ../ocudu
 $ mkdir -p plugins
-$ ln -s ../../ocudu_matlab/ocuduVectorTests plugins/ocudu_vectortests
+$ ln -s ../../ocudu-matlab/ocuduVectorTests plugins/ocudu_vectortests
 ```
 
 Generate a build system with the `ENABLE_PLUGINS` option activated.
