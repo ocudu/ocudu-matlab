@@ -94,18 +94,19 @@ std::shared_ptr<ldpc_segmenter_rx_factory> LDPCSegmenterFixture::segmenter_rx_fa
 TEST_P(LDPCSegmenterFixture, LDPCSegmenterTest)
 {
   LDPCSegmenterParams test_data = GetParam();
-  segmenter_config    seg_cfg{};
-  seg_cfg.base_graph     = static_cast<ldpc_base_graph_type>(test_data.bg);
-  seg_cfg.mod            = modulation_scheme::QPSK;
-  seg_cfg.rv             = 0;
-  seg_cfg.nof_layers     = 1;
-  seg_cfg.nof_ch_symbols = 150;
 
   const std::vector<uint8_t> trans_block    = test_data.trans_block.read();
   const std::vector<uint8_t> segments_check = test_data.segments.read();
 
+  segmenter_config seg_cfg{.transport_block_size = units::bytes{static_cast<unsigned>(trans_block.size())},
+                           .base_graph           = static_cast<ldpc_base_graph_type>(test_data.bg),
+                           .rv                   = 0,
+                           .mod                  = modulation_scheme::QPSK,
+                           .nof_layers           = 1,
+                           .nof_ch_symbols       = 150};
+
   // Initialize the segmenter.
-  const ldpc_segmenter_buffer&                segment_buffer = segmenter_tx->new_transmission(trans_block, seg_cfg);
+  const ldpc_segmenter_buffer&                segment_buffer = segmenter_tx->new_transmission(seg_cfg);
   static_bit_buffer<ldpc::MAX_CODEBLOCK_SIZE> cb_data;
   cb_data.resize(segment_buffer.get_segment_length().value());
 
@@ -136,7 +137,7 @@ TEST_P(LDPCSegmenterFixture, LDPCSegmenterTest)
     return log_likelihood_ratio(r);
   });
   static_vector<described_rx_codeblock, MAX_NOF_SEGMENTS> codeblocks;
-  segmenter_rx->segment(codeblocks, cw_llrs, test_data.tbs, seg_cfg);
+  segmenter_rx->segment(codeblocks, cw_llrs, seg_cfg);
 
   for (const auto& cb : codeblocks) {
     EXPECT_EQ(cb.first.size(), cb.second.cb_specific.rm_length) << "Wrong codeblock length.";
