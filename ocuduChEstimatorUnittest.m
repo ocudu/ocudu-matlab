@@ -359,8 +359,8 @@ classdef ocuduChEstimatorUnittest < ocuduTest.ocuduBlockUnittest
     end % of methods (Test, TestTags = {'testmex'})
 
     methods % public
-        function [mse, noiseEst, rsrpEst, epreEst, cfoEst, crlb] = characterize(obj, configuration, ...
-                FrequencyHopping, scs, nLayers, channelType, delay, doppler, cfo, snrValues, nRuns, sizeBWP)
+        function [mse, noiseEst, rsrpEst, epreEst, cfoEst, crlb, nPilots] = characterize(obj, configuration, ...
+                scs, channelType, delay, doppler, cfo, snrValues, nRuns, sizeBWP)
         %characterize - Draw the empirical MSE performance curve of the estimator.
         %   MSE = characterize(OBJ, CONFIGURATION, FREQUENCYHOPPING, SCS, NLAYERS, CHANNELTYPE, DELAY, DOPPLER, CFO, SNRVALUES, NRUNS)
         %   returns the empirical mean squared error of the channel estimation after NRUNS simulations
@@ -387,9 +387,7 @@ classdef ocuduChEstimatorUnittest < ocuduTest.ocuduBlockUnittest
             arguments
                 obj              (1, 1) ocuduChEstimatorUnittest
                 configuration    (1, 1) struct {mustBeConfiguration}
-                FrequencyHopping (1, :) char   {mustBeMember(FrequencyHopping, {'neither', 'intraSlot'})}
                 scs              (1, 1) double {mustBeMember(scs, [15, 30])}
-                nLayers          (1, 1) double {mustBeMember(nLayers, 1:4)}
                 channelType      (1, :) char   {mustBeMember(channelType, {'pure-delay', ...
                     'TDL-A', 'TDL-B', 'TDL-C', 'TDL-D', 'TDL-E', ...
                     'TDLA30', 'TDLB100', 'TDLC300', 'TDLC60'})}
@@ -413,12 +411,12 @@ classdef ocuduChEstimatorUnittest < ocuduTest.ocuduBlockUnittest
                 obj.NSizeGrid = obj.NStartBWP + obj.NSizeBWP;
             end
 
-            fullConfig = configureAndMatlab(obj, configuration, scs, nLayers, FrequencyHopping, []);
-
+            fullConfig = configureAndMatlab(obj, configuration, scs, []);
             hop1 = fullConfig.Hop1;
             hop2 = fullConfig.Hop2;
             pilots = fullConfig.Pilots;
             betaDMRS = fullConfig.BetaDMRS;
+            nPilots = numel(fullConfig.Pilots(:, :, 1));
 
             % Configure carrier.
             carrier = nrCarrierConfig;
@@ -427,6 +425,7 @@ classdef ocuduChEstimatorUnittest < ocuduTest.ocuduBlockUnittest
             carrier.NSlot = 0;
             carrier.NSizeGrid = obj.NSizeGrid;
 
+            nLayers = configuration.NumLayers;
             waveformInfo = nrOFDMInfo(carrier);
             channel = configureChannel(channelType, delay, doppler, waveformInfo.SampleRate, ...
                 carrier.SubcarrierSpacing, nLayers);
@@ -454,8 +453,8 @@ classdef ocuduChEstimatorUnittest < ocuduTest.ocuduBlockUnittest
             EstimatorConfig.nPilotsNoiseAvg = sum(obj.DMRSREmask);
             EstimatorConfig.scs = scs * 1000; % SCS in hertz
             EstimatorConfig.CyclicPrefixDurations = CPDurations;
-            EstimatorConfig.Smoothing = configuration.smoothing;
-            EstimatorConfig.CFOCompensate = configuration.cfocompensate;
+            EstimatorConfig.Smoothing = configuration.Smoothing;
+            EstimatorConfig.CFOCompensate = configuration.CFOcompensate;
 
             for iRun = 1:nRuns
                 reset(channel);
@@ -971,65 +970,84 @@ end
 
 
 function mustBeConfiguration(a)
-    if ~isfield(a, 'nPRBs')
+    if ~isfield(a, 'Channel')
         eidType = 'ocuduChEstimatorUnittest:characterize';
-        msgType = 'Missing configuration field "nPRBs."';
+        msgType = 'Missing configuration field "Channel".';
         throwAsCaller(MException(eidType, msgType));
     end
-    mustBeScalarOrEmpty(a.nPRBs);
-    mustBeInteger(a.nPRBs);
-    mustBeInRange(a.nPRBs, 1, 273);
+    mustBeMember(a.Channel, ["PUSCH", "PUCCHF2", "PUCCHF3F4"]);
 
-    if ~isfield(a, 'symbolAllocation')
+    if ~isfield(a, 'NumPRBs')
         eidType = 'ocuduChEstimatorUnittest:characterize';
-        msgType = 'Missing configuration field "symbolAllocation".';
+        msgType = 'Missing configuration field "NumPRBs".';
         throwAsCaller(MException(eidType, msgType));
     end
-    mustBeVector(a.symbolAllocation)
-    if numel(a.symbolAllocation) ~= 2
+    mustBeScalarOrEmpty(a.NumPRBs);
+    mustBeInteger(a.NumPRBs);
+    mustBeInRange(a.NumPRBs, 1, 273);
+
+    if ~isfield(a, 'SymbolAllocation')
         eidType = 'ocuduChEstimatorUnittest:characterize';
-        msgType = 'Configuration field "symbolAllocation" should be an array of two elements.';
+        msgType = 'Missing configuration field "SymbolAllocation".';
         throwAsCaller(MException(eidType, msgType));
     end
-    mustBeInteger(a.symbolAllocation);
-    mustBeNonnegative(a.symbolAllocation);
-    if (a.symbolAllocation(1) + a.symbolAllocation(2) > 14)
+    mustBeVector(a.SymbolAllocation)
+    if numel(a.SymbolAllocation) ~= 2
+        eidType = 'ocuduChEstimatorUnittest:characterize';
+        msgType = 'Configuration field "SymbolAllocation" should be an array of two elements.';
+        throwAsCaller(MException(eidType, msgType));
+    end
+    mustBeInteger(a.SymbolAllocation);
+    mustBeNonnegative(a.SymbolAllocation);
+    if (a.SymbolAllocation(1) + a.SymbolAllocation(2) > 14)
         eidType = 'ocuduChEstimatorUnittest:characterize';
         msgType = 'Inconsistent symbol allocation.';
         throwAsCaller(MException(eidType, msgType));
     end
 
-    if ~isfield(a, 'dmrsOffset')
-        eidType = 'ocuduChEstimatorUnittest:characterize';
-        msgType = 'Missing configuration field "dmrsOffset".';
-        throwAsCaller(MException(eidType, msgType));
-    end
-    mustBeScalarOrEmpty(a.dmrsOffset);
-    mustBeMember(a.dmrsOffset, [0, 1]);
+    if strcmp(a.Channel, 'PUSCH')
+        if ~isfield(a, 'NumLayers')
+            eidType = 'ocuduChEstimatorUnittest:characterize';
+            msgType = 'Missing configuration field "NumLayers".';
+            throwAsCaller(MException(eidType, msgType));
+        end
+        mustBeMember(a.NumLayers, [1, 2, 3, 4]);
 
-    if ~isfield(a, 'dmrsStrideSCS')
-        eidType = 'ocuduChEstimatorUnittest:characterize';
-        msgType = 'Missing configuration field "dmrsStrideSCS".';
-        throwAsCaller(MException(eidType, msgType));
-    end
-    mustBeScalarOrEmpty(a.dmrsStrideSCS);
-    mustBeMember(a.dmrsStrideSCS, [1, 2, 3]);
+        if ~isfield(a, 'DMRSTypeAPosition')
+            eidType = 'ocuduChEstimatorUnittest:characterize';
+            msgType = 'Missing configuration field "DMRSTypeAPosition".';
+            throwAsCaller(MException(eidType, msgType));
+        end
+        mustBeMember(a.DMRSTypeAPosition, [2, 3]);
 
-    if ~isfield(a, 'dmrsStrideTime')
-        eidType = 'ocuduChEstimatorUnittest:characterize';
-        msgType = 'Missing configuration field "dmrsStrideTime".';
-        throwAsCaller(MException(eidType, msgType));
+        if ~isfield(a, 'DMRSAdditionalPosition')
+            eidType = 'ocuduChEstimatorUnittest:characterize';
+            msgType = 'Missing configuration field "DMRSAdditionalPosition".';
+            throwAsCaller(MException(eidType, msgType));
+        end
+        mustBeMember(a.DMRSAdditionalPosition, [0, 1, 2, 3]);
     end
-    mustBeScalarOrEmpty(a.dmrsStrideTime);
-    mustBeMember(a.dmrsStrideTime, [1, 2, 4, 6, 20]);
 
-    if ~isfield(a, 'betaDMRS')
+    if ~isfield(a, 'FrequencyHopping')
         eidType = 'ocuduChEstimatorUnittest:characterize';
-        msgType = 'Missing configuration field "betaDMRS".';
+        msgType = 'Missing configuration field "FrequencyHopping".';
         throwAsCaller(MException(eidType, msgType));
     end
-    mustBeScalarOrEmpty(a.betaDMRS);
-    mustBeMember(a.betaDMRS, [-3, 0]);
+    mustBeMember(a.FrequencyHopping, ["neither", "intraSlot"]);
+
+    if ~isfield(a, 'Smoothing')
+        eidType = 'ocuduChEstimatorUnittest:characterize';
+        msgType = 'Missing configuration field "Smoothing".';
+        throwAsCaller(MException(eidType, msgType));
+    end
+    mustBeMember(a.Smoothing, ["filter", "mean", "none"]);
+
+    if ~isfield(a, 'CFOcompensate')
+        eidType = 'ocuduChEstimatorUnittest:characterize';
+        msgType = 'Missing configuration field "CFOcompensate".';
+        throwAsCaller(MException(eidType, msgType));
+    end
+    mustBeMember(a.CFOcompensate, [false, true]);
 end
 
 function crlb = computeCRLB(prbMask, reMask)
