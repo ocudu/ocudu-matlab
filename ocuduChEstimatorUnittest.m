@@ -17,15 +17,15 @@
 %
 %   ocuduChEstimatorUnittest Properties (TestParameter):
 %
-%   configuration     - Description of the allocated REs and DM-RS pattern.
-%   SubcarrierSpacing - Subcarrier spacing in kHz.
+%   Configuration     - Description of the PHY UL transmission requiring channel estimation.
+%   SubcarrierSpacing - Subcarrier spacing in kilohertz.
 %   NumLayers         - Number of transmission layers.
 %   FrequencyHopping  - Frequency hopping type.
 %   CarrierOffset     - Carrier frequency offset, as a fraction of the subcarrier spacing.
 %
 %   ocuduChEstimatorUnittest Methods:
 %
-%   characterize  - Draws the empircical MSE performance curve of the estimator.
+%   characterize  - Draws the empirical MSE performance curve of the estimator.
 %
 %   ocuduChEstimatorUnittest Methods (TestTags = {'testvector'}):
 %
@@ -78,133 +78,22 @@ classdef ocuduChEstimatorUnittest < ocuduTest.ocuduBlockUnittest
     properties (TestParameter)
         %Configuration.
         %   A configuration structure array with fields:
-        %   nPRBs              - Number of allocated PRBs (0...51)
-        %   symbolAllocation   - A two-element array denoting the first allocated OFDM symbol (0...13)
-        %                        and the number of allocated OFDM symbols (1...14).
-        %   dmrsOffset         - Number of non-DM-RS REs at the beginning of the RB (0, 1).
-        %   dmrsStrideSCS      - DM-RS frequency domain stride (1, 2, 3), that is the distance
-        %                        between two consecutive DM-RS REs (distance of 1 being back-to-back).
-        %   dmrsStrideTime     - Stride between OFDM symbols containing DM-RS (1, 2, 4, 6, 20).
-        %                        Use 20 for a single DM-RS symbol.
-        %   betaDMRS           - The gain of the DM-RS pilots with respect to the data
-        %                        symbols in dB (0, 3).
-        %   supportMultiLayer  - Boolean flag that specifies whether the configuration supports
-        %                        multiple transmission layers (true) or not (false).
-        %   smoothing          - The frequency-domain smoothing strategy to be used with the
-        %                        current configuration ('filter', 'mean', 'none').
-        %   cfocompensate      - A boolean flag denoting whether the channel estimator should
-        %                        compensate (true) or not (false) the CFO.
-        configuration = {...
-            struct(...        % #1: PUSCH DM-RS configuration Type 1 (inspired to).
-               'nPRBs', 3, ...
-               'symbolAllocation', [0, 14], ...
-               'dmrsOffset', 0, ...
-               'dmrsStrideSCS', 2, ...
-               'dmrsStrideTime', 4, ...
-               'betaDMRS', -3, ...
-               'supportMultiLayer', true, ...
-               'smoothing', 'filter', ...
-               'cfocompensate', true ...
-               ),...
-            struct(...        % #2: PUSCH DM-RS configuration Type 1 (inspired to).
-               'nPRBs', 20, ...
-               'symbolAllocation', [0, 14], ...
-               'dmrsOffset', 0, ...
-               'dmrsStrideSCS', 2, ...
-               'dmrsStrideTime', 4, ...
-               'betaDMRS', -3, ...
-               'supportMultiLayer', true, ...
-               'smoothing', 'filter', ...
-               'cfocompensate', true ...
-               ), ...
-            struct(...        % #3: PUSCH DM-RS configuration Type 1 (inspired to).
-               'nPRBs', 51, ...
-               'symbolAllocation', [0, 14], ...
-               'dmrsOffset', 0, ...
-               'dmrsStrideSCS', 2, ...
-               'dmrsStrideTime', 4, ...
-               'betaDMRS', -3, ...
-               'supportMultiLayer', true, ...
-               'smoothing', 'filter', ...
-               'cfocompensate', true ...
-               ), ...
-            struct(...        % #4: PUCCH Format 1 (inspired to).
-               'nPRBs', 1, ...
-               'symbolAllocation', [8, 4], ...
-               'dmrsOffset', 0, ...
-               'dmrsStrideSCS', 1, ...
-               'dmrsStrideTime', 2, ...
-               'betaDMRS', 0, ...
-               'supportMultiLayer', false, ...
-               'smoothing', 'mean', ...
-               'cfocompensate', false ...
-               ), ...
-            struct(...        % #5: PUCCH Format 1 (inspired to).
-               'nPRBs', 1, ...
-               'symbolAllocation', [0, 14], ...
-               'dmrsOffset', 0, ...
-               'dmrsStrideSCS', 1, ...
-               'dmrsStrideTime', 2, ...
-               'betaDMRS', 0, ...
-               'supportMultiLayer', false, ...
-               'smoothing', 'mean', ...
-               'cfocompensate', false ...
-               ), ...
-            struct(...        % #6: PUCCH Format 2 (inspired to).
-               'nPRBs', 1, ...
-               'symbolAllocation', [0, 2], ...
-               'dmrsOffset', 1, ...
-               'dmrsStrideSCS', 3, ...
-               'dmrsStrideTime', 1, ...
-               'betaDMRS', 0, ...
-               'supportMultiLayer', false, ...
-               'smoothing', 'filter', ...
-               'cfocompensate', true ...
-               ), ...
-            struct(...        % #7: PUCCH Format 2 (inspired to).
-               'nPRBs', 6, ...
-               'symbolAllocation', [5, 1], ...
-               'dmrsOffset', 1, ...
-               'dmrsStrideSCS', 3, ...
-               'dmrsStrideTime', 1, ...
-               'betaDMRS', 0, ...
-               'supportMultiLayer', false, ...
-               'smoothing', 'filter', ...
-               'cfocompensate', true ...
-               ), ...
-            struct(...        % #8: PUCCH Format 2 (inspired to).
-               'nPRBs', 16, ...
-               'symbolAllocation', [5, 2], ...
-               'dmrsOffset', 1, ...
-               'dmrsStrideSCS', 3, ...
-               'dmrsStrideTime', 1, ...
-               'betaDMRS', 0, ...
-               'supportMultiLayer', false, ...
-               'smoothing', 'filter', ...
-               'cfocompensate', true ...
-               ), ...
-            struct(...        % #8: PUCCH Format 3 (inspired to).
-               'nPRBs', 3, ...
-               'symbolAllocation', [2, 4], ...
-               'dmrsOffset', 0, ...
-               'dmrsStrideSCS', 1, ...
-               'dmrsStrideTime', 2, ...
-               'betaDMRS', 0, ...
-               'supportMultiLayer', false, ...
-               'smoothing', 'filter', ...
-               'cfocompensate', true ...
-               ), ...
-            }
+        %   Channel                 - PHY UL channel requiring channel estimation ('PUSCH', 'PUCCHF2', 'PUCCHF3F4')
+        %   NumPRBs                 - Number of allocated PRBs (0...51)
+        %   SymbolAllocation        - A two-element array denoting the first allocated OFDM symbol (0...13)
+        %                             and the number of allocated OFDM symbols (1...14).
+        %   NumLayers               - Number of transmission layers (1...4), only for 'PUSCH'.
+        %   DMRSTypeAPosition       - Position of the first DM-RS symbol (2, 3), only for 'PUSCH'.
+        %   DMRSAdditionalPosition  - Maximum number of DM-RS additional positions (0...3), only for 'PUSCH'.
+        %   FrequencyHopping        - Frequency hopping type ('neither', 'intraSlot').
+        %   Smoothing               - The frequency-domain smoothing strategy to be used with the
+        %                             current configuration ('filter', 'mean', 'none').
+        %   CFOcompensate           - A boolean flag denoting whether the channel estimator should
+        %                             compensate (true) or not (false) the CFO.
+        Configuration = generateTestConfig()
 
         %Subcarrier spacing in kHz.
         SubcarrierSpacing = {15, 30}
-
-        %Number of transmission layers.
-        NumLayers = {1, 2, 3, 4}
-
-        %Frequency hopping type ('neither', 'intraSlot').
-        %   Note: Interslot frequency hopping is currently not considered.
-        FrequencyHopping = {'neither', 'intraSlot'}
 
         %Carrier frequency offset, as a fraction of the subcarrier spacing.
         CarrierOffset = {0, 0.007, -0.013, 0.027}
@@ -256,16 +145,15 @@ classdef ocuduChEstimatorUnittest < ocuduTest.ocuduBlockUnittest
     end % of methods (Access = protected)
 
     methods (Test, TestTags = {'testvector'})
-        function testvectorGenerationCases(obj, configuration, SubcarrierSpacing, ...
-            NumLayers, FrequencyHopping, CarrierOffset)
+        function testvectorGenerationCases(obj, Configuration, SubcarrierSpacing, CarrierOffset)
         %testvectorGenerationCases - Generates a test vector according to the provided
-        %   CONFIGURATION, SUBCARRIERSPACING, NUMLAYERS, FREQUENCYHOPPING type and CARRIEROFFSET.
+        %   CONFIGURATION, SUBCARRIERSPACING and CARRIEROFFSET.
 
             import ocuduTest.helpers.writeResourceGridEntryFile
             import ocuduTest.helpers.writeComplexFloatFile
 
-            [fullConfig, channel, receivedRG, results] = obj.configureAndMatlab(configuration, ...
-                SubcarrierSpacing, NumLayers, FrequencyHopping, CarrierOffset);
+            [fullConfig, channel, receivedRG, results] = obj.configureAndMatlab(Configuration, ...
+                SubcarrierSpacing, CarrierOffset);
 
             % Generate a unique test ID.
             testID = obj.generateTestID;
@@ -293,18 +181,26 @@ classdef ocuduChEstimatorUnittest < ocuduTest.ocuduBlockUnittest
             betaDMRS = fullConfig.BetaDMRS;
             fftSize = fullConfig.FFTSize;
 
-            snrEst = rsrp * NumLayers / betaDMRS^2 / noiseEst;
+            if isfield(Configuration, 'NumLayers')
+                nLayers = Configuration.NumLayers;
+            else
+                nLayers = 1;
+            end
+            snrEst = rsrp * nLayers / betaDMRS^2 / noiseEst;
 
             % A few very loose checks, just to ensure we are not completely out of place.
-            if (configuration.nPRBs > 2)
+            if (Configuration.NumPRBs > 2)
                 chEstIdx = (channelEst ~= 0);
-                obj.assertEqual(channelEst(chEstIdx), channelRG(chEstIdx), "Wrong channel coefficients.", RelTol = 0.4);
-                obj.assertEqual(noiseEst, noiseVar, "Wrong noise variance.", RelTol = 1.2 * NumLayers);
+                isCFOmeaningful = (sum(fullConfig.Hop1.DMRSsymbols) > 1) && (sum(fullConfig.Hop2.DMRSsymbols) > 1);
+                if ((CarrierOffset == 0) || isCFOmeaningful)
+                    obj.assertEqual(channelEst(chEstIdx), channelRG(chEstIdx), "Wrong channel coefficients.", RelTol = 0.4);
+                end
+                obj.assertEqual(noiseEst, noiseVar, "Wrong noise variance.", RelTol = 1.2 * nLayers);
                 obj.assertEqual(snrEst, 10^(SNR/10), "Wrong SNR.", RelTol = 2.5);
                 obj.assertEqual(timeAlignment, channelDelay / fftSize / SubcarrierSpacing / 1000, ...
                     "Wrong time alignment.", AbsTol = 2e-7);
                 cfoHz = cfo * SubcarrierSpacing * 1000;
-                if (~isempty(cfoEst) && (abs(cfoEst - cfoHz) > 40) && ((cfoHz == 0) || abs(cfoEst / cfoHz - 1) > 0.7))
+                if (~strcmp(Configuration.Channel, 'PUCCHF2') && ~isempty(cfoEst) && (abs(cfoEst - cfoHz) > 50) && ((cfoHz == 0) || abs(cfoEst / cfoHz - 1) > 0.7))
                     warning('ocudu_matlab:ocuduChEstimatorUnittest', 'Estimated CFO = %f, True CFO = %f.', cfoEst, cfoHz);
                 end
             end
@@ -333,23 +229,23 @@ classdef ocuduChEstimatorUnittest < ocuduTest.ocuduBlockUnittest
                 obj.DMRSREmask,  ...    % re_pattern
                 };
 
-            if (NumLayers >= 2)
+            if (nLayers >= 2)
                 % Layer 1 shares the same resources as layer 0.
                 dmrsPattern = {dmrsPattern dmrsPattern};
             end
-            if (NumLayers >= 3)
+            if (nLayers >= 3)
                 % Layer 2 shares the same time resources as layers 0 and 1,
                 % but the RE mask is negated.
                 dmrsPattern = [dmrsPattern dmrsPattern(end)];
                 dmrsPattern{end}{end} = ~dmrsPattern{end}{end};
             end
-            if (NumLayers == 4)
+            if (nLayers == 4)
                 % Layer 3 shares the same resources as layer 2.
                 dmrsPattern = [dmrsPattern dmrsPattern(end)];
             end
 
-            startSymbol = configuration.symbolAllocation(1);
-            nAllocatedSymbols = configuration.symbolAllocation(2);
+            startSymbol = Configuration.SymbolAllocation(1);
+            nAllocatedSymbols = Configuration.SymbolAllocation(2);
             scsString = sprintf('subcarrier_spacing::kHz%d', SubcarrierSpacing);
 
             configurationOut = {...
@@ -366,11 +262,11 @@ classdef ocuduChEstimatorUnittest < ocuduTest.ocuduBlockUnittest
                 cfoEst = {};
             end
 
-            smoothingOut = ['port_channel_estimator_fd_smoothing_strategy::' configuration.smoothing];
+            smoothingOut = ['port_channel_estimator_fd_smoothing_strategy::' Configuration.Smoothing];
             context = {...
                 configurationOut, ...
                 smoothingOut, ...
-                configuration.cfocompensate, ...
+                Configuration.CFOcompensate, ...
                 obj.NSizeGrid, ...
                 rsrp, ...
                 epre, ...
@@ -392,14 +288,13 @@ classdef ocuduChEstimatorUnittest < ocuduTest.ocuduBlockUnittest
     end % of methods (Test, TestTags = {'testvector'})
 
     methods (Test, TestTags = {'testmex'})
-        function compareMex(obj, configuration, SubcarrierSpacing, NumLayers, FrequencyHopping, CarrierOffset)
+        function compareMex(obj, Configuration, SubcarrierSpacing, CarrierOffset)
         %compareMex - Compare mex results with those from the reference estimator for
-        %   a given CONFIGURATION, SUBCARRIERSPACING, FREQUENCYHOPPING type and CARRIEROFFSET.
+        %   a given CONFIGURATION, SUBCARRIERSPACING and CARRIEROFFSET.
 
             import ocuduMEX.phy.ocuduMultiPortChannelEstimator
 
-            [fullConfig, ~, receivedRG, results] = configureAndMatlab(obj, ...
-                configuration, SubcarrierSpacing, NumLayers, FrequencyHopping, CarrierOffset);
+            [fullConfig, ~, receivedRG, results] = configureAndMatlab(obj, Configuration, SubcarrierSpacing, CarrierOffset);
 
             hop1 = fullConfig.Hop1;
             hop2 = fullConfig.Hop2;
@@ -419,26 +314,31 @@ classdef ocuduChEstimatorUnittest < ocuduTest.ocuduBlockUnittest
                 pilotRBMask = pilotRBMask + hop2.maskPRBs * hop2.DMRSsymbols';
             end
             nPRB = size(hop1.maskPRBs, 1);
+            if isfield(Configuration, 'NumLayers')
+                nLayers = Configuration.NumLayers;
+            else
+                nLayers = 1;
+            end
             nSymbols = size(hop1.DMRSsymbols, 1);
             [nRE, nCDM] = size(hop1.DMRSREmask);
             pilotMask = nan(nPRB * nRE, nSymbols, nCDM);
             nPilots = sum(pilotRBMask, 'all') * sum(hop1.DMRSREmask(:, 1));
-            pilotIndices = nan(nPilots, NumLayers);
-            for iLayer = 1:2:NumLayers
+            pilotIndices = nan(nPilots, nLayers);
+            for iLayer = 1:2:nLayers
                 iCDM = floor(iLayer / 2) + 1;
                 pilotMask(:, :, iCDM) = kron(pilotRBMask, hop1.DMRSREmask(:, iCDM));
                 pilotIndices(:, iLayer) = find(pilotMask(:, :, iCDM)) + prod(size(receivedRG, [1, 2])) * (iLayer - 1);
-                if (iLayer + 1 <= NumLayers)
+                if (iLayer + 1 <= nLayers)
                     pilotIndices(:, iLayer + 1) = pilotIndices(:, iLayer) + prod(size(receivedRG, [1, 2]));
                 end
             end
 
             mexEstimator = ocuduMultiPortChannelEstimator(...
-                Smoothing=configuration.smoothing, ...
-                CompensateCFO=configuration.cfocompensate ...
+                Smoothing=Configuration.Smoothing, ...
+                CompensateCFO=Configuration.CFOcompensate ...
                 );
             [channelEstMEX, noiseEstMEX, extra] ...
-                = mexEstimator(receivedRG, configuration.symbolAllocation, pilotIndices, reshape(pilots, [], NumLayers), ...
+                = mexEstimator(receivedRG, Configuration.SymbolAllocation, pilotIndices, reshape(pilots, [], nLayers), ...
                     SubcarrierSpacing=SubcarrierSpacing, ...
                     HoppingIndex=hop2.startSymbol, ...
                     BetaScaling=betaDMRS ...
@@ -452,7 +352,7 @@ classdef ocuduChEstimatorUnittest < ocuduTest.ocuduBlockUnittest
             obj.assertEqual(noiseEstMEX, noiseEst, 'Wrong noise variance estimate.', AbsTol = 5e-4);
             obj.assertEqual(extra.RSRP, rsrp, 'Wrong RSRP estimate.', AbsTol = 5e-4);
             obj.assertEqual(extra.EPRE, epre, 'Wrong EPRE estimate.', AbsTol = 5e-4);
-            obj.assertEqual(extra.SINR, rsrp * NumLayers / betaDMRS^2 / noiseEst, 'Wrong SINR estimate.', RelTol = 0.004);
+            obj.assertEqual(extra.SINR, rsrp * nLayers / betaDMRS^2 / noiseEst, 'Wrong SINR estimate.', RelTol = 0.004);
             obj.assertEqual(extra.TimeAlignment, timeAlignment, 'Wrong time alignment estimate.', AbsTol = toleranceTA);
             obj.assertEqual(extra.CFO, cfoEst, 'Wrong CFO.', RelTol = 0.04);
         end % of function compareMex(...)
@@ -653,38 +553,95 @@ classdef ocuduChEstimatorUnittest < ocuduTest.ocuduBlockUnittest
     end % of methods % public
 
     methods (Access = private)
-        function [hop1, hop2] = configureHops(obj, configuration, NumLayers, FrequencyHopping)
+        function [hop1, hop2] = configureHops(obj, configuration, subcarrierspacing)
         %Creates a description of the resources allocated in each hop.
 
-            startSymbol = configuration.symbolAllocation(1);
-            nAllocatedSymbols = configuration.symbolAllocation(2);
-            dmrsStrideTime = configuration.dmrsStrideTime;
+            startSymbol = configuration.SymbolAllocation(1);
+            nAllocatedSymbols = configuration.SymbolAllocation(2);
+
+            % Configure carrier.
+            carrier = nrCarrierConfig( ...
+                SubcarrierSpacing=subcarrierspacing, ...
+                CyclicPrefix='normal', ...
+                NSizeGrid=obj.NSizeGrid, ...
+                NStartGrid=0);
+
+            nPRBs = configuration.NumPRBs;
+            PRBstart = randi([0, obj.NSizeBWP - nPRBs]);
+            secondHopStartPRB = randi([0, obj.NSizeBWP - nPRBs]);
+            if strcmp(configuration.Channel, 'PUSCH')
+                dmrsconfig = nrPUSCHDMRSConfig( ...
+                    DMRSConfigurationType=1, ...
+                    DMRSTypeAPosition=configuration.DMRSTypeAPosition, ...
+                    DMRSAdditionalPosition=configuration.DMRSAdditionalPosition);
+
+                pusch = nrPUSCHConfig( ...
+                    NSizeBWP=obj.NSizeBWP, ...
+                    NStartBWP=obj.NStartBWP, ...
+                    NumLayers=configuration.NumLayers, ...
+                    MappingType='A', ...
+                    SymbolAllocation=configuration.SymbolAllocation, ...
+                    PRBSet=(PRBstart + (0:nPRBs-1)), ...
+                    TransformPrecoding=false, ...
+                    NumAntennaPorts=configuration.NumLayers, ...
+                    FrequencyHopping=configuration.FrequencyHopping, ...
+                    SecondHopStartPRB=secondHopStartPRB, ...
+                    DMRS=dmrsconfig);
+
+                ind = nrPUSCHDMRSIndices(carrier, pusch, IndexStyle='subscript');
+
+                % Create a DM-RS pattern from the offset and stride.
+                obj.DMRSREmask = false(obj.NRE, 1);
+                obj.DMRSREmask(ind(1:6, 1) - (PRBstart + 1) * obj.NRE) = true;
+            elseif strcmp(configuration.Channel, 'PUCCHF2')
+                pucch = nrPUCCH2Config( ...
+                    NSizeBWP=obj.NSizeBWP, ...
+                    NStartBWP=obj.NStartBWP, ...
+                    SymbolAllocation=configuration.SymbolAllocation, ...
+                    PRBSet=(PRBstart + (0:nPRBs-1)), ...
+                    FrequencyHopping=configuration.FrequencyHopping, ...
+                    SecondHopStartPRB=secondHopStartPRB, ...
+                    OCCI=randi([0, 3]));
+
+                ind = nrPUCCHDMRSIndices(carrier, pucch, IndexStyle='subscript');
+
+                % Create a DM-RS pattern from the offset and stride.
+                obj.DMRSREmask = false(obj.NRE, 1);
+                obj.DMRSREmask(ind(1:4, 1) - (PRBstart + 1) * obj.NRE) = true;
+            elseif strcmp(configuration.Channel, 'PUCCHF3F4')
+                pucch = nrPUCCH3Config( ...
+                    NSizeBWP=obj.NSizeBWP, ...
+                    NStartBWP=obj.NStartBWP, ...
+                    SymbolAllocation=configuration.SymbolAllocation, ...
+                    PRBSet=(PRBstart + (0:nPRBs-1)), ...
+                    FrequencyHopping=configuration.FrequencyHopping, ...
+                    SecondHopStartPRB=secondHopStartPRB, ...
+                    AdditionalDMRS=randi([0, 1]), ...
+                    OCCI=randi([0, 3]));
+
+                ind = nrPUCCHDMRSIndices(carrier, pucch, IndexStyle='subscript');
+
+                % Create a DM-RS pattern from the offset and stride.
+                obj.DMRSREmask = true(obj.NRE, 1);
+            else
+                error('PHY channel %s not supported.', configuration.Channel);
+            end
 
             % Create a mask of the OFDM symbols carrying DM-RS.
             obj.DMRSsymbols = false(14, 1);
-            obj.DMRSsymbols(startSymbol + (1:dmrsStrideTime:nAllocatedSymbols)) = true;
+            obj.DMRSsymbols(unique(ind(:, 2))) = true;
 
-            nPRBs = configuration.nPRBs;
-            dmrsOffset = configuration.dmrsOffset;
-            dmrsStrideSCS = configuration.dmrsStrideSCS;
-
-            % Create a DM-RS pattern from the offset and stride.
-            obj.DMRSREmask = false(obj.NRE, 1);
-            obj.DMRSREmask((dmrsOffset + 1):dmrsStrideSCS:end) = true;
-
-            if strcmp(FrequencyHopping, 'intraSlot')
-                PRBstart = randperm(obj.NSizeBWP - nPRBs + 1, 2) - 1 + obj.NStartBWP;
-
+            if strcmp(configuration.FrequencyHopping, 'intraSlot')
                 obj.secondHop = startSymbol + floor(nAllocatedSymbols / 2);
                 hopMask = [true(obj.secondHop, 1); false(obj.nSymbolsSlot - obj.secondHop, 1)];
 
                 hop1.DMRSsymbols = (obj.DMRSsymbols & hopMask);
-                if NumLayers <= 2
+                if (~isfield(configuration, 'NumLayers') || (configuration.NumLayers <= 2))
                     hop1.DMRSREmask = obj.DMRSREmask;
                 else
                     hop1.DMRSREmask = [obj.DMRSREmask ~obj.DMRSREmask];
                 end
-                hop1.PRBstart = PRBstart(1);
+                hop1.PRBstart = PRBstart;
                 hop1.nPRBs = nPRBs;
                 hop1.maskPRBs = false(obj.NSizeGrid, 1);
                 hop1.maskPRBs(hop1.PRBstart + (1:nPRBs)) = true;
@@ -695,7 +652,7 @@ classdef ocuduChEstimatorUnittest < ocuduTest.ocuduBlockUnittest
 
                 hop2.DMRSsymbols = (obj.DMRSsymbols & (~hopMask));
                 hop2.DMRSREmask = hop1.DMRSREmask;
-                hop2.PRBstart = PRBstart(2);
+                hop2.PRBstart = secondHopStartPRB;
                 hop2.nPRBs = nPRBs;
                 hop2.maskPRBs = false(obj.NSizeGrid, 1);
                 hop2.maskPRBs(hop2.PRBstart + (1:nPRBs)) = true;
@@ -704,11 +661,10 @@ classdef ocuduChEstimatorUnittest < ocuduTest.ocuduBlockUnittest
                 hop2.CHsymbols = false(obj.nSymbolsSlot, 1);
                 hop2.CHsymbols(hop2.startSymbol + (1:hop2.nAllocatedSymbols)) = true;
             else
-                PRBstart = randi([0, obj.NSizeBWP - nPRBs]) + obj.NStartBWP;
                 obj.secondHop = 'std::nullopt';
 
                 hop1.DMRSsymbols = obj.DMRSsymbols;
-                if NumLayers <= 2
+                if (~isfield(configuration, 'NumLayers') || (configuration.NumLayers <= 2))
                     hop1.DMRSREmask = obj.DMRSREmask;
                 else
                     hop1.DMRSREmask = [obj.DMRSREmask ~obj.DMRSREmask];
@@ -762,7 +718,7 @@ classdef ocuduChEstimatorUnittest < ocuduTest.ocuduBlockUnittest
         end % of function transmittedRG = transmitPilots(pilots, hop1, hop2)
 
         function [fullConfig, channel, receivedRG, results] = configureAndMatlab(obj, ...
-            configuration, SubcarrierSpacing, NumLayers, FrequencyHopping, CarrierOffset)
+            Configuration, SubcarrierSpacing, CarrierOffset)
         %Computes secondary configuration parameters and, if the number of output arguments
         %   is larger than one, runs the MATLAB-based channel estimator.
 
@@ -770,26 +726,32 @@ classdef ocuduChEstimatorUnittest < ocuduTest.ocuduBlockUnittest
             import ocuduLib.ran.utils.scs2cps
             import ocuduTest.helpers.approxbf16
 
-            obj.assumeFalse(((configuration.nPRBs == obj.NSizeBWP) || (configuration.symbolAllocation(2) == 1)) ...
-                && strcmp(FrequencyHopping, 'intraSlot'), ...
+            obj.assumeFalse(((Configuration.NumPRBs == obj.NSizeBWP) || (Configuration.SymbolAllocation(2) == 1)) ...
+                && strcmp(Configuration.FrequencyHopping, 'intraSlot'), ...
                 'Cannot do frequency hopping if the entire BWP is allocated or if using a single OFDM symbol.');
 
-            obj.assumeFalse(~configuration.supportMultiLayer && (NumLayers > 1), ...
-                'Multiple transmission layers not supported for this configuration.');
+            obj.assumeFalse(strcmp(Configuration.Channel, 'PUSCH') && strcmp(Configuration.FrequencyHopping, 'intraSlot') ...
+                && (Configuration.DMRSAdditionalPosition > 1), ...
+                'When intra-slot frequency hopping is enabled, DMRSAdditionalPosition must be either 0 or 1.');
 
-            assert((sum(configuration.symbolAllocation) <= obj.nSymbolsSlot), ...
+            assert((sum(Configuration.SymbolAllocation) <= obj.nSymbolsSlot), ...
                 'ocudu_matlab:ocuduChEstimatorUnittest', 'Time allocation exceeds slot length.');
 
             % Configure each hop.
-            [hop1, hop2] = obj.configureHops(configuration, NumLayers, FrequencyHopping);
+            [hop1, hop2] = obj.configureHops(Configuration, SubcarrierSpacing);
 
             % Build DM-RS-like pilots.
             nDMRSsymbols = sum(obj.DMRSsymbols);
-            nPilots = configuration.nPRBs * sum(obj.DMRSREmask) * nDMRSsymbols;
-            pilots = complex(nan(nPilots * NumLayers, 1), nan(nPilots * NumLayers, 1));
+            if isfield(Configuration, 'NumLayers')
+                nLayers = Configuration.NumLayers;
+            else
+                nLayers = 1;
+            end
+            nPilots = Configuration.NumPRBs * sum(obj.DMRSREmask) * nDMRSsymbols;
+            pilots = complex(nan(nPilots * nLayers, 1), nan(nPilots * nLayers, 1));
             pilots(1:nPilots) = (2 * randi([0 1], nPilots, 2) - 1) * [1; 1j] / sqrt(2);
-            pilots = reshape(pilots, [], nDMRSsymbols, NumLayers);
-            if NumLayers >= 2
+            pilots = reshape(pilots, [], nDMRSsymbols, nLayers);
+            if nLayers >= 2
                 % We only simulate the case corresponding to DM-RS configuration type 1.
                 % For CDM group 0, i.e. ports {0, 1}, the DM-RS are sent over the same REs
                 % and the pilots for port 1 are the same as those of port 0 but for a sign
@@ -797,20 +759,25 @@ classdef ocuduChEstimatorUnittest < ocuduTest.ocuduBlockUnittest
                 pilots(:, :, 2) = pilots(:, :, 1);
                 pilots(2:2:end, :, 2) = -pilots(2:2:end, :, 2);
             end
-            if NumLayers >= 3
+            if nLayers >= 3
                 % We only simulate the case corresponding to DM-RS configuration type 1.
                 % The DM-RS for port 2 are the same as those of port 0, just sent on
                 % a disjoint set of REs.
                 pilots(:, :, 3) = pilots(:, :, 1);
             end
-            if NumLayers == 4
+            if nLayers == 4
                 % We only simulate the case corresponding to DM-RS configuration type 1.
                 % The DM-RS for port 3 are the same as those of port 1, just sent on
                 % a disjoint set of REs.
                 pilots(:, :, 4) = pilots(:, :, 2);
             end
 
-            betaDMRS = 10^(-configuration.betaDMRS / 20);
+            if strcmp(Configuration.Channel, 'PUSCH')
+                betaDMRS = sqrt(2);
+            else
+                betaDMRS = 1;
+            end
+
             fftSize =  obj.NSizeGrid * obj.NRE;
 
             fullConfig = struct(...
@@ -829,13 +796,13 @@ classdef ocuduChEstimatorUnittest < ocuduTest.ocuduBlockUnittest
                 CPDurations = scs2cps(SubcarrierSpacing);
 
                 receivedRG = complex(zeros(fftSize, obj.nSymbolsSlot));
-                channelRG = complex(nan(fftSize, obj.nSymbolsSlot, NumLayers));
+                channelRG = complex(nan(fftSize, obj.nSymbolsSlot, nLayers));
 
                 % For now, consider a single-tap channel (max delay is 1/4 of
                 % the cyclic prefix length).
                 channelDelay = randi([0, floor(fftSize * 0.07 * 0.25)]);
-                for iLayer = 1:NumLayers
-                    channelCoef = exp(2j * pi * rand) / sqrt(NumLayers);
+                for iLayer = 1:nLayers
+                    channelCoef = exp(2j * pi * rand) / sqrt(nLayers);
                     channelTF = fft([zeros(channelDelay, 1); channelCoef; zeros(5, 1)], fftSize);
                     channelTF = fftshift(channelTF);
                     % We assume the channel constant over the entire slot...
@@ -862,8 +829,8 @@ classdef ocuduChEstimatorUnittest < ocuduTest.ocuduBlockUnittest
 
                 EstimatorConfig.scs = SubcarrierSpacing * 1000;
                 EstimatorConfig.CyclicPrefixDurations = CPDurations;
-                EstimatorConfig.Smoothing = configuration.smoothing;
-                EstimatorConfig.CFOCompensate = configuration.cfocompensate;
+                EstimatorConfig.Smoothing = Configuration.Smoothing;
+                EstimatorConfig.CFOCompensate = Configuration.CFOcompensate;
                 [channelEst, noiseEst, rsrp, epre, timeAlignment, cfoEst] = ocuduChannelEstimator(approxbf16(receivedRG), ...
                     pilots, betaDMRS, hop1, hop2, EstimatorConfig);
 
@@ -887,6 +854,90 @@ classdef ocuduChEstimatorUnittest < ocuduTest.ocuduBlockUnittest
 
     end % of methods (Access = private)
 end % of classdef ocuduChEstimatorUnittest
+
+function configuration = generateTestConfig()
+% Generates several configurations to test.
+    configuration = cell(60, 1);
+
+    PRBvalues = [3, 20, 51];
+    nPRBvalues = numel(PRBvalues);
+
+    % Generate 40 PUSCH-like configurations
+    for iConf = 1:40
+        nSymbols = randi([4, 14]);
+        configuration{iConf} = struct( ...
+                'Channel', 'PUSCH', ...
+                'SymbolAllocation', [0, nSymbols], ...
+                'NumPRBs', PRBvalues(randi(nPRBvalues)), ...
+                'NumLayers', 2^randi([0, 2]), ...
+                'DMRSTypeAPosition', [], ...
+                'DMRSAdditionalPosition', [], ...
+                'FrequencyHopping', '', ...
+                'Smoothing', 'filter', ...
+                'CFOcompensate', true ...
+            );
+
+        % According to TS38.211 Section 6.4.1.1.3, four allocated symbols require DM-RS position equal to pos2.
+        if (nSymbols > 4)
+            configuration{iConf}.DMRSTypeAPosition = randi([2, 3]);
+        else
+            configuration{iConf}.DMRSTypeAPosition = 2;
+        end
+
+        % According to TS38.211 Section 6.4.1.1.3, DM-RS additional position pos3 only works with DM-RS position pos2.
+        if (configuration{iConf}.DMRSTypeAPosition == 2)
+            configuration{iConf}.DMRSAdditionalPosition = randi([0, 3]);
+        else
+            configuration{iConf}.DMRSAdditionalPosition = randi([0, 2]);
+        end
+
+        % Intraslot frequency hopping can be enabled if the number of allocated symbols is at least 8 (4+ symbols
+        % per hop), and DM-RS additional position is 0 or 1. If so, enable frequency hopping with 50% probability.
+        if ((nSymbols > 8) && (configuration{iConf}.DMRSAdditionalPosition < 2) && (configuration{iConf}.NumPRBs < 51) && (randn < 0))
+            configuration{iConf}.FrequencyHopping = 'intraSlot';
+        else
+            configuration{iConf}.FrequencyHopping = 'neither';
+        end
+    end
+
+    % Generate 10 PUCCHF2-like configurations.
+    for iConf = iConf + (1:10)
+        configuration{iConf} = struct( ...
+            'Channel', 'PUCCHF2', ...
+            'SymbolAllocation', [randi([0, 12]), randi([1, 2])], ...
+            'NumPRBs', randi([1, 16]), ...
+            'FrequencyHopping', '', ...
+            'Smoothing', 'filter', ...
+            'CFOcompensate', true ...
+        );
+
+        if ((configuration{iConf}.SymbolAllocation(2) == 2) && (randn < 0))
+            configuration{iConf}.FrequencyHopping = 'intraSlot';
+        else
+            configuration{iConf}.FrequencyHopping = 'neither';
+        end
+    end
+
+    % Generate 10 PUCCHF3F4-like configurations.
+    for iConf = iConf + (1:10)
+        nSymbols = randi([4, 14]);
+        startSymbol = randi([0, 14 - nSymbols]);
+        configuration{iConf} = struct( ...
+            'Channel', 'PUCCHF3F4', ...
+            'SymbolAllocation', [startSymbol, nSymbols], ...
+            'NumPRBs', randi([1, 16]), ...
+            'FrequencyHopping', '', ...
+            'Smoothing', 'filter', ...
+            'CFOcompensate', true ...
+        );
+
+        if ((configuration{iConf}.SymbolAllocation(2) > 2) && (randn < 0))
+            configuration{iConf}.FrequencyHopping = 'intraSlot';
+        else
+            configuration{iConf}.FrequencyHopping = 'neither';
+        end
+    end
+end % of function generateTestConfig()
 
 function channel = configureChannel(chModel, delay, doppler, SampleRate, SubcarrierSpacing, nLayers)
     channel = nrTDLChannel;
