@@ -159,7 +159,7 @@ run matlab unit tests:
   script:
     - &inject_matlab_file |
       cp ${HARQ_ENTITY_PATH} ${CI_PROJECT_DIR}/apps/simulators/PUSCHBLER/+matlablicense/HARQEntity.m
-    - matlab -sd "./" -batch "addpath('.'); assertSuccess(runtests('unitTests', Tag='matlab code'))" -logfile matlablog.log
+    - matlab -sd "./" -batch "addpath('.'); assertSuccess(runtests('tests/smoke', Tag='matlab code'))" -logfile matlablog.log
   artifacts:
     when: always
     paths:
@@ -303,7 +303,7 @@ build ocudu with export on:
     when: always
     paths:
       - matlablog.log
-      - unitTests/**/conformance*.csv
+      - tests/conformance/conformanceResults/conformance*.csv
     reports:
     expire_in: 1 day
 
@@ -312,7 +312,7 @@ build mex basic tests:
   rules:
     - if: $ON_MR
   script:
-    - matlab -sd "./" -batch "addpath('.'); assertSuccess(runtests('unitTests', Tag='mex code'))" -logfile matlablog.log
+    - matlab -sd "./" -batch "addpath('.'); assertSuccess(runtests('tests/smoke', Tag='mex code'))" -logfile matlablog.log
 
 build mex full tests:
   extends: .build mex
@@ -341,7 +341,7 @@ build mex full tests:
     TEST: ""
     SUBSET: ""
   script:
-    - matlab -sd ./ -batch "addpath('.', '.gitlab'); res = launchconformance('unitTests/${TEST}', '${SUBSET}'); postprocessconformance(res);" -logfile matlablog.log
+    - matlab -sd ./ -batch "addpath('.', '.gitlab'); res = launchconformance('tests/conformance/${TEST}', '${SUBSET}'); postprocessconformance(res);" -logfile matlablog.log
   artifacts:
     <<: *mex_artifacts
     expire_in: 10 days
