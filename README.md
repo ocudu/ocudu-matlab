@@ -37,7 +37,7 @@ The repository is organized as follows.
 * [`+ocuduTest`](+ocuduTest): Testing framework and utilities. The content of this directory is intended for expert users only. Using functions and classes from this directory is discouraged.
 * [`apps`](apps): End user applications, including simulators and analyzers. See the [Apps](#apps) section for more details.
 * [`ocuduVectorTests`](ocuduVectorTests): Vector tests for the OCUDU software. This folder contains C++ code and it is meant to be imported from the OCUDU software as a plugin. See the dedicated [README](ocuduVectorTests/README.md) for more information.
-* [`unitTests`](unitTests): Repository CI/CD tools. The content of this directory is intended for expert users only.
+* [`tests`](tests): Repository CI/CD tools. The content of this directory is intended for expert users only.
 
 ### Help
 
@@ -219,43 +219,43 @@ See `help ocuduAllocationAnalyzer` for more details.
 
 ## Repository CI/CD
 ### CheckTests.m
-The class `unitTests/CheckTests` implements a series of checks to provide a basic level of quality assurance for the unit tests in the root folder.
+The class `tests/smoke/CheckTests` implements a series of checks to provide a basic level of quality assurance for the unit tests in the root folder.
 
 These checks have been designed mainly for automatic CI/CD procedures. Nevertheless, they can be executed locally by running the following commands from the *OCUDU MATLAB* root folder.
 ```matlab
 addpath .
-runtests("unitTests/CheckTests.m")
+runtests("tests/smoke/CheckTests.m")
 ```
 
 ### CheckSimulators.m
-The class `unitTests/CheckSimulators` carries out short runs of the simulators in the [Apps folder](#apps) to ensure their functioning.
+The class `tests/smoke/CheckSimulators` carries out short runs of the simulators in the [Apps folder](#apps) to ensure their functioning.
 
 These checks have been designed mainly for automatic CI/CD procedures. Nevertheless, they can be executed locally by running the following commands from the *OCUDU MATLAB* root folder.
 ```matlab
 addpath .
-runtests("unitTests/CheckSimulators.m")
+runtests("tests/smoke/CheckSimulators.m")
 ```
 
 ### CheckAnalyzers.m
-The class `unitTests/CheckAnalyzers` carries out a demo run of the analyzers in the [Apps folder](#apps) to ensure their functioning.
+The class `tests/smoke/CheckAnalyzers` carries out a demo run of the analyzers in the [Apps folder](#apps) to ensure their functioning.
 
 These checks have been designed mainly for automatic CI/CD procedures. Nevertheless, they can be executed locally by running the following commands from the *OCUDU MATLAB* root folder.
 ```matlab
 addpath .
-runtests("unitTests/CheckAnalyzers.m")
+runtests("tests/smoke/CheckAnalyzers.m")
 ```
 
 ### Conformance Tests
-The classes `CheckPUSCHConformance`, `CheckPUCCHF?Conformance` and `CheckPRACHConformace` run a set of conformance tests (as defined in *TS38.104* and *TS38.141*) of the corresponding PHY channel receivers.
+The classes `CheckPUSCHConformance`, `CheckPUCCHF?Conformance` and `CheckPRACHConformace` in the `tests/conformance` folder run a set of conformance tests (as defined in *TS38.104* and *TS38.141*) of the corresponding PHY channel receivers.
 
 These checks have been designed mainly for automatic CI/CD procedures. Nevertheless, they can be executed locally by running the following commands from the *OCUDU MATLAB* root folder (be aware that these tests may run for several hours).
 ```matlab
 addpath .
-runtests("unitTests/@CheckPUSCHConformance/CheckPUSCHConformance.m")
-runtests("unitTests/CheckPUCCHF0Conformance.m")
-runtests("unitTests/CheckPUCCHF1Conformance.m")
-runtests("unitTests/CheckPUCCHF2Conformance.m")
-runtests("unitTests/CheckPUCCHF3Conformance.m")
-runtests("unitTests/CheckPUCCHF4Conformance.m")
-runtests("unitTests/CheckPRACHConformance.m")
+runtests("tests/conformance/@CheckPUSCHConformance/CheckPUSCHConformance.m")
+runtests("tests/conformance/CheckPUCCHF0Conformance.m")
+runtests("tests/conformance/CheckPUCCHF1Conformance.m")
+runtests("tests/conformance/CheckPUCCHF2Conformance.m")
+runtests("tests/conformance/CheckPUCCHF3Conformance.m")
+runtests("tests/conformance/CheckPUCCHF4Conformance.m")
+runtests("tests/conformance/CheckPRACHConformance.m")
 ```

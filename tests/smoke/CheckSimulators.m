@@ -52,7 +52,7 @@ classdef CheckSimulators < matlab.unittest.TestCase
         function testPUSCHBLERmatlab(obj)
             import matlab.unittest.fixtures.CurrentFolderFixture
 
-            obj.applyFixture(CurrentFolderFixture('../apps/simulators/PUSCHBLER'));
+            obj.applyFixture(CurrentFolderFixture('../../apps/simulators/PUSCHBLER'));
 
             try
                 pp = PUSCHBLER;
@@ -81,7 +81,7 @@ classdef CheckSimulators < matlab.unittest.TestCase
         function testPRACHPERFmatlab(obj)
             import matlab.unittest.fixtures.CurrentFolderFixture
 
-            obj.applyFixture(CurrentFolderFixture('../apps/simulators/PRACHPERF'));
+            obj.applyFixture(CurrentFolderFixture('../../apps/simulators/PRACHPERF'));
 
             try
                 pp = PRACHPERF;
@@ -137,7 +137,7 @@ classdef CheckSimulators < matlab.unittest.TestCase
         function testPUCCHPERFF0matlab(obj, PUCCHTestType)
             import matlab.unittest.fixtures.CurrentFolderFixture
 
-            obj.applyFixture(CurrentFolderFixture('../apps/simulators/PUCCHPERF/'));
+            obj.applyFixture(CurrentFolderFixture('../../apps/simulators/PUCCHPERF/'));
 
             try
                 pp = PUCCHPERF;
@@ -178,7 +178,7 @@ classdef CheckSimulators < matlab.unittest.TestCase
         function testPUCCHPERFF1matlab(obj, PUCCHTestType)
             import matlab.unittest.fixtures.CurrentFolderFixture
 
-            obj.applyFixture(CurrentFolderFixture('../apps/simulators/PUCCHPERF'));
+            obj.applyFixture(CurrentFolderFixture('../../apps/simulators/PUCCHPERF'));
 
             try
                 pp = PUCCHPERF;
@@ -218,7 +218,7 @@ classdef CheckSimulators < matlab.unittest.TestCase
         function testPUCCHPERFF2matlab(obj, PUCCHTestType)
             import matlab.unittest.fixtures.CurrentFolderFixture
 
-            obj.applyFixture(CurrentFolderFixture('../apps/simulators/PUCCHPERF'));
+            obj.applyFixture(CurrentFolderFixture('../../apps/simulators/PUCCHPERF'));
 
             try
                 pp = PUCCHPERF;
@@ -253,7 +253,7 @@ classdef CheckSimulators < matlab.unittest.TestCase
         function testPUCCHPERFF3matlab(obj)
             import matlab.unittest.fixtures.CurrentFolderFixture
 
-            obj.applyFixture(CurrentFolderFixture('../apps/simulators/PUCCHPERF'));
+            obj.applyFixture(CurrentFolderFixture('../../apps/simulators/PUCCHPERF'));
 
             try
                 pp = PUCCHPERF;
@@ -288,7 +288,7 @@ classdef CheckSimulators < matlab.unittest.TestCase
         function testPUCCHPERFF4matlab(obj)
             import matlab.unittest.fixtures.CurrentFolderFixture
 
-            obj.applyFixture(CurrentFolderFixture('../apps/simulators/PUCCHPERF'));
+            obj.applyFixture(CurrentFolderFixture('../../apps/simulators/PUCCHPERF'));
 
             try
                 pp = PUCCHPERF;
@@ -326,7 +326,7 @@ classdef CheckSimulators < matlab.unittest.TestCase
             import matlab.unittest.fixtures.CurrentFolderFixture
             import matlab.unittest.constraints.IsFile
 
-            obj.applyFixture(CurrentFolderFixture('../apps/simulators/PUSCHBLER'));
+            obj.applyFixture(CurrentFolderFixture('../../apps/simulators/PUSCHBLER'));
 
             try
                 pp = PUSCHBLER;
@@ -367,7 +367,7 @@ classdef CheckSimulators < matlab.unittest.TestCase
             import matlab.unittest.fixtures.CurrentFolderFixture
             import matlab.unittest.constraints.IsFile
 
-            obj.applyFixture(CurrentFolderFixture('../apps/simulators/PUCCHPERF/'));
+            obj.applyFixture(CurrentFolderFixture('../../apps/simulators/PUCCHPERF/'));
 
             try
                 pp = PUCCHPERF;
@@ -413,7 +413,7 @@ classdef CheckSimulators < matlab.unittest.TestCase
             import matlab.unittest.fixtures.CurrentFolderFixture
             import matlab.unittest.constraints.IsFile
 
-            obj.applyFixture(CurrentFolderFixture('../apps/simulators/PUCCHPERF'));
+            obj.applyFixture(CurrentFolderFixture('../../apps/simulators/PUCCHPERF'));
 
             try
                 pp = PUCCHPERF;
@@ -460,7 +460,7 @@ classdef CheckSimulators < matlab.unittest.TestCase
             import matlab.unittest.fixtures.CurrentFolderFixture
             import matlab.unittest.constraints.IsFile
 
-            obj.applyFixture(CurrentFolderFixture('../apps/simulators/PUCCHPERF'));
+            obj.applyFixture(CurrentFolderFixture('../../apps/simulators/PUCCHPERF'));
 
             try
                 pp = PUCCHPERF;
@@ -502,7 +502,7 @@ classdef CheckSimulators < matlab.unittest.TestCase
             import matlab.unittest.fixtures.CurrentFolderFixture
             import matlab.unittest.constraints.IsFile
 
-            obj.applyFixture(CurrentFolderFixture('../apps/simulators/PUCCHPERF'));
+            obj.applyFixture(CurrentFolderFixture('../../apps/simulators/PUCCHPERF'));
 
             try
                 pp = PUCCHPERF;
@@ -543,7 +543,7 @@ classdef CheckSimulators < matlab.unittest.TestCase
             import matlab.unittest.fixtures.CurrentFolderFixture
             import matlab.unittest.constraints.IsFile
 
-            obj.applyFixture(CurrentFolderFixture('../apps/simulators/PUCCHPERF'));
+            obj.applyFixture(CurrentFolderFixture('../../apps/simulators/PUCCHPERF'));
 
             try
                 pp = PUCCHPERF;

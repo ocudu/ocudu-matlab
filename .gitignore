@@ -4,7 +4,7 @@
 # runOCUDUunittest results.
 /testvectorOutputs
 # Conformance tests CSV results.
-/unitTests/conformanceResults
+/tests/conformance/conformanceResults
 # MATLAB automatic save files.
 *.asv
 # MEX libraries.

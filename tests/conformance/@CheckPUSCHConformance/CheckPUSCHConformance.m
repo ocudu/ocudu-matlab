@@ -243,7 +243,7 @@ classdef CheckPUSCHConformance < matlab.unittest.TestCase
             obj.assumeGreaterThanOrEqual(maxLayers, TestConfig.NTxAnts, ...
                 sprintf('The current MEX version does not support more than %d layers, requested %d.', maxLayers, TestConfig.NTxAnts));
 
-            obj.applyFixture(CurrentFolderFixture('../apps/simulators/PUSCHBLER'));
+            obj.applyFixture(CurrentFolderFixture('../../apps/simulators/PUSCHBLER'));
 
             try
                 pp = PUSCHBLER;

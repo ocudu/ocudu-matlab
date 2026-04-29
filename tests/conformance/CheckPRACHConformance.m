@@ -71,7 +71,7 @@ classdef CheckPRACHConformance < matlab.unittest.TestCase
 
             import matlab.unittest.fixtures.CurrentFolderFixture
 
-            obj.applyFixture(CurrentFolderFixture('../apps/simulators/PRACHPERF'));
+            obj.applyFixture(CurrentFolderFixture('../../apps/simulators/PRACHPERF'));
 
             pp = obj.preparePRACH(TestConfig);
 
@@ -100,7 +100,7 @@ classdef CheckPRACHConformance < matlab.unittest.TestCase
 
             import matlab.unittest.fixtures.CurrentFolderFixture
 
-            obj.applyFixture(CurrentFolderFixture('../apps/simulators/PRACHPERF'));
+            obj.applyFixture(CurrentFolderFixture('../../apps/simulators/PRACHPERF'));
 
             pp = obj.preparePRACH(TestConfig);
 

@@ -43,7 +43,7 @@ classdef CheckAnalyzers < matlab.unittest.TestCase
         %   caused by redefining some MATLAB functions.
             import matlab.unittest.fixtures.CurrentFolderFixture
 
-            obj.applyFixture(CurrentFolderFixture('../apps/analyzers'));
+            obj.applyFixture(CurrentFolderFixture('../../apps/analyzers'));
 
             warn = warning('query', 'MATLAB:dispatcher:nameConflict');
             warning('off', 'MATLAB:dispatcher:nameConflict');

@@ -78,7 +78,7 @@ classdef CheckPUCCHF4Conformance < matlab.unittest.TestCase
             obj.assumeLessThanOrEqual(TestConfig.NRxAnts, 4, ...
                 'Configurations with more than 4 Rx antennas are not supported yet.');
 
-            obj.applyFixture(CurrentFolderFixture('../apps/simulators/PUCCHPERF'));
+            obj.applyFixture(CurrentFolderFixture('../../apps/simulators/PUCCHPERF'));
             pp = obj.preparePUCCH(TestConfig);
 
             mu = log2(TestConfig.SubcarrierSpacing / 15);

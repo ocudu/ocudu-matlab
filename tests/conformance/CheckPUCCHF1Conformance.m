@@ -71,7 +71,7 @@ classdef CheckPUCCHF1Conformance < matlab.unittest.TestCase
 
             import matlab.unittest.fixtures.CurrentFolderFixture
 
-            obj.applyFixture(CurrentFolderFixture('../apps/simulators/PUCCHPERF'));
+            obj.applyFixture(CurrentFolderFixture('../../apps/simulators/PUCCHPERF'));
 
             pp = obj.preparePUCCH(TestConfig);
 
@@ -102,7 +102,7 @@ classdef CheckPUCCHF1Conformance < matlab.unittest.TestCase
 
             import matlab.unittest.fixtures.CurrentFolderFixture
 
-            obj.applyFixture(CurrentFolderFixture('../apps/simulators/PUCCHPERF'));
+            obj.applyFixture(CurrentFolderFixture('../../apps/simulators/PUCCHPERF'));
 
             pp = obj.preparePUCCH(TestConfig);
 
@@ -135,7 +135,7 @@ classdef CheckPUCCHF1Conformance < matlab.unittest.TestCase
 
             import matlab.unittest.fixtures.CurrentFolderFixture
 
-            obj.applyFixture(CurrentFolderFixture('../apps/simulators/PUCCHPERF'));
+            obj.applyFixture(CurrentFolderFixture('../../apps/simulators/PUCCHPERF'));
 
             pp = obj.preparePUCCH(TestConfig);
 

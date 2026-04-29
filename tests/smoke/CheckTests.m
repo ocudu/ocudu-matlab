@@ -72,7 +72,7 @@ classdef CheckTests < matlab.unittest.TestCase
         %   in the ocudu_matlab root directory.
 
             % Get all .m files in root directory.
-            tmp = what('..');
+            tmp = what('../..');
             testName = tmp.m;
 
             % Remove files that are not unit tests.
@@ -94,7 +94,7 @@ classdef CheckTests < matlab.unittest.TestCase
             import matlab.unittest.fixtures.PathFixture
             import matlab.unittest.fixtures.TemporaryFolderFixture;
 
-            obj.applyFixture(PathFixture('..'));
+            obj.applyFixture(PathFixture('../..'));
 
             tmp = obj.applyFixture(TemporaryFolderFixture);
             obj.tmpOutputPath = tmp.Folder;
