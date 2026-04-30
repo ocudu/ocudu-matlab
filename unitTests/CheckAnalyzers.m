@@ -220,7 +220,10 @@ classdef CheckAnalyzers < matlab.unittest.TestCase
 
             % Check the extra output.
             obj.assertClass(extra, 'struct', 'Output "extra" is not a struct.');
-            obj.assertEmpty(extra, 'Output "extra" is not empty.');
+            obj.assertEqual(extra.NumHARQAck, 1, 'Wrong NumHARQAck.');
+            obj.assertEqual(extra.NumSR, 0, 'Wrong NumSR.');
+            obj.assertEqual(extra.NumCSIPart1, 0, 'Wrong NumCSIPart1.');
+            obj.assertEqual(extra.NumCSIPart2, 0, 'Wrong NumCSIPart2.');
         end % of function checkParserPUCCHF0(obj)
 
         function checkParserPUCCHF1(obj)
@@ -284,7 +287,10 @@ classdef CheckAnalyzers < matlab.unittest.TestCase
 
             % Check the extra output.
             obj.assertClass(extra, 'struct', 'Output "extra" is not a struct.');
-            obj.assertEmpty(extra, 'Output "extra" is not empty.');
+            obj.assertEqual(extra.NumHARQAck, 0, 'Wrong NumHARQAck.');
+            obj.assertEqual(extra.NumSR, 1, 'Wrong NumSR.');
+            obj.assertEqual(extra.NumCSIPart1, 0, 'Wrong NumCSIPart1.');
+            obj.assertEqual(extra.NumCSIPart2, 0, 'Wrong NumCSIPart2.');
         end % of function checkParserPUCCHF1(obj)
 
         function checkParserPUCCHF2(obj)
@@ -345,7 +351,10 @@ classdef CheckAnalyzers < matlab.unittest.TestCase
 
             % Check the extra output.
             obj.assertClass(extra, 'struct', 'Output "extra" is not a struct.');
-            obj.assertEmpty(extra, 'Output "extra" is not empty.');
+            obj.assertEqual(extra.NumHARQAck, 0, 'Wrong NumHARQAck.');
+            obj.assertEqual(extra.NumSR, 0, 'Wrong NumSR.');
+            obj.assertEqual(extra.NumCSIPart1, 7, 'Wrong NumCSIPart1.');
+            obj.assertEqual(extra.NumCSIPart2, 0, 'Wrong NumCSIPart2.');
         end % of function checkParserPUCCHF2(obj)
 
         function checkParserPUCCHF3(obj)
@@ -412,7 +421,10 @@ classdef CheckAnalyzers < matlab.unittest.TestCase
 
             % Check the extra output.
             obj.assertClass(extra, 'struct', 'Output "extra" is not a struct.');
-            obj.assertEmpty(extra, 'Output "extra" is not empty.');
+            obj.assertEqual(extra.NumHARQAck, 0, 'Wrong NumHARQAck.');
+            obj.assertEqual(extra.NumSR, 0, 'Wrong NumSR.');
+            obj.assertEqual(extra.NumCSIPart1, 4, 'Wrong NumCSIPart1.');
+            obj.assertEqual(extra.NumCSIPart2, 0, 'Wrong NumCSIPart2.');
         end % of function checkParserPUCCHF3(obj)
 
         function checkParserPUCCHF4(obj)
@@ -483,7 +495,10 @@ classdef CheckAnalyzers < matlab.unittest.TestCase
 
             % Check the extra output.
             obj.assertClass(extra, 'struct', 'Output "extra" is not a struct.');
-            obj.assertEmpty(extra, 'Output "extra" is not empty.');
+            obj.assertEqual(extra.NumHARQAck, 0, 'Wrong NumHARQAck.');
+            obj.assertEqual(extra.NumSR, 0, 'Wrong NumSR.');
+            obj.assertEqual(extra.NumCSIPart1, 4, 'Wrong NumCSIPart1.');
+            obj.assertEqual(extra.NumCSIPart2, 0, 'Wrong NumCSIPart2.');
         end % of function checkParserPUCCHF4(obj)
 
         function checkParserPRACH(obj)
