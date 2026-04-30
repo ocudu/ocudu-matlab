@@ -338,14 +338,6 @@ function mustBeMultiplexList(a)
         throwAsCaller(MException(eidType, msgType));
     end
 
-    % Cannot mix SR and ACK PUCCHs.
-    nSR = sum(allBits == 0);
-    if ((nSR > 0) && (nSR < numel(allBits)))
-        eidType = 'mustBeMultiplexList:mixedPUCCHTypes';
-        msgType = 'Cannot mix PUCCH carrying HARQ-ACK bits and PUCCH carrying SR bits.';
-        throwAsCaller(MException(eidType, msgType));
-    end
-
     % Check the uniqueness of the entries.
     aHash = 12 * allShifts + allOCCI;
     if numel(unique(aHash)) ~= numel(a)
