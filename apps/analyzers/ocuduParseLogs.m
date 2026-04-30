@@ -7,8 +7,8 @@
 %   PHYCH   - a PHY uplink channel configuration object (specifically, an
 %             nrPUSCHConfig, an nrPUCCHNConfig, N=1,2,3,4, or an nrPRACHConfig object)
 %   EXTRA   - a struct with PUSCH additional information, namely redundancy
-%             version, transport block size and target code rate (for PUCCH and PRACH,
-%             the struct is empty).
+%             version, transport block size and target code rate for PUSCH, number of
+%             SR, ACK and CSI bits for PUCCH (for PRACH, the struct is empty).
 %
 %   Remark: The nrPRACHConfig object assumes PRACH root sequence index 1 (the default
 %   value in OCUDU gNB). Similarly, the PRACH preamble index is set to the first
@@ -136,6 +136,10 @@ function [carrier, phych, extra] = ocuduParseLogs
         error('Invalid channel type: can only parse PUSCH, PUCCH and PRACH logs.');
     end
 
+    nACK = 0;
+    nCSI1 = 0;
+    nCSI2 = 0;
+    nSR = 0;
     % Now parse all lines and get the values we need.
     for iLine = 2:nLines
         parameter = split(strtrim(allLines{iLine}), '=');
@@ -262,6 +266,19 @@ function [carrier, phych, extra] = ocuduParseLogs
                 % This applies to PUCCH Format 4 only.
                 sf = sscanf(parameter{2}, '%d');
                 phych.SpreadingFactor = sf;
+            case 'ack'
+                % This applies to PUCCH only.
+                nACK = numel(parameter{2});
+            case 'csi1'
+                % This applies to PUCCH only.
+                nCSI1 = numel(parameter{2});
+            case 'csi2'
+                % This applies to PUCCH only.
+                nCSI2 = numel(parameter{2});
+            case 'sr'
+                % This applies to PUCCH F0, F2, F3, F4. (Recall that, for PUCCH F1, the SR
+                % is deduced from the resource used to transmit.)
+                nSR = numel(parameter{2});
             otherwise
         end
     end
@@ -275,7 +292,14 @@ function [carrier, phych, extra] = ocuduParseLogs
         extra = struct('RV', rv, 'TargetCodeRate', tcr, 'TransportBlockLength', tbs * 8, ...
             'OACK', oack, 'OCSI1', ocsi1, 'DCPosition', dcPosition);
     else
-        extra = struct([]);
+        extra = struct('NumHARQAck', nACK, 'NumSR', 0, 'NumCSIPart1', nCSI1, 'NumCSIPart2', nCSI2);
+        if (format ~= 1)
+            extra.NumSR = nSR;
+        elseif (nACK == 0)
+            % For PUCCH F1, if there are no transmitted ACK bits we still need to
+            % check for the SR.
+            extra.NumSR = 1;
+        end
     end
 end
 

@@ -1,8 +1,9 @@
 %ocuduPUCCHAnalyzer Analyzes a PUCCH transmission from a resource grid.
-%   ocuduPUCCHAnalyzer(CARRIER, PUCCH, RGFILENAME, RGOFFSET, RGSIZE) analyzes the
+%   ocuduPUCCHAnalyzer(CARRIER, PUCCH, EXTRA, RGFILENAME, RGOFFSET, RGSIZE) analyzes the
 %   NR Physical Uplink Control Channel transmission detailed by the carrier
-%   configuration CARRIER and by the control channel configuration PUCCH (either
-%   Format 1 or Format 2). The resource grid IQ samples are stored in the
+%   configuration CARRIER and by the control channel configuration PUCCH. The
+%   structure EXTRA specifies the number of bits in the UCI message (i.e., NumHARQAck,
+%   NumSR, NumCSIPart1, NumCSIPart2). The resource grid IQ samples are stored in the
 %   binary file RGFILENAME. RGOFFSET and RGSIZE are the offset and size, as
 %   a number of single-precision complex floating point numbers, of the slot
 %   containing the PUCCH transmission inside the binary file.
@@ -14,21 +15,22 @@
 %   %    2023-06-07T20:54:24.502277 [UL-PHY2 ] [D] [  584.19] PUCCH: rnti=0x4601 format=1 ...
 %
 %   % Use ocuduParseLogs to populate the carrier and PUCCH configuration objects
-%   % (you will be asked to select the PUCCH entry of the logs):
-%   [carrier, pucch] = ocuduParseLogs
+%   % as well as the extra structure (you will be asked to select the PUCCH entry of the logs):
+%   [carrier, pucch, extra] = ocuduParseLogs
 %
 %   % Launch the analyzer
-%   ocuduPUCCHAnalyzer(carrier, pucch, 'rx_symbols.bin', 636504, 45864)
+%   ocuduPUCCHAnalyzer(carrier, pucch, extra, 'rx_symbols.bin', 636504, 45864)
 %
 %   See also ocuduParseLogs.
 
 % SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 % SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-function ocuduPUCCHAnalyzer(carrier, pucch, rgFilename, rgOffset, rgSize)
+function ocuduPUCCHAnalyzer(carrier, pucch, extra, rgFilename, rgOffset, rgSize)
     arguments
         carrier    (1, 1) nrCarrierConfig
         pucch      (1, 1) {mustBeA(pucch, ["nrPUCCH0Config", "nrPUCCH1Config", "nrPUCCH2Config", "nrPUCCH3Config", "nrPUCCH4Config"])}
+        extra      (1, 1) struct
         rgFilename (1, :) char {mustBeFile}
         rgOffset   (1, 1) double {mustBeInteger, mustBePositive}
         rgSize     (1, 1) double {mustBeInteger, mustBePositive}
@@ -57,10 +59,41 @@ function ocuduPUCCHAnalyzer(carrier, pucch, rgFilename, rgOffset, rgSize)
     % Perform equalization.
     pucchEq = nrEqualizeMMSE(pucchRx, pucchHest, noiseEst);
 
-    % % Decode PUCCH symbols
-    % % TODO: For this, we need to log the number of uncoded UCI bits, which is not
-    % %       done at the moment.
-    % [uciLLRs, rxSymbols] = nrPUCCHDecode(carrier, pucch, ouci, pucchEq, noiseEst);
+    % Decode PUCCH symbols
+    isdecodable = true;
+    if isa(pucch, 'nrPUCCH1Config')
+        % If there are no ACK bits, we still need to check for SR.
+        ouci = max(extra.NumHARQAck, 1);
+    elseif isa(pucch, 'nrPUCCH2Config')
+        ouci = extra.NumHARQAck + extra.NumSR + extra.NumCSIPart1 + extra.NumCSIPart2;
+    else
+        %TODO: format 3 and 4 should be the same as format 2, but I need to generate
+        % logs to test. Format 0 should also be easy, but again logs needed.
+        isdecodable = false;
+        warning('ocudu_matlab:ocuduPUCCHAnalyzer', 'PUCCH decoding not yet available for Formats 0, 3, 4.');
+    end
+
+    if isdecodable
+        [uciLLRs, rxSymbols, metric] = nrPUCCHDecode(carrier, pucch, ouci, pucchEq, noiseEst);
+
+        if isa(pucch, 'nrPUCCH1Config')
+            % For F1, nrPUCCHDecode returns hard (as opposed to soft) bits.
+            fprintf('Received bits:\n');
+            disp(uciLLRs{1});
+        else
+            fprintf('Received LLRs:\n');
+            disp(uciLLRs{1});
+
+            uciBits = nrUCIDecode(uciLLRs{1}, ouci);
+            fprintf('Received bits:\n');
+            disp(uciBits);
+        end
+        fprintf('Received constellation symbols:\n');
+        disp(rxSymbols);
+        fprintf('Detection metric (if applicable):\n');
+        disp(metric);
+    end
+
 
     figRG = figure("Name", "ocuduPUCCHAnalyzer: Resource grid amplitude");
     tiledlayout(nPorts, 1);
@@ -114,7 +147,9 @@ function ocuduPUCCHAnalyzer(carrier, pucch, rgFilename, rgOffset, rgSize)
     end
 
     figure
+    tiledlayout('flow')
     % Plot detected constellation.
+    nexttile
     plot(real(pucchEq), imag(pucchEq), 'x');
     grid on;
     xlabel('Real');
@@ -122,10 +157,12 @@ function ocuduPUCCHAnalyzer(carrier, pucch, rgFilename, rgOffset, rgSize)
     title('ocuduPUCCHAnalyzer: Equalized constellation');
     axis([-1.2, 1.2, -1.2, 1.2])
 
-    % % Plot soft bits histogram.
-    % subplot(NumYPlots, NumXPlots, 5);
-    % histogram(uciLLRs, 'Normalization', 'pdf');
-    % grid on;
-    % xlabel('Soft bits');
-    % ylabel('Soft bit count');
-    % title('Received soft bit distribution');
+    if (~isa(pucch, 'nrPUCCH1Config') && ~isa(pucch, 'nrPUCCH0Config'))
+        % Plot soft bits histogram.
+        nexttile
+        histogram(uciLLRs{1}, 'Normalization', 'pdf');
+        grid on;
+        xlabel('Soft bits');
+        ylabel('Soft bit count');
+        title('Received soft bit distribution');
+    end
