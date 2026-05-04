@@ -159,11 +159,15 @@ run matlab unit tests:
   script:
     - &inject_matlab_file |
       cp ${HARQ_ENTITY_PATH} ${CI_PROJECT_DIR}/apps/simulators/PUSCHBLER/+matlablicense/HARQEntity.m
-    - matlab -sd "./" -batch "addpath('.'); assertSuccess(runtests('tests/smoke', Tag='matlab code'))" -logfile matlablog.log
+    - |
+      matlab -sd "./" -batch "addpath('.', '.gitlab/matlab'); \
+      runsmoketests('matlab code', 'run_matlab_unit_tests_xunit.xml');" \
+      -logfile matlablog.log
   artifacts:
     when: always
     paths:
       - matlablog.log
+      - run_matlab_unit_tests_xunit.xml
     expire_in: 1 day
 
 ################################################################################
@@ -189,11 +193,15 @@ build test vectors:
   script:
     - export ARTIFACTSDIR="${CI_PROJECT_DIR}/artifacts"
     - mkdir -p $ARTIFACTSDIR
-    - matlab -sd ./ -batch "[allTests, runner] = runOCUDUunittest('all', 'testvector', RandomShuffle=${RANDOM_TESTS}); allResults = runner.run(allTests); ocuduTest.copyOCUDUtestvectors('testvectorOutputs', '$ARTIFACTSDIR'); assertSuccess(allResults)" -logfile matlablog.log
+    - |
+      matlab -sd ./ -batch "addpath('.', '.gitlab/matlab'); \
+      runvectortests('testvector', ${RANDOM_TESTS}, 'build_test_vectors_xunit.xml', '${ARTIFACTSDIR}');" \
+      -logfile matlab.log
   artifacts:
     when: always
     paths:
       - artifacts/
+      - build_test_vectors_xunit.xml
       - matlablog.log
     expire_in: 10 days
 
@@ -303,6 +311,7 @@ build ocudu with export on:
     when: always
     paths:
       - matlablog.log
+      - build_mex_*_xunit.xml
       - tests/conformance/conformanceResults/conformance*.csv
     reports:
     expire_in: 1 day
@@ -312,7 +321,10 @@ build mex basic tests:
   rules:
     - if: $ON_MR
   script:
-    - matlab -sd "./" -batch "addpath('.'); assertSuccess(runtests('tests/smoke', Tag='mex code'))" -logfile matlablog.log
+    - |
+      matlab -sd "./" -batch "addpath('.', '.gitlab/matlab'); \
+      runsmoketests('mex code', 'build_mex_basic_tests_xunit.xml');" \
+      -logfile matlablog.log
 
 build mex full tests:
   extends: .build mex
@@ -324,7 +336,10 @@ build mex full tests:
       variables:
         RANDOM_TESTS: "true"
   script:
-    - matlab -sd ./ -batch "[allTests, runner] = runOCUDUunittest('all', 'testmex', RandomShuffle=${RANDOM_TESTS}); allResults = runner.run(allTests); assertSuccess(allResults)" -logfile matlablog.log
+    - |
+      matlab -sd ./ -batch "addpath('.', '.gitlab/matlab'); \
+      runvectortests('testmex', ${RANDOM_TESTS}, 'build_mex_full_tests_xunit.xml');" \
+      -logfile matlab.log
   artifacts:
     <<: *mex_artifacts
     expire_in: 10 days
@@ -339,9 +354,14 @@ build mex full tests:
     - allow_failure: true
   variables:
     TEST: ""
+    TESTMARKER: ""
     SUBSET: ""
   script:
-    - matlab -sd ./ -batch "addpath('.', '.gitlab'); res = launchconformance('tests/conformance/${TEST}', '${SUBSET}'); postprocessconformance(res);" -logfile matlablog.log
+    - |
+      matlab -sd ./ -batch "addpath('.', '.gitlab/matlab'); \
+      res = launchconformance('tests/conformance/${TEST}', '${SUBSET}', 'build_mex_conformance_xunit.xml', '${TESTMARKER}'); \
+      postprocessconformance(res);" \
+      -logfile matlablog.log
   artifacts:
     <<: *mex_artifacts
     expire_in: 10 days
@@ -354,6 +374,7 @@ build mex conformance even:
   parallel:
     matrix:
       - TEST: "@CheckPUSCHConformance/CheckPUSCHConformance.m"
+        TESTMARKER: "PLACEHOLDEREXAMPLE"
         SUBSET:
           - ".+Table8_2_1_2_1.+"       # Table TS38.104 V15.19.0 Table 8.2.1.2-1 (Type A,   5 MHz, 15 kHz)
           - ".+Table8_2_1_2_2.+"       # Table TS38.104 V15.19.0 Table 8.2.1.2-2 (Type A,  10 MHz, 15 kHz)
