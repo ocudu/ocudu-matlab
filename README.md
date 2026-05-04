@@ -1,5 +1,11 @@
 # OCUDU MATLAB
 
+![Code](https://img.shields.io/badge/code-MATLAB-informational)
+![Code](https://img.shields.io/badge/code-C++17-informational)
+![Code](https://img.shields.io/badge/build-CMake-informational)
+[![License](https://img.shields.io/badge/license-BSD--3--Clause--Open--MPI-blue)](https://spdx.org/licenses/BSD-3-Clause-Open-MPI.html)
+
+
 *OCUDU MATLAB* provides a number of MATLAB-based tools for testing and benchmarking the [OCUDU](https://gitlab.com/ocudu/ocudu) software.
 
 ## Overview
