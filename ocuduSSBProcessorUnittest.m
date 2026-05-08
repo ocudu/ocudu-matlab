@@ -19,7 +19,7 @@
 %
 %   SSBpattern - SSB pattern ('A', 'B', 'C', 'D', 'E').
 %   Lmax       - Maximum number of SSBs within an SSB set (4, 8, 64).
-%   betaPSS    - PSS scaling factor (0, -3).
+%   betaPSS    - PSS scaling factor (0, 3).
 %   SSBindex   - SSB index (0...63).
 %   subframeIndex - Index of an SSB within the set transmitted in a given half-frame (0...3).
 %   NCellID  - PHY-layer cell ID (0...1007).
@@ -62,8 +62,8 @@ classdef ocuduSSBProcessorUnittest < ocuduTest.ocuduBlockUnittest
         %Maximum number of SSBs within an SSB set (4, 8, 64).
         Lmax = {4, 8, 64}
 
-        %PSS scaling factor in dB (0, -3).
-        PSSscale = {0, -3}
+        %PSS scaling factor in dB (0, 3).
+        PSSscale = {0, 3}
 
         %SSB index (0...63).
         SSBindex = num2cell(0:63)
@@ -203,10 +203,13 @@ classdef ocuduSSBProcessorUnittest < ocuduTest.ocuduBlockUnittest
                 % Create common SCS string assuming it is equal to the SS/PBCH block SCS.
                 commonSCSStr = sprintf('subcarrier_spacing::kHz%d', subcarrierSpacing);
 
+                % Create a PSS to SSS power scaling string.
+                PSSscaleStr = sprintf('ssb_pss_to_sss_epre::dB_%d', PSSscale);
+
                 % Generate the test case entry.
                 testCaseString = testCase.testCaseToString(testID, ...
                     {{numerology, SFNLoc, subframeIndexLoc, slotInSubframe}, NCellIDLoc, ...
-                        PSSscale, SSBindex, Lmax, commonSCSStr, SSBoffset, pointAoffset, ...
+                        PSSscaleStr, SSBindex, Lmax, commonSCSStr, SSBoffset, pointAoffset, ...
                         ['ssb_pattern_case::', upper(SSBpattern)], randomMIB, ...
                         SSBportsStr}, true, '_test_output');
 
