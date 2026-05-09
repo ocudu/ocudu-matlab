@@ -189,11 +189,14 @@ for iPort=1:nPorts
     xlabel('Symbol');
     ylabel('Subcarrier');
     zlabel('Angle [rad]');
-    zmin = min(angle(H(:,:,iPort)), [], 'all') * 0.9;
-    zmax = max(angle(H(:,:,iPort)), [], 'all') * 1.1;
+    zmin = min(angle(H(:,:,iPort)), [], 'all');
+    zmax = max(angle(H(:,:,iPort)), [], 'all');
     if zmin == zmax
         zmin = zmin - 0.5;
         zmax = zmax + 0.5;
+    else
+        zmin = zmin * 0.9;
+        zmax = zmax * 1.1;
     end
     axis([0, nSymbols - 1, 0, nSubcarriers - 1, zmin, zmax]);
 end
