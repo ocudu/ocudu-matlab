@@ -7,8 +7,9 @@
 %   PRB1      - the allocated PRB set
 %   PRB2      - the allocated PRB set after hopping, if applicable (empty otherwise)
 %   Symbols   - the allocated OFDM symbols
-%   ICS       - the initial cyclic shift (only for PUCCH F1)
-%   OCCI      - the orthogonal cover code index (only for PUCCH F1).
+%   ICS       - the initial cyclic shift (only for PUCCH F0 and F1)
+%   OCCI      - the orthogonal cover code index (only for PUCCH F1 and F4).
+%   OCCLength - the OCC length / spreading factor (only for PUCCH F4).
 %
 %   The function asks the user to copy the relevant section of the logs into
 %   the system clipboard. Log level can be either INFO or DEBUG.
@@ -61,15 +62,18 @@ function grants = ocuduAllocationAnalyzer
     nSymbols = 14;
     resourceGrid = zeros(gridSize, nSymbols);
 
-    pucchValues = [0; 1; 2];
-    puschValue = 3;
-    conflictValue = 4;
+    pucchValues = [1; 2; 3; 4; 5];
+    puschValue = max(pucchValues) + 1;
+    srsValue = puschValue + 1;
+    conflictValue = srsValue + 1;
     for g = grants'
         switch g.Channel
             case 'PUSCH'
                 value = puschValue;
             case 'PUCCH'
                 value = pucchValues(g.Format + 1);
+            case 'SRS'
+                value = srsValue;
         end
 
         % Render the current grant.
@@ -77,8 +81,8 @@ function grants = ocuduAllocationAnalyzer
         if isempty(g.PRB2)
             rgTmp(g.PRB1, g.Symbols) = value;
         else
-            nSymbols = numel(g.Symbols);
-            hop1end = floor(nSymbols/2);
+            nHopSymbols = numel(g.Symbols);
+            hop1end = floor(nHopSymbols/2);
 
             rgTmp(g.PRB1, g.Symbols(1:hop1end)) = value;
             rgTmp(g.PRB2, g.Symbols(hop1end+1:end)) = value;
@@ -87,10 +91,8 @@ function grants = ocuduAllocationAnalyzer
         % Check whether the current grant conflicts with previous ones.
         mask = (resourceGrid > 0) & (rgTmp > 0);
 
-        % Mark conflicting RBs.
+        % After adding rgTmp, conflicted cells will read exactly conflictValue.
         resourceGrid(mask) = conflictValue - value;
-
-        % Mark grant.
         resourceGrid = resourceGrid + rgTmp;
     end
 
@@ -103,15 +105,13 @@ function grants = ocuduAllocationAnalyzer
     ylabel('Resource block');
     grid on;
 
-    % Fine-tuned color map.
-    maxColor = conflictValue;
     jj = jet(256);
-    colormap(jj(round(linspace(1, 256, maxColor+1)), :));
+    colormap(jj(round(linspace(1, 256, conflictValue+1)), :));
 
     % Customize the colorbar ticks and labels.
     c = colorbar;
-    c.Ticks = ((0:maxColor) + 0.5) * maxColor / (maxColor + 1);
-    c.TickLabels = ["Empty"; "PUCCH F1"; "PUCCH F2"; "PUSCH"; "CONFLICT"];
+    c.Ticks = ((0:conflictValue) + 0.5) * conflictValue / (conflictValue + 1);
+    c.TickLabels = ["Empty"; "PUCCH F0"; "PUCCH F1"; "PUCCH F2"; "PUCCH F3"; "PUCCH F4"; "PUSCH"; "SRS"; "CONFLICT"];
 end
 
 % Extracts the relevant grant information from the logs.
@@ -124,9 +124,10 @@ function grants = extractData(allLines)
         'PRB2', [], ...
         'Symbols', [], ...
         'ICS', [], ...
-        'OCCI', []);
+        'OCCI', [], ...
+        'OCCLength', []);
 
-    channelPattern = ("PUCCH" | "PUSCH" | "PRACH") + ":";
+    channelPattern = ("PUCCH" | "PUSCH" | "PRACH" | "SRS") + ":";
     usedLines = 0;
     for iLine = 1:nLines
         line = string(allLines{iLine});
@@ -135,8 +136,8 @@ function grants = extractData(allLines)
         switch channel
         case "PUCCH:"
             pucchGrant = parsePUCCH(line);
-            % Only use the PUCCH grant if it's not a PUCCH F1 that doesn't multiplex with a previous grant.
-            isNew = (pucchGrant.Format ~= 1) || ~isMultiplexed(pucchGrant, grants(1:usedLines));
+            % Only use the PUCCH grant if it's not a PUCCH F1/F4 that multiplexes with a previous grant.
+            isNew = ~ismember(pucchGrant.Format, [1, 4]) || ~isMultiplexed(pucchGrant, grants(1:usedLines));
             if isNew
                 usedLines = usedLines + 1;
                 grants(usedLines) = pucchGrant;
@@ -148,6 +149,10 @@ function grants = extractData(allLines)
         case "PRACH:"
             % todo
             warning('ocudu_matlab:ocuduAllocationAnalyzer', 'PRACH not supported yet.');
+        case "SRS:"
+            usedLines = usedLines + 1;
+            grants(usedLines).Channel = "SRS";
+            grants = processSRS(grants, line, usedLines);
         otherwise
             error('Shouldn''t be here');
         end
@@ -162,9 +167,7 @@ function grants = processPUSCH(grants, line, iLine)
     prbs = sscanf(prbsString, '%d, %d');
     grants(iLine).PRB1 = (prbs(1) + 1):prbs(2);
 
-    symbString = extractBetween(line, 'symb=[', ')');
-    symbols = sscanf(symbString, '%d, %d');
-    grants(iLine).Symbols = (symbols(1) + 1):symbols(2);
+    grants(iLine).Symbols = parseSymbolRange(line);
 end
 
 % Extract the relevant information from a PUCCH log line.
@@ -178,9 +181,10 @@ function pucchGrant = parsePUCCH(line)
         'PRB2', [], ...
         'Symbols', [], ...
         'ICS', [], ...
-        'OCCI', []);
+        'OCCI', [], ...
+        'OCCLength', []);
 
-    if (format == 1)
+    if ((format == 0) || (format == 1))
         prb = double(extractBetween(line, 'prb1=', ' '));
         pucchGrant.PRB1 = prb + 1;
 
@@ -190,8 +194,10 @@ function pucchGrant = parsePUCCH(line)
         end
 
         pucchGrant.ICS = double(extractBetween(line, 'cs=', ' '));
-        pucchGrant.OCCI = double(extractBetween(line, 'occ=', ' '));
-    elseif (format == 2)
+        if (format == 1)
+            pucchGrant.OCCI = double(extractBetween(line, 'occ=', ' '));
+        end
+    elseif ((format == 2) || (format == 3) || (format == 4))
         prbsString = extractBetween(line, 'prb=[', ')');
         prbs = sscanf(prbsString, '%d, %d');
         pucchGrant.PRB1 = (prbs(1) + 1):prbs(2);
@@ -201,34 +207,59 @@ function pucchGrant = parsePUCCH(line)
             prbs = sscanf(prbsString, '[%d, %d)');
             pucchGrant.PRB2 = (prbs(1) + 1):prbs(2);
         end
+
+        if (format == 4)
+            pucchGrant.OCCI      = double(extractBetween(line, 'occ=', ' '));
+            pucchGrant.OCCLength = double(extractBetween(line, 'occ_len=', ' '));
+        end
     else
-        warning('ocudu_matlab:ocuduAllocationAnalyzer', 'PUCCH Format %d not supported yet.', format);
+        warning('ocudu_matlab:ocuduAllocationAnalyzer', 'Unknown PUCCH Format %d.', format);
     end
 
-    symbString = extractBetween(line, 'symb=[', ')');
-    symbols = sscanf(symbString, '%d, %d');
-
-    pucchGrant.Symbols = (symbols(1) + 1):symbols(2);
+    pucchGrant.Symbols = parseSymbolRange(line);
 end
 
 % Checks whether pucchGrant is part of a multiplexed resource.
 function flag = isMultiplexed(pucchGrant, grants)
 
-    % Only PUCCH Format 1 can be multiplexed.
-    mask = strcmp([grants.Channel], "PUCCH");
-    mask = mask & ([grants.Format] == 1);
+    % From all grants, only check those that correspond to a PUCCH channel with the
+    % same format as pucchGrant.
+    mask = strcmp([grants.Channel], "PUCCH") & ([grants.Format] == pucchGrant.Format);
 
     flag = false;
     for u = grants(mask)'
-        % Multiplexed if same symbols...
-        flag = isequal(pucchGrant.Symbols, u.Symbols);
-        % and same PRBs ...
-        flag = flag && isequal(pucchGrant.PRB1, u.PRB1);
-        flag = flag && isequal(pucchGrant.PRB2, u.PRB2);
-        % but different (ICS, OCCI) pair.
-        flag = flag && ((pucchGrant.ICS ~= u.ICS) || (pucchGrant.OCCI ~= u.OCCI));
+        sameLocation = isequal(pucchGrant.Symbols, u.Symbols) ...
+            && isequal(pucchGrant.PRB1, u.PRB1) ...
+            && isequal(pucchGrant.PRB2, u.PRB2);
+        if ~sameLocation
+            continue;
+        end
+        if (pucchGrant.Format == 1)
+            % F1: multiplexed if (ICS, OCCI) pair differs.
+            flag = (pucchGrant.ICS ~= u.ICS) || (pucchGrant.OCCI ~= u.OCCI);
+        elseif (pucchGrant.Format == 4)
+            % F4: multiplexed if same OCCLength but different OCCI.
+            flag = (pucchGrant.OCCLength == u.OCCLength) && (pucchGrant.OCCI ~= u.OCCI);
+        else
+            error('ocudu_matlab:ocuduAllocationAnalyzer', 'Unexpected multiplexed PUCCH format %d.', pucchGrant.Format);
+        end
         if flag
             break;
         end
     end
+end
+
+% Extract the relevant information from an SRS log line.
+function grants = processSRS(grants, line, iLine)
+    prbsString = extractBetween(line, 'crb=[', ')');
+    prbs = sscanf(prbsString, '%d..%d');
+    grants(iLine).PRB1 = (prbs(1) + 1):prbs(2);
+
+    grants(iLine).Symbols = parseSymbolRange(line);
+end
+
+function symbols = parseSymbolRange(line)
+    symbString = extractBetween(line, 'symb=[', ')');
+    vals = sscanf(symbString, '%d, %d');
+    symbols = (vals(1) + 1):vals(2);
 end
