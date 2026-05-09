@@ -60,41 +60,44 @@ function ocuduPUCCHAnalyzer(carrier, pucch, extra, rgFilename, rgOffset, rgSize)
     pucchEq = nrEqualizeMMSE(pucchRx, pucchHest, noiseEst);
 
     % Decode PUCCH symbols
-    isdecodable = true;
-    if isa(pucch, 'nrPUCCH1Config')
+    if isa(pucch, 'nrPUCCH0Config')
+        if (extra.NumSR == 1)
+            ouci = [extra.NumHARQAck; extra.NumSR];
+        else
+            ouci = extra.NumHARQAck;
+        end
+        pucchEq = pucchRx;
+    elseif isa(pucch, 'nrPUCCH1Config')
         % If there are no ACK bits, we still need to check for SR.
         ouci = max(extra.NumHARQAck, 1);
-    elseif isa(pucch, 'nrPUCCH2Config')
-        ouci = extra.NumHARQAck + extra.NumSR + extra.NumCSIPart1 + extra.NumCSIPart2;
     else
-        %TODO: format 3 and 4 should be the same as format 2, but I need to generate
-        % logs to test. Format 0 should also be easy, but again logs needed.
-        isdecodable = false;
-        warning('ocudu_matlab:ocuduPUCCHAnalyzer', 'PUCCH decoding not yet available for Formats 0, 3, 4.');
+        ouci = extra.NumHARQAck + extra.NumSR + extra.NumCSIPart1 + extra.NumCSIPart2;
     end
 
-    if isdecodable
-        [uciLLRs, rxSymbols, metric] = nrPUCCHDecode(carrier, pucch, ouci, pucchEq, noiseEst);
+    [uciLLRs, rxSymbols, metric] = nrPUCCHDecode(carrier, pucch, ouci, pucchEq, noiseEst);
 
-        if isa(pucch, 'nrPUCCH1Config')
-            % For F1, nrPUCCHDecode returns hard (as opposed to soft) bits.
-            fprintf('Received bits:\n');
-            disp(uciLLRs{1});
-        else
-            fprintf('Received LLRs:\n');
-            disp(uciLLRs{1});
-
-            uciBits = nrUCIDecode(uciLLRs{1}, ouci);
-            fprintf('Received bits:\n');
-            disp(uciBits);
+    if (isa(pucch, 'nrPUCCH0Config') || isa(pucch, 'nrPUCCH1Config'))
+        % For F0 and F1, nrPUCCHDecode returns hard (as opposed to soft) bits.
+        fprintf('Received ACK bits:\n');
+        disp(uciLLRs{1});
+        if (numel(uciLLRs) == 2)
+            fprintf('Received SR bit:\n');
+            disp(uciLLRs{2});
         end
-        fprintf('Received constellation symbols:\n');
-        disp(rxSymbols);
-        fprintf('Detection metric (if applicable):\n');
-        disp(metric);
+    else
+        fprintf('Received LLRs:\n');
+        disp(uciLLRs{1});
+
+        uciBits = nrUCIDecode(uciLLRs{1}, ouci);
+        fprintf('Received bits:\n');
+        disp(uciBits);
     end
+    fprintf('Received constellation symbols:\n');
+    disp(rxSymbols);
+    fprintf('Detection metric (if applicable):\n');
+    disp(metric);
 
-
+    % Plots.
     figRG = figure("Name", "ocuduPUCCHAnalyzer: Resource grid amplitude");
     tiledlayout(nPorts, 1);
     figChannel = figure("Name", "ocuduPUCCHAnalyzer: Channel estimate");
@@ -121,11 +124,14 @@ function ocuduPUCCHAnalyzer(carrier, pucch, extra, rgFilename, rgOffset, rgSize)
         xlabel('Symbol');
         ylabel('Subcarrier');
         zlabel('Magnitude');
-        zmin = min(abs(estChannel(:,:,iPort)), [], 'all') * 0.9;
-        zmax = max(abs(estChannel(:,:,iPort)), [], 'all') * 1.1;
+        zmin = min(abs(estChannel(:,:,iPort)), [], 'all');
+        zmax = max(abs(estChannel(:,:,iPort)), [], 'all');
         if zmin == zmax
             zmin = zmin - 0.5;
             zmax = zmax + 0.5;
+        else
+            zmin = zmin * 0.9;
+            zmax = zmax * 1.1;
         end
         axis([0, nSymbols - 1, 0, nSubcarriers - 1, zmin, zmax]);
 
@@ -137,11 +143,14 @@ function ocuduPUCCHAnalyzer(carrier, pucch, extra, rgFilename, rgOffset, rgSize)
         xlabel('Symbol');
         ylabel('Subcarrier');
         zlabel('Angle [rad]');
-        zmin = min(angle(estChannel(:,:,iPort)), [], 'all') * 0.9;
-        zmax = max(angle(estChannel(:,:,iPort)), [], 'all') * 1.1;
+        zmin = min(angle(estChannel(:,:,iPort)), [], 'all');
+        zmax = max(angle(estChannel(:,:,iPort)), [], 'all');
         if zmin == zmax
             zmin = zmin - 0.5;
             zmax = zmax + 0.5;
+        else
+            zmin = zmin * 0.9;
+            zmax = zmax * 1.1;
         end
         axis([0, nSymbols - 1, 0, nSubcarriers - 1, zmin, zmax]);
     end
@@ -150,12 +159,17 @@ function ocuduPUCCHAnalyzer(carrier, pucch, extra, rgFilename, rgOffset, rgSize)
     tiledlayout('flow')
     % Plot detected constellation.
     nexttile
-    plot(real(pucchEq), imag(pucchEq), 'x');
+    if isa(pucch, 'nrPUCCH0Config')
+        plot(real(pucchRx(:)), imag(pucchRx(:)), 'x');
+        title('ocuduPUCCHAnalyzer: Received symbols');
+    else
+        plot(real(rxSymbols), imag(rxSymbols), 'x');
+        title('ocuduPUCCHAnalyzer: Equalized constellation');
+        axis([-1.2, 1.2, -1.2, 1.2])
+    end
     grid on;
     xlabel('Real');
     ylabel('Imaginary');
-    title('ocuduPUCCHAnalyzer: Equalized constellation');
-    axis([-1.2, 1.2, -1.2, 1.2])
 
     if (~isa(pucch, 'nrPUCCH1Config') && ~isa(pucch, 'nrPUCCH0Config'))
         % Plot soft bits histogram.
