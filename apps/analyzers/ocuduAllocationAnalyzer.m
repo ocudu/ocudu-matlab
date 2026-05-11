@@ -2,7 +2,7 @@
 %   grants = ocuduAllocationAnalyzer draws a resource-grid allocation map from the
 %   OCUDU logs corresponding to one slot. It also returns a structure array with
 %   a summary of the processed grants:
-%   Channel   - the allocated PHY channel (PUSCH or PUCCH)
+%   Channel   - the allocated PHY channel (PUSCH, PUCCH, PRACH or SRS)
 %   Format    - the PUCCH format (empty otherwise)
 %   PRB1      - the allocated PRB set
 %   PRB2      - the allocated PRB set after hopping, if applicable (empty otherwise)
@@ -43,8 +43,9 @@ function grants = ocuduAllocationAnalyzer
     % Split the logs into lines.
     allLines = splitlines(logs);
 
-    % Remove debug and empty lines, if present.
+    % Remove debug and empty lines, as well as lines from the IQ recorder, if present.
     allLines(startsWith(allLines, '  ')) = [];
+    allLines(contains(allLines, ("RX_SYMBOL:" | "RX_PRACH:"))) = [];
     allLines(cellfun(@isempty, allLines)) = [];
 
     % Check that all logs refer to the same slot.
@@ -58,13 +59,22 @@ function grants = ocuduAllocationAnalyzer
     % Extract allocation details from the provided logs.
     grants = extractData(allLines);
 
+    % If PRACH is present, ask for its config and compute the resource allocation.
+    if any(strcmp([grants.Channel], "PRACH"))
+        slotNumber = str2double(extractBetween(slot, '.', ']'));
+        [prachPRB1, prachSymbols] = parsePRACH(gridSize, slotNumber);
+        grants(strcmp([grants.Channel], "PRACH")).PRB1 = prachPRB1;
+        grants(strcmp([grants.Channel], "PRACH")).Symbols = prachSymbols;
+    end
+
     % Prepare the resource grid map.
     nSymbols = 14;
     resourceGrid = zeros(gridSize, nSymbols);
 
     pucchValues = [1; 2; 3; 4; 5];
     puschValue = max(pucchValues) + 1;
-    srsValue = puschValue + 1;
+    prachValue = puschValue + 1;
+    srsValue = prachValue + 1;
     conflictValue = srsValue + 1;
     for g = grants'
         switch g.Channel
@@ -72,6 +82,8 @@ function grants = ocuduAllocationAnalyzer
                 value = puschValue;
             case 'PUCCH'
                 value = pucchValues(g.Format + 1);
+            case 'PRACH'
+                value = prachValue;
             case 'SRS'
                 value = srsValue;
         end
@@ -111,7 +123,7 @@ function grants = ocuduAllocationAnalyzer
     % Customize the colorbar ticks and labels.
     c = colorbar;
     c.Ticks = ((0:conflictValue) + 0.5) * conflictValue / (conflictValue + 1);
-    c.TickLabels = ["Empty"; "PUCCH F0"; "PUCCH F1"; "PUCCH F2"; "PUCCH F3"; "PUCCH F4"; "PUSCH"; "SRS"; "CONFLICT"];
+    c.TickLabels = ["Empty"; "PUCCH F0"; "PUCCH F1"; "PUCCH F2"; "PUCCH F3"; "PUCCH F4"; "PUSCH"; "PRACH"; "SRS"; "CONFLICT"];
 end
 
 % Extracts the relevant grant information from the logs.
@@ -147,8 +159,8 @@ function grants = extractData(allLines)
             grants(usedLines).Channel = "PUSCH";
             grants = processPUSCH(grants, line, usedLines);
         case "PRACH:"
-            % todo
-            warning('ocudu_matlab:ocuduAllocationAnalyzer', 'PRACH not supported yet.');
+            usedLines = usedLines + 1;
+            grants(usedLines).Channel = "PRACH";
         case "SRS:"
             usedLines = usedLines + 1;
             grants(usedLines).Channel = "SRS";
@@ -262,4 +274,98 @@ function symbols = parseSymbolRange(line)
     symbString = extractBetween(line, 'symb=[', ')');
     vals = sscanf(symbString, '%d, %d');
     symbols = (vals(1) + 1):vals(2);
+end
+
+% Ask the user for the PRACH config and compute its resource grid allocation.
+function [prb1, symbols] = parsePRACH(gridSize, slotNumber)
+    carrierSCS = input('Carrier subcarrier spacing [kHz]: ');
+    if (carrierSCS == 15)
+        defaultDuplex = 'FDD';
+        duplexString = '[FDD]/TDD';
+    elseif ((carrierSCS == 30) || (carrierSCS == 120))
+        defaultDuplex = 'TDD';
+        duplexString = 'FDD/[TDD]';
+    else
+        error('ocudu_matlab:ocuduAllocationAnalyzer', 'Unsupported subcarrier spacing %d kHz', carrierSCS);
+    end
+    duplexMode = input(['Duplex mode: ', duplexString, ' '], 's');
+    if isempty(duplexMode)
+        duplexMode = defaultDuplex;
+    end
+    assert(ismember(duplexMode, {'FDD', 'fdd', 'TDD', 'tdd'}), ...
+        'ocudu_matlab:ocuduAllocationAnalyzer', 'Unsupported subcarrier spacing %d kHz', carrierSCS);
+
+    fprintf(['\nCopy the prach: section of your gNB config to the system clipboard, ', ...
+        'then switch back to MATLAB and press any key.\n']);
+    pause;
+    prachYaml = string(clipboard('paste')) + newline;
+
+    fprintf('Parsing the following yaml section:\n\n%s\n\n', prachYaml);
+
+    isOK = input('Do you want to continue? [Y]/N ', 's');
+    if isempty(isOK)
+        isOK = 'Y';
+    end
+    if ~ismember(isOK, {'y', 'Y'})
+        error('Parsing aborted.\n');
+    end
+
+    configIndexString = extractBetween(prachYaml, 'prach_config_index: ', newline);
+    configIndex = double(configIndexString);
+    freqStartString = extractBetween(prachYaml, 'prach_frequency_start: ', newline);
+    if isempty(freqStartString)
+        freqStart = input('PRACH frequency start (e.g., see msg1-FrequencyStart in SIB1) as a number of RBs: ');
+    else
+        freqStart = double(freqStartString);
+    end
+
+    carrier = nrCarrierConfig;
+    carrier.SubcarrierSpacing = carrierSCS;
+    carrier.NSizeGrid = gridSize;
+
+    if ((carrierSCS == 15) || (carrierSCS == 30))
+        freqRange = 'FR1';
+    elseif (carrierSCS == 120)
+        freqRange = 'FR2';
+    else
+        error('ocudu_matlab:ocuduAllocationAnalyzer', ...
+            'Subcarrier spacing %d kHz not supported.', carrierSCS);
+    end
+
+    % Look up the preamble format so that ocuduConfigurePRACH can correctly set
+    % SubcarrierSpacing, LRA, and other format-dependent properties that nrPRACHConfig
+    % does not update automatically when ConfigurationIndex is assigned.
+    if strcmp(freqRange, 'FR2')
+        cfgTable = nrPRACHConfig.Tables.ConfigurationsFR2;
+    elseif strcmp(duplexMode, 'FDD')
+        cfgTable = nrPRACHConfig.Tables.ConfigurationsFR1PairedSUL;
+    else
+        cfgTable = nrPRACHConfig.Tables.ConfigurationsFR1Unpaired;
+    end
+    preambleFormat = cfgTable.PreambleFormat{cfgTable.ConfigurationIndex == configIndex};
+
+    prach = ocuduLib.phy.helpers.ocuduConfigurePRACH(preambleFormat, ...
+        DuplexMode=duplexMode, SubcarrierSpacing=carrierSCS, FrequencyStart=freqStart);
+    % ocuduConfigurePRACH picks the first matching ConfigurationIndex; override with
+    % the specific index from the YAML to get the correct timing pattern.
+    prach.ConfigurationIndex = configIndex;
+
+    if ~strcmp(prach.Format, 'B4')
+        warning('ocudu_matlab:ocuduAllocationAnalyzer', ...
+            'PRACH allocation has only been tested with format B4 (detected format: %s).', prach.Format);
+    end
+
+    prach.NPRACHSlot = slotNumber;
+    [~, info] = nrPRACHIndices(carrier, prach);
+    prb1 = info.PRBSet + 1;
+
+    % Long PRACH (formats 0–3) don't map cleanly to slot OFDM symbols.
+    if ismember(prach.Format, {'0', '1', '2', '3'})
+        warning('ocudu_matlab:ocuduAllocationAnalyzer', ...
+            'Long PRACH format %s: showing all 14 symbols as approximation.', prach.Format);
+        symbols = 1:14;
+    else
+        startSymbol = mod(prach.SymbolLocation, 14);
+        symbols = (startSymbol + 1) : (startSymbol + prach.PRACHDuration);
+    end
 end
