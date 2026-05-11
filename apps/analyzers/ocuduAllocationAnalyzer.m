@@ -12,7 +12,9 @@
 %   OCCLength - the OCC length / spreading factor (only for PUCCH F4).
 %
 %   The function asks the user to copy the relevant section of the logs into
-%   the system clipboard. Log level can be either INFO or DEBUG.
+%   the system clipboard. Log level can be either INFO or DEBUG. The logs may
+%   span multiple slots; only the log entries with the same slot index as the
+%   first entry will be part of the analysis.
 
 % SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 % SPDX-License-Identifier: BSD-3-Clause-Open-MPI
@@ -54,7 +56,12 @@ function grants = ocuduAllocationAnalyzer
     assert(isscalar(slot));
     slot = slot{1};
 
-    assert(all(contains(allLines, slot)), 'ocudu_matlab:ocuduAllocationAnalyzer', 'The provided logs span more than one slot');
+    foreignLines = ~contains(allLines, slot);
+    if any(foreignLines)
+        warning('ocudu_matlab:ocuduAllocationAnalyzer', ...
+            'Discarding %d line(s) not belonging to slot %s.', sum(foreignLines), slot);
+        allLines(foreignLines) = [];
+    end
 
     % Extract allocation details from the provided logs.
     grants = extractData(allLines);
