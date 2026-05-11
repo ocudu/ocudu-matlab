@@ -67,11 +67,12 @@ function grants = ocuduAllocationAnalyzer
     grants = extractData(allLines);
 
     % If PRACH is present, ask for its config and compute the resource allocation.
-    if any(strcmp([grants.Channel], "PRACH"))
+    prachMask = strcmp([grants.Channel], "PRACH");
+    if any(prachMask)
         slotNumber = str2double(extractBetween(slot, '.', ']'));
         [prachPRB1, prachSymbols] = parsePRACH(gridSize, slotNumber);
-        grants(strcmp([grants.Channel], "PRACH")).PRB1 = prachPRB1;
-        grants(strcmp([grants.Channel], "PRACH")).Symbols = prachSymbols;
+        grants(prachMask).PRB1 = prachPRB1;
+        grants(prachMask).Symbols = prachSymbols;
     end
 
     % Prepare the resource grid map.
@@ -287,9 +288,15 @@ end
 function [prb1, symbols] = parsePRACH(gridSize, slotNumber)
     carrierSCS = input('Carrier subcarrier spacing [kHz]: ');
     if (carrierSCS == 15)
+        freqRange = 'FR1';
         defaultDuplex = 'FDD';
         duplexString = '[FDD]/TDD';
-    elseif ((carrierSCS == 30) || (carrierSCS == 120))
+    elseif (carrierSCS == 30)
+        freqRange = 'FR1';
+        defaultDuplex = 'TDD';
+        duplexString = 'FDD/[TDD]';
+    elseif (carrierSCS == 120)
+        freqRange = 'FR2';
         defaultDuplex = 'TDD';
         duplexString = 'FDD/[TDD]';
     else
@@ -300,7 +307,7 @@ function [prb1, symbols] = parsePRACH(gridSize, slotNumber)
         duplexMode = defaultDuplex;
     end
     assert(ismember(duplexMode, {'FDD', 'fdd', 'TDD', 'tdd'}), ...
-        'ocudu_matlab:ocuduAllocationAnalyzer', 'Unsupported subcarrier spacing %d kHz', carrierSCS);
+        'ocudu_matlab:ocuduAllocationAnalyzer', 'Unknown duplex mode ''%s''.', duplexMode);
 
     fprintf(['\nCopy the prach: section of your gNB config to the system clipboard, ', ...
         'then switch back to MATLAB and press any key.\n']);
@@ -329,15 +336,6 @@ function [prb1, symbols] = parsePRACH(gridSize, slotNumber)
     carrier = nrCarrierConfig;
     carrier.SubcarrierSpacing = carrierSCS;
     carrier.NSizeGrid = gridSize;
-
-    if ((carrierSCS == 15) || (carrierSCS == 30))
-        freqRange = 'FR1';
-    elseif (carrierSCS == 120)
-        freqRange = 'FR2';
-    else
-        error('ocudu_matlab:ocuduAllocationAnalyzer', ...
-            'Subcarrier spacing %d kHz not supported.', carrierSCS);
-    end
 
     % Look up the preamble format so that ocuduConfigurePRACH can correctly set
     % SubcarrierSpacing, LRA, and other format-dependent properties that nrPRACHConfig
