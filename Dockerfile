@@ -19,10 +19,13 @@ ARG MATLAB_RELEASE
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
     && apt-get install --no-install-recommends --yes \
+    tzdata \
     wget \
     unzip \
     ca-certificates \
     tini \
+    && ln -fs /usr/share/zoneinfo/Etc/UTC /etc/localtime \
+    && echo Etc/UTC > /etc/timezone \
     && apt-get clean \
     && apt-get autoremove \
     && rm -rf /var/lib/apt/lists/*
