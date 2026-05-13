@@ -326,6 +326,8 @@ classdef ocuduPUCCHProcessorFormat3Unittest < ocuduTest.ocuduBlockUnittest
             % Convert cyclic prefix to string.
             cyclicPrefixStr = matlab2ocuduCyclicPrefix(carrier.CyclicPrefix);
 
+            prbInterval = {pucch.PRBSet(1), pucch.PRBSet(end) + 1};
+
             % Second Hop PRB.
             if strcmp(pucch.FrequencyHopping, 'intraSlot')
                 secondHopPRB = pucch.SecondHopStartPRB;
@@ -341,9 +343,8 @@ classdef ocuduPUCCHProcessorFormat3Unittest < ocuduTest.ocuduBlockUnittest
                 portsString, ...                            % ports
                 pucch.NSizeBWP, ...                         % bwp_size_rb
                 pucch.NStartBWP, ...                        % bwp_start_rb
-                pucch.PRBSet(1), ...                        % starting_prb
+                prbInterval, ...                            % prbs
                 secondHopPRB, ...                           % second_hop_prb
-                numel(pucch.PRBSet), ...                    % nof_prb
                 SymbolAllocation(1), ...                    % start_symbol_index
                 SymbolAllocation(2), ...                    % nof_symbols
                 pucch.RNTI, ...                             % rnti
