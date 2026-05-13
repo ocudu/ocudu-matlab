@@ -189,8 +189,9 @@ static pucch_processor::format2_configuration populate_f2_configuration(const St
   cfg.bwp_start_rb = static_cast<unsigned>(in_cfg["NStartBWP"][0]);
 
   // Set the frequency allocation.
-  cfg.starting_prb   = static_cast<unsigned>(in_cfg["StartPRB"][0]);
-  cfg.nof_prb        = static_cast<unsigned>(in_cfg["NumPRBs"][0]);
+  auto starting_prb  = static_cast<unsigned>(in_cfg["StartPRB"][0]);
+  auto nof_prb       = static_cast<unsigned>(in_cfg["NumPRBs"][0]);
+  cfg.prbs           = {starting_prb, starting_prb + nof_prb};
   cfg.second_hop_prb = std::nullopt;
   if (!in_cfg["SecondHopStartPRB"].isEmpty()) {
     cfg.second_hop_prb = static_cast<unsigned>(in_cfg["SecondHopStartPRB"][0]);
@@ -246,8 +247,9 @@ static pucch_processor::format3_configuration populate_f3_configuration(const St
   cfg.bwp_start_rb = static_cast<unsigned>(in_cfg["NStartBWP"][0]);
 
   // Set the frequency allocation.
-  cfg.starting_prb   = static_cast<unsigned>(in_cfg["StartPRB"][0]);
-  cfg.nof_prb        = static_cast<unsigned>(in_cfg["NumPRBs"][0]);
+  auto starting_prb  = static_cast<unsigned>(in_cfg["StartPRB"][0]);
+  auto nof_prb       = static_cast<unsigned>(in_cfg["NumPRBs"][0]);
+  cfg.prbs           = {starting_prb, starting_prb + nof_prb};
   cfg.second_hop_prb = std::nullopt;
   if (!in_cfg["SecondHopStartPRB"].isEmpty()) {
     cfg.second_hop_prb = static_cast<unsigned>(in_cfg["SecondHopStartPRB"][0]);
