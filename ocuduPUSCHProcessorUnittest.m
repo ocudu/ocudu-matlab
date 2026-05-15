@@ -57,6 +57,12 @@ classdef ocuduPUSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
               54,  60,  64,  72,  75,  80,  81,  90,  96, 100, 108, 120,...
              125, 128, 135, 144, 150, 160, 162, 180, 192, 200, 216, 225,...
              240, 243, 250, 256, 270]
+
+        %Symbols allocated to the PUSCH transmission.
+        %   The symbol allocation is described by a two-element array with the starting
+        %   symbol (0...13) and the length (1...14) of the PUSCH transmission.
+        %   Example: [0, 14].
+        SymbolAllocation = [0, 14]
     end
 
     properties (ClassSetupParameter)
@@ -66,12 +72,6 @@ classdef ocuduPUSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
     end
 
     properties (TestParameter)
-        %Symbols allocated to the PUSCH transmission.
-        %   The symbol allocation is described by a two-element array with the starting
-        %   symbol (0...13) and the length (1...14) of the PUSCH transmission.
-        %   Example: [0, 14].
-        SymbolAllocation = {[0, 14]}
-
         %Number of HARQ-ACK bits multiplexed with the message.
         nofHarqAck = {0, 1, 10}
 
@@ -114,14 +114,15 @@ classdef ocuduPUSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
     end % of methods (Access = protected)
 
     methods (Test, TestTags = {'testvector'})
-        function testvectorGenerationCases(testCase, SymbolAllocation, ...
-                nofHarqAck, nofCsiBits, NumRxPorts)
+        function testvectorGenerationCases(testCase, nofHarqAck, ...
+                nofCsiBits, NumRxPorts)
         %testvectorGenerationCases Generates test vectors with permutations
-        %   of the symbol allocation, number of HARQ-ACK, CSI-Part1 and
-        %   CSI-Part2 information bits, and number of receive ports. Other
-        %   parameters such as physical cell identifier, BWP dimensions,
-        %   slot number, RNTI, scrambling identifiers, frequency allocation
-        %   and DM-RS additional positions are randomly selected.
+        %   of the number of HARQ-ACK, CSI-Part1 and CSI-Part2 information
+        %   bits, and number of receive ports. Other parameters such as
+        %   physical cell identifier, BWP dimensions, slot number, RNTI,
+        %   scrambling identifiers, frequency allocation and DM-RS additional
+        %   positions are randomly selected. If the number of UCI bits is
+        %   zero, a MsgA message is generated.
             import ocuduTest.helpers.rbAllocationIndexes2String
             import ocuduTest.helpers.symbolAllocationMask2string
             import ocuduTest.helpers.bitPack
@@ -140,9 +141,14 @@ classdef ocuduPUSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             nofCsiPart1 = nofCsiBits(1);
             nofCsiPart2 = nofCsiBits(2);
 
+            % Generate a MsgA PUCCH transmission if the number of
+            % multiplexed UCI bits is zero.
+            nofUCIBits = (nofHarqAck + nofCsiPart1 + nofCsiPart2);
+            isMsgA = (nofUCIBits == 0);
+
             % Minimum number of PRB. It increases when UCI needs to be
             % multiplexed on the PUSCH resources.
-            minNumPrb = 1 + (nofHarqAck + nofCsiPart1 + nofCsiPart2);
+            minNumPrb = 1 + nofUCIBits;
 
             % Maximum number of PRB of a 5G NR resource grid.
             maxGridBW = max(testCase.BWPSizes);
@@ -151,24 +157,34 @@ classdef ocuduPUSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             % size constraints. 
             BWPSize = testCase.BWPSizes(randi([1, numel(testCase.BWPSizes)]));
             BWPStart = randi([0, maxGridBW - BWPSize]);
-
             nSizeGrid = BWPStart + BWPSize;
             nStartGrid = 0;
 
             % PUSCH PRB start within the BWP.
             prbStart = randi([0, BWPSize - minNumPrb]);
 
-            % Fix a maximum number of PRB allocated to PUSCH to limit the
-            % size of the test vectors.
-            maxNumPrb = BWPSize - prbStart;
+            % Select maximum number of PRBs. The bandwidth for MsgA is
+            % limited by the range of the higher-layer parameter
+            % nrofPRBs-PerMsgA-PO, which is [1-32].
+            if (isMsgA)
+                maxNumPrb = min(BWPSize - prbStart, 32);
+            else
+                maxNumPrb = BWPSize - prbStart;
+            end
 
             % Select a valid number of PRB allocated to PUSCH.
             validNumPrb = testCase.ValidNumPRB((testCase.ValidNumPRB >= minNumPrb) & (testCase.ValidNumPRB <= maxNumPrb));
             numPrb = validNumPrb(randi([1, numel(validNumPrb)]));
 
-            % Random modulation.
+            % Random modulation. For MsgA, the MCS is determined by TS38.214 Table
+            % 5.1.3.1-1 or TS38.214 Table 6.1.4.1-1, which limits the
+            % highest modulation to 64QAM.
             modulationOpts = {'QPSK', '16QAM', '64QAM', '256QAM'};
-            modulation = modulationOpts{randi([1, 4])};
+            if isMsgA
+                modulation = modulationOpts{randi([1, 3])};
+            else
+                modulation = modulationOpts{randi([1, 4])};
+            end
 
             % Random target code rate between 0.1 to 0.7.
             targetCodeRate = 0.6 * rand() + 0.1;
@@ -182,7 +198,6 @@ classdef ocuduPUSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
 
             % Random parameters.
             nSlot = randi([0, carrier.SlotsPerFrame]);
-            RNTI = randi([1, 65535]);
             nID = randi([0, 1023]);
             DMRSAdditionalPosition = randi([0, 3]);
             NIDNSCID = randi([0, 65535]);
@@ -190,6 +205,15 @@ classdef ocuduPUSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             NRSID = randi([0, 1007]);
             DCPosition = randi(12 * [prbStart, prbStart + numPrb]) + BWPStart;
             transformPrecoding = randi([0, 1]);
+            if (isMsgA)
+                % Select parameters whose ranges are affected if they are
+                % for MsgA.
+                RNTI = randi([1, 2400]);
+                NRAPID = randi([0, 63]);
+            else
+                RNTI = randi([32767, 65535]);
+                NRAPID = [];
+            end
 
             % Fix parameters.
             rv = 0;
@@ -197,9 +221,9 @@ classdef ocuduPUSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             % Generate PUSCH configuration.
             pusch = nrPUSCHConfig( ...
                 Modulation=modulation, ...
-                SymbolAllocation=SymbolAllocation, ...
+                SymbolAllocation=testCase.SymbolAllocation, ...
                 RNTI=RNTI, ...
-                NID=nID...
+                NID=nID...,
                 );
 
             % Set parameters.
@@ -212,6 +236,7 @@ classdef ocuduPUSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             pusch.DMRS.NSCID = NSCID;
             pusch.DMRS.NRSID = NRSID;
             pusch.TransformPrecoding = transformPrecoding;
+            pusch.NRAPID = NRAPID;
 
             % Generate PUSCH resource grid indices.
             [puschResourceIndices, puschInfo] = nrPUSCHIndices(carrier, pusch);
@@ -396,6 +421,8 @@ classdef ocuduPUSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
                     ')'];
             end
 
+            NRAPIDStr = sprintf('{%u}', NRAPID);
+
             pduDescription = {...
                 'std::nullopt', ...                           % context
                 slotConfig, ...                               % slot
@@ -416,6 +443,7 @@ classdef ocuduPUSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
                 pusch.SymbolAllocation(2), ...                % nof_symbols
                 TBSLBRMStr, ...                               % tbs_lbrm
                 DCPosition, ...                               % dc_position
+                NRAPIDStr, ...                                % n_rapid
                 };
 
             contextDescription = {...
