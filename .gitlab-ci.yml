@@ -161,13 +161,15 @@ run matlab unit tests:
       cp ${HARQ_ENTITY_PATH} ${CI_PROJECT_DIR}/apps/simulators/PUSCHBLER/+matlablicense/HARQEntity.m
     - |
       matlab -sd "./" -batch "addpath('.', '.gitlab/matlab'); \
-      runsmoketests('matlab code', 'run_matlab_unit_tests_xunit.xml');" \
+      runsmoketests('matlab code', 'run_matlab_unit_tests.xml');" \
       -logfile matlablog.log
   artifacts:
     when: always
     paths:
       - matlablog.log
-      - run_matlab_unit_tests_xunit.xml
+      - run_matlab_unit_tests.xml
+    reports:
+      junit: run_matlab_unit_tests.xml
     expire_in: 1 day
 
 ################################################################################
@@ -195,14 +197,16 @@ build test vectors:
     - mkdir -p $ARTIFACTSDIR
     - |
       matlab -sd ./ -batch "addpath('.', '.gitlab/matlab'); \
-      runvectortests('testvector', ${RANDOM_TESTS}, 'build_test_vectors_xunit.xml', '${ARTIFACTSDIR}');" \
+      runvectortests('testvector', ${RANDOM_TESTS}, 'build_test_vectors.xml', '${ARTIFACTSDIR}');" \
       -logfile matlab.log
   artifacts:
     when: always
     paths:
       - artifacts/
-      - build_test_vectors_xunit.xml
+      - build_test_vectors.xml
       - matlablog.log
+    reports:
+      junit: build_test_vectors.xml
     expire_in: 10 days
 
 build and run vector unit tests:
@@ -311,9 +315,8 @@ build ocudu with export on:
     when: always
     paths:
       - matlablog.log
-      - build_mex_*_xunit.xml
+      - build_mex_*.xml
       - tests/conformance/conformanceResults/conformance*.csv
-    reports:
     expire_in: 1 day
 
 build mex basic tests:
@@ -323,8 +326,12 @@ build mex basic tests:
   script:
     - |
       matlab -sd "./" -batch "addpath('.', '.gitlab/matlab'); \
-      runsmoketests('mex code', 'build_mex_basic_tests_xunit.xml');" \
+      runsmoketests('mex code', 'build_mex_basic_tests.xml');" \
       -logfile matlablog.log
+  artifacts:
+    <<: *mex_artifacts
+    reports:
+      junit: build_mex_basic_tests.xml
 
 build mex full tests:
   extends: .build mex
@@ -338,10 +345,12 @@ build mex full tests:
   script:
     - |
       matlab -sd ./ -batch "addpath('.', '.gitlab/matlab'); \
-      runvectortests('testmex', ${RANDOM_TESTS}, 'build_mex_full_tests_xunit.xml');" \
+      runvectortests('testmex', ${RANDOM_TESTS}, 'build_mex_full_tests.xml');" \
       -logfile matlab.log
   artifacts:
     <<: *mex_artifacts
+    reports:
+      junit: build_mex_full_tests.xml
     expire_in: 10 days
 
 ################################################################################
@@ -364,6 +373,8 @@ build mex full tests:
       -logfile matlablog.log
   artifacts:
     <<: *mex_artifacts
+    reports:
+      junit: build_mex_conformance_xunit.xml
     expire_in: 10 days
   timeout: 24h
 
