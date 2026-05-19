@@ -245,6 +245,15 @@ build and run vector unit tests:
       fi
     - build_ocudu
     - launch_tests_ocudu
+  after_script:
+    - mv ${OCUDU_DIR}/${OCUDU_BUILD_DIR}/xunit.xml ${CI_PROJECT_DIR}/vector_unit_tests.xml || true
+  artifacts:
+    when: always
+    paths:
+      - vector_unit_tests.xml
+    reports:
+      junit: vector_unit_tests.xml
+    expire_in: 1 day
 
 ################################################################################
 # mex files
