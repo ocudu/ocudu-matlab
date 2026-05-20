@@ -1,7 +1,7 @@
 %ocuduPRACHAnalyzer Analyzes a PRACH transmission from a PRACH resource grid.
 %   ocuduPRACHAnalyzer(PRACH, FILENAME, OFFSET, SIZE) analyzes an NR Preamble for
 %   Random Access Channel transmission. PRACH is an object of type
-%   nrPRACHConfig containing the paramaters necessary for the detection.
+%   nrPRACHConfig containing the parameters necessary for the detection.
 %   FILENAME indicates the file that contains the IQ samples. OFFSET and SIZE are
 %   the offset and the size, as a number of single-precision complex floating point numbers,
 %   of the desired PRACH occasion inside the file.

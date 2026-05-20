@@ -315,7 +315,7 @@ function prach = parsePRACH(allLines)
             case 'zcz'
                 zcz = sscanf(parameter{2}, '%d');
             case 'scs'
-                scs = sscanf(parameter{2}, '%d');
+                scs = sscanf(parameter{2}, '%f');
                 if (scs == 15)
                     duplexMode = 'FDD';
                 else
