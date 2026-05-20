@@ -148,8 +148,8 @@ classdef ocuduPRACHDetectorUnittest < ocuduTest.ocuduBlockUnittest
 
             import ocuduLib.phy.helpers.ocuduConfigurePRACH
 
-            obj.assumeTrue(~strcmp(DuplexMode, 'TDD-FR2') || ismember(PreambleFormat, {'A1', 'B4'}), ...
-                'Only short formats A1 and B4 currently allowed in FR2.');
+            obj.assumeTrue(~strcmp(DuplexMode, 'TDD-FR2') || ismember(PreambleFormat, {'A1', 'B4', 'C0'}), ...
+                'Only short formats A1, B4 and C0 are currently allowed in FR2.');
 
             restrictedSet = obj.RestrictedSet;
             rbOffset = obj.RBOffset;

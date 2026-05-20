@@ -82,7 +82,7 @@ classdef ocuduPRACHSchedulerUnittest < ocuduTest.ocuduBlockUnittest
         DuplexMode = {'FDD', 'TDD', 'TDD-FR2'}
 
         %PRACH configuration index.
-        ConfigurationIndex = num2cell(2:255)
+        ConfigurationIndex = num2cell(0:255)
     end
 
     methods (Access = protected)
@@ -188,7 +188,7 @@ classdef ocuduPRACHSchedulerUnittest < ocuduTest.ocuduBlockUnittest
             end
 
             % The PRACH format is long preamble if the sequence length is 839.
-            isLongPreamble = prach.LRA == 839;
+            isLongPreamble = (prach.LRA == 839);
 
             % Starting OFDM symbol of the PRACH occasion. Long preambles
             % use the value from configuration table, whereas short
