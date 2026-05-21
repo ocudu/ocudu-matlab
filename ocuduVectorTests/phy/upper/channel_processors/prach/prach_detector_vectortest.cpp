@@ -13,9 +13,10 @@ using namespace ocudu;
 
 static bool is_stable_conf(const ocudu::prach_detector::configuration& conf)
 {
-  // For FR2, only format B4 with one or two antenna ports is fully supported.
+  // For FR2, only formats B4 and C0 with one or two antenna ports are fully supported.
   if (conf.ra_scs == prach_subcarrier_spacing::kHz120) {
-    return ((conf.format == prach_format_type::B4) && (conf.nof_rx_ports <= 2));
+    return (((conf.format == prach_format_type::B4) || (conf.format == prach_format_type::C0)) &&
+            (conf.nof_rx_ports <= 2));
   }
   return true;
 }

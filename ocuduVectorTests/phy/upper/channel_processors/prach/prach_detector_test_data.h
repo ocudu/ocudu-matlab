@@ -3,7 +3,7 @@
 
 #pragma once
 
-// This file was generated using the following MATLAB class on 25-02-2026 (seed 0):
+// This file was generated using the following MATLAB class on 21-05-2026 (seed 0):
 //   + "ocuduPRACHDetectorUnittest.m"
 
 #include "prach_buffer_test_doubles.h"
@@ -160,6 +160,12 @@ static const std::vector<test_case_t> prach_detector_test_data = {
   {{{305, to_prach_format_type("B4"), restricted_set_config::UNRESTRICTED, 14, 0, 64, to_ra_subcarrier_spacing("120.000000kHz"), 1}, phy_time_unit::from_seconds(5.29783e-08), {3.0727, phy_time_unit::from_seconds(0.0), phy_time_unit::from_seconds(0.0), {{24, phy_time_unit::from_seconds(6.51042e-08), 24.9096, -0.83451}}}}, {"test_data/prach_detector_test_input129.dat", {139, 12, 1, 1, 1}}},
   {{{151, to_prach_format_type("B4"), restricted_set_config::UNRESTRICTED, 14, 0, 64, to_ra_subcarrier_spacing("120.000000kHz"), 2}, phy_time_unit::from_seconds(6.02367e-08), {1.6763, phy_time_unit::from_seconds(0.0), phy_time_unit::from_seconds(0.0), {{1, phy_time_unit::from_seconds(5.59708e-08), 114.492, -0.15831}}}}, {"test_data/prach_detector_test_input130.dat", {139, 12, 1, 1, 2}}},
   {{{159, to_prach_format_type("B4"), restricted_set_config::UNRESTRICTED, 14, 0, 64, to_ra_subcarrier_spacing("120.000000kHz"), 4}, phy_time_unit::from_seconds(6.21304e-08), {0.99004, phy_time_unit::from_seconds(0.0), phy_time_unit::from_seconds(0.0), {{15, phy_time_unit::from_seconds(6.51042e-08), 19.6541, -0.25557}}}}, {"test_data/prach_detector_test_input131.dat", {139, 12, 1, 1, 4}}},
+  {{{340, to_prach_format_type("C0"), restricted_set_config::UNRESTRICTED, 0, 0, 64, to_ra_subcarrier_spacing("120.000000kHz"), 1}, phy_time_unit::from_seconds(1.26068e-08), {3.3827, phy_time_unit::from_seconds(0.0), phy_time_unit::from_seconds(0.0), {{41, phy_time_unit::from_seconds(0), 6.5154, -0.035351}}}}, {"test_data/prach_detector_test_input132.dat", {139, 1, 1, 1, 1}}},
+  {{{775, to_prach_format_type("C0"), restricted_set_config::UNRESTRICTED, 0, 0, 64, to_ra_subcarrier_spacing("120.000000kHz"), 2}, phy_time_unit::from_seconds(2.78742e-08), {2.1909, phy_time_unit::from_seconds(0.0), phy_time_unit::from_seconds(0.0), {{52, phy_time_unit::from_seconds(3.25521e-08), 23.8072, 0.31333}}}}, {"test_data/prach_detector_test_input133.dat", {139, 1, 1, 1, 2}}},
+  {{{667, to_prach_format_type("C0"), restricted_set_config::UNRESTRICTED, 0, 0, 64, to_ra_subcarrier_spacing("120.000000kHz"), 4}, phy_time_unit::from_seconds(1.3661e-08), {0.94928, phy_time_unit::from_seconds(0.0), phy_time_unit::from_seconds(0.0), {{41, phy_time_unit::from_seconds(0), 13.8058, -0.305}}}}, {"test_data/prach_detector_test_input134.dat", {139, 1, 1, 1, 4}}},
+  {{{33, to_prach_format_type("C0"), restricted_set_config::UNRESTRICTED, 14, 0, 64, to_ra_subcarrier_spacing("120.000000kHz"), 1}, phy_time_unit::from_seconds(1.74533e-08), {3.5044, phy_time_unit::from_seconds(0.0), phy_time_unit::from_seconds(0.0), {{31, phy_time_unit::from_seconds(2.34188e-08), 9.4075, 0.84246}}}}, {"test_data/prach_detector_test_input135.dat", {139, 1, 1, 1, 1}}},
+  {{{670, to_prach_format_type("C0"), restricted_set_config::UNRESTRICTED, 14, 0, 64, to_ra_subcarrier_spacing("120.000000kHz"), 2}, phy_time_unit::from_seconds(5.3148e-08), {1.8922, phy_time_unit::from_seconds(0.0), phy_time_unit::from_seconds(0.0), {{33, phy_time_unit::from_seconds(3.25521e-08), 13.2165, -0.53284}}}}, {"test_data/prach_detector_test_input136.dat", {139, 1, 1, 1, 2}}},
+  {{{963, to_prach_format_type("C0"), restricted_set_config::UNRESTRICTED, 14, 0, 64, to_ra_subcarrier_spacing("120.000000kHz"), 4}, phy_time_unit::from_seconds(2.30041e-08), {1.1419, phy_time_unit::from_seconds(0.0), phy_time_unit::from_seconds(0.0), {{19, phy_time_unit::from_seconds(2.34188e-08), 26.1191, 0.096483}}}}, {"test_data/prach_detector_test_input137.dat", {139, 1, 1, 1, 4}}},
     // clang-format on
 };
 
