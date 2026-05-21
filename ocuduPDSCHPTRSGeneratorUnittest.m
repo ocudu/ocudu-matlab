@@ -87,16 +87,32 @@ classdef ocuduPDSCHPTRSGeneratorUnittest < ocuduTest.ocuduBlockUnittest
     methods (Access = protected)
         function addTestIncludesToHeaderFile(~, fileID)
         %addTestIncludesToHeaderFile Adds include directives to the test header file.
-            fprintf(fileID, '#include "ocudu/phy/upper/signal_processors/ptrs/ptrs_pdsch_generator.h"\n');
-            fprintf(fileID, '#include "ocudu/support/file_vector.h"\n');
             fprintf(fileID, '#include "resource_grid_test_doubles.h"\n');
-            fprintf(fileID, '#include "ocudu/ran/precoding/precoding_codebooks.h"\n');
+            fprintf(fileID, '#include "ocudu/phy/upper/dmrs_mapping.h"\n');
+            fprintf(fileID, '#include "ocudu/ran/ptrs/ptrs.h"\n');
+            fprintf(fileID, '#include "ocudu/ran/rnti.h"\n');
+            fprintf(fileID, '#include "ocudu/ran/slot_point.h"\n');
+            fprintf(fileID, '#include "ocudu/support/file_vector.h"\n');
         end
 
         function addTestDefinitionToHeaderFile(~, fileID)
         %addTestDetailsToHeaderFile Adds details (e.g., type/variable declarations) to the test header file.
             fprintf(fileID, 'struct test_case_t {\n');
-            fprintf(fileID, '  ptrs_pdsch_generator::configuration                     config;\n');
+            fprintf(fileID, '  slot_point                                              slot;\n');
+            fprintf(fileID, '  rnti_t                                                  rnti;\n');
+            fprintf(fileID, '  dmrs_type                                               dmrs_config_type;\n');
+            fprintf(fileID, '  unsigned                                                reference_point_k_rb;\n');
+            fprintf(fileID, '  unsigned                                                scrambling_id;\n');
+            fprintf(fileID, '  bool                                                    n_scid;\n');
+            fprintf(fileID, '  float                                                   amplitude;\n');
+            fprintf(fileID, '  symbol_slot_mask                                        dmrs_symbols_mask;\n');
+            fprintf(fileID, '  crb_bitmap                                              rb_mask;\n');
+            fprintf(fileID, '  interval<uint8_t>                                       time_allocation;\n');
+            fprintf(fileID, '  ptrs_frequency_density                                  freq_density;\n');
+            fprintf(fileID, '  ptrs_time_density                                       time_density;\n');
+            fprintf(fileID, '  ptrs_re_offset                                          re_offset;\n');
+            fprintf(fileID, '  re_pattern_list                                         reserved;\n');
+            fprintf(fileID, '  unsigned                                                nof_layers;\n');
             fprintf(fileID, '  file_vector<resource_grid_writer_spy::expected_entry_t> symbols;\n');
             fprintf(fileID, '};\n');
         end
@@ -240,13 +256,14 @@ classdef ocuduPDSCHPTRSGeneratorUnittest < ocuduTest.ocuduBlockUnittest
         % Generate a RB allocation mask string.
         rbAllocationMask = RBallocationMask2string(PRBstart + nStartBWP, PRBend + nStartBWP);
 
-        precodingString = ['precoding_configuration::make_wideband(make_identity(' num2str(NumLayers) '))'];
-
         words = {'one', 'two', 'three', 'four'};
         frequencyDensityStr = ['ptrs_frequency_density::' words{FrequencyDensity}];
         timeDensityStr = ['ptrs_time_density::' words{TimeDensity}];
         reOffsetStr = ['ptrs_re_offset::offset' REOffset];
 
+        % Becasue of memory issues, we cannot include the precoding configuration
+        % in the cell config. We only include the number of layers and generate the
+        % precoding configuration at run time.
         configCell = {...
             slotPointConfig, ...                                     % slot
             rntiStr, ...                                             % rnti
@@ -262,12 +279,12 @@ classdef ocuduPDSCHPTRSGeneratorUnittest < ocuduTest.ocuduBlockUnittest
             timeDensityStr, ...                                      % time_density
             reOffsetStr, ...                                         % re_offset
             {}, ...                                                  % reserved
-            precodingString...                                       % precoding
+            NumLayers, ...                                           % nof_layers
             };
 
         % Generate the test case entry.
         testCaseString = testCase.testCaseToString(testID, configCell, ...
-            true, '_test_output');
+            false, '_test_output');
 
         % Add the test to the file header.
         testCase.addTestToHeaderFile(testCase.headerFileID, testCaseString);
