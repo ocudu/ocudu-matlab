@@ -23,7 +23,7 @@ For license details, see the [LICENSE](LICENSE) file.
 
 ### Requirements
 
-*OCUDU MATLAB* runs on MATLAB and builds upon the [5G Toolbox](https://www.mathworks.com/products/5g.html) (tested on MATLAB R2024b and R2025b under Linux, but other recent releases should also work).
+*OCUDU MATLAB* runs on MATLAB and builds upon the [5G Toolbox](https://www.mathworks.com/products/5g.html). Although most of the code should run on any recent MATLAB release, some functionalities require at least release R2024b. We currently test on R2024b, R2025b and R2026a over Linux.
 
 The OCUDU project is required to build the MEX wrappers and to run the applications that include them (see the [MEX](#mex) section for further details).
 
