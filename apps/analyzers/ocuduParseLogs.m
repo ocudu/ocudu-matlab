@@ -10,11 +10,12 @@
 %             version, transport block size and target code rate for PUSCH, number of
 %             SR, ACK and CSI bits for PUCCH (for PRACH, the struct is empty).
 %
-%   Remark: The nrPRACHConfig object assumes PRACH root sequence index 1 (the default
-%   value in OCUDU gNB). Similarly, the PRACH preamble index is set to the first
+%   Remark: In the PRACH case, some parameters cannot be obtained from the logs.
+%   For instance, the configuration index is set to the first index that supports
+%   the logged PRACH format. Also, the PRACH preamble index is set to the first
 %   detected preamble in the logs, if any, or to 0 if no detection was possible.
-%   If these indices differ from the desired ones, they must be changed manually
-%   in the nrPRACHConfig object returned by the function.
+%   If these or other parameters differ from the desired ones, they must be changed
+%   manually in the nrPRACHConfig object returned by the function.
 %
 %   As an example of a log entry expected by the ocuduParseLogs function, the
 %   following excerpt from a OCUDU gNB log file refers to a PUSCH transmission
@@ -306,20 +307,27 @@ end
 function prach = parsePRACH(allLines)
 % Parses a PRACH log.
 
+    slotPattern = "[" + whitespacePattern + digitsPattern(1, 4) + "." + digitsPattern(1, 2) + ']';
+    slot = str2double(extractBetween(extract(allLines{1}, slotPattern), ".", "]"));
+
+    activeSlot = 0;
     nLines = length(allLines);
     for iLine = 2:nLines
         parameter = split(strtrim(allLines{iLine}), '=');
         switch parameter{1}
+            case 'rsi'
+                rsi = sscanf(parameter{2}, '%d');
             case 'format'
                 preambleFormat = sscanf(parameter{2}, '%s');
             case 'zcz'
                 zcz = sscanf(parameter{2}, '%d');
             case 'scs'
                 scs = sscanf(parameter{2}, '%f');
-                if (scs == 15)
+                if (scs <= 15)
                     duplexMode = 'FDD';
                 else
                     duplexMode = 'TDD';
+                    activeSlot = 1;
                 end
             case 'detected_preambles'
                 if strcmp(parameter{2}, '[]')
@@ -338,7 +346,9 @@ function prach = parsePRACH(allLines)
         ZeroCorrelationZone=zcz, ...
         SubcarrierSpacing=scs, ...
         DuplexMode=duplexMode, ...
-        SequenceIndex=1, ...
-        PreambleIndex=preambleIndex ...
+        SequenceIndex=rsi, ...
+        PreambleIndex=preambleIndex, ...
+        ActivePRACHSlot=activeSlot, ...
+        NPRACHSlot=slot ...
         );
 end % of function parsePRACH(allLines)
