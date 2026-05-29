@@ -260,7 +260,7 @@ void MexFunction::method_step(ArgumentList outputs, ArgumentList inputs)
   demodulator_config.dmrs_symb_pos   = bounded_bitset<MAX_NSYMB_PER_SLOT>(dmrs_pos_in.begin(), dmrs_pos_in.end());
 
   // DM-RS configuration type.
-  demodulator_config.dmrs_config_type = matlab_to_ocudu_dmrs_type(in_dem_cfg["DMRSConfigType"][0]);
+  demodulator_config.dmrs_type = matlab_to_ocudu_dmrs_type(in_dem_cfg["DMRSConfigType"][0]);
 
   // Number of CDM Groups without data.
   demodulator_config.nof_cdm_groups_without_data = in_dem_cfg["NumCDMGroupsWithoutData"][0];

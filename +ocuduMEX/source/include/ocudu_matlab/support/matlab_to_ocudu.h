@@ -6,15 +6,14 @@
 
 #pragma once
 
-#include "ocudu/phy/upper/dmrs_mapping.h"
 #include "ocudu/ran/cyclic_prefix.h"
+#include "ocudu/ran/dmrs/dmrs.h"
 #include "ocudu/ran/prach/prach_format_type.h"
 #include "ocudu/ran/prach/restricted_set_config.h"
 #include "ocudu/ran/sch/ldpc_base_graph.h"
 #include "ocudu/ran/sch/modulation_scheme.h"
 #include "ocudu/ran/subcarrier_spacing.h"
 #include "ocudu/support/error_handling.h"
-#include "ocudu/support/ocudu_assert.h"
 #include <string>
 
 namespace ocudu_matlab {
@@ -86,13 +85,13 @@ inline ocudu::prach_format_type matlab_to_ocudu_preamble_format(const std::strin
 /// \brief Converts a MATLAB DM-RS type to an OCUDU DM-RS type.
 /// \param[in] type A DM-RS type in {1, 2}.
 /// \return A DM-RS type identifier according to OCUDU convention.
-inline ocudu::dmrs_type matlab_to_ocudu_dmrs_type(unsigned type)
+inline ocudu::dmrs_config_type matlab_to_ocudu_dmrs_type(unsigned type)
 {
   if (type == 1) {
-    return ocudu::dmrs_type::TYPE1;
+    return ocudu::dmrs_config_type::type1;
   }
   if (type == 2) {
-    return ocudu::dmrs_type::TYPE2;
+    return ocudu::dmrs_config_type::type2;
   }
   ocudu::ocudu_terminate("Unknown DMRS type {}.", type);
 }
