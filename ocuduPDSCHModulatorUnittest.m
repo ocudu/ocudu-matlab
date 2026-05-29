@@ -159,7 +159,7 @@ classdef ocuduPDSCHModulatorUnittest < ocuduTest.ocuduBlockUnittest
             else
                 RBAllocationString = sprintf('rb_allocation::make_type1(%d, %d, vrb_to_prb::create_non_interleaved_other())', startPRB, length(pdsch.PRBSet));
             end
-            DMRSTypeString = sprintf('dmrs_type::TYPE%d', pdsch.DMRS.DMRSConfigurationType);
+            DMRSTypeString = sprintf('dmrs_config_type::type%d', pdsch.DMRS.DMRSConfigurationType);
 
             precodingString = ['precoding_configuration::make_wideband(make_identity(' num2str(NumLayers) '))'];
 

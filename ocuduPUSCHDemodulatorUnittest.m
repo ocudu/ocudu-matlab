@@ -405,7 +405,7 @@ classdef ocuduPUSCHDemodulatorUnittest < ocuduTest.ocuduBlockUnittest
             rbAllocationMask(obj.pusch.PRBSet + 1) = 1;
             rbAllocationMask = {rbAllocationMask};
 
-            dmrsTypeString = sprintf('dmrs_type::TYPE%d', obj.pusch.DMRS.DMRSConfigurationType);
+            dmrsTypeString = sprintf('dmrs_config_type::type%d', obj.pusch.DMRS.DMRSConfigurationType);
 
             % Generate a QAM modulation string.
             modString = ocuduModulationFromMatlab(obj.pusch.Modulation, 'full');

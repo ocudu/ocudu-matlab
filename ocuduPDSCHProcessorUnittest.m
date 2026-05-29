@@ -310,7 +310,7 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
 
             % Generate the test case entry.
             slotConfig = {log2(carrier.SubcarrierSpacing/15), carrier.NSlot};
-            dmrsTypeString = sprintf('dmrs_type::TYPE%d', pdsch.DMRS.DMRSConfigurationType);
+            dmrsTypeString = sprintf('dmrs_config_type::type%d', pdsch.DMRS.DMRSConfigurationType);
             refPointStr = ['pdsch_processor::pdu_t::', pdsch.DMRS.DMRSReferencePoint];
             numCDMGroupsWithoutData = pdsch.DMRS.NumCDMGroupsWithoutData;
             baseGraphString = ['ldpc_base_graph_type::BG', num2str(dlschInfo.BGN)];

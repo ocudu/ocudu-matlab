@@ -206,7 +206,7 @@ classdef ocuduULSCHDemultiplexUnittest < ocuduTest.ocuduBlockUnittest
             dmrsSymbolMask = symbolAllocationMask2string(puschDMRSIndices);
 
             % Generate DM-RS type string.
-            dmrsTypeString = sprintf('dmrs_type::TYPE%d', pusch.DMRS.DMRSConfigurationType);
+            dmrsTypeString = sprintf('dmrs_config_type::type%d', pusch.DMRS.DMRSConfigurationType);
 
             % Prepare configuration in a cell.
             configuration = {...

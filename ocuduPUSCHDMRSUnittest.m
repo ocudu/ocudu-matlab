@@ -237,7 +237,7 @@ classdef ocuduPUSCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
                 rem(nSlot, carrier.SlotsPerSubframe)}, true);
 
             % DMRS type
-            DmrsTypeStr = ['dmrs_type::TYPE', num2str(DMRSConfigurationType)];
+            DmrsTypeStr = ['dmrs_config_type::type', num2str(DMRSConfigurationType)];
 
             % Cyclic Prefix.
             cyclicPrefixStr = 'cyclic_prefix::NORMAL';

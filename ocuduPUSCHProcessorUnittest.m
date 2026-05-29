@@ -1,4 +1,4 @@
- %ocuduPUSCHProcessorUnittest Unit tests for PUSCH processor functions.
+%ocuduPUSCHProcessorUnittest Unit tests for PUSCH processor functions.
 %   This class implements unit tests for the PUSCH symbol processor
 %   functions using the matlab.unittest framework. The simplest use
 %   consists in creating an object with
@@ -380,7 +380,7 @@ classdef ocuduPUSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             TBSLBRM = nrTBS('256QAM', 4, 273, 156, 948 / 1024) / 8;
             TBSLBRMStr = ['units::bytes(' num2str(TBSLBRM) ')'];
 
-            dmrsTypeString = sprintf('dmrs_type::TYPE%d', pusch.DMRS.DMRSConfigurationType);
+            dmrsTypeString = sprintf('dmrs_config_type::type%d', pusch.DMRS.DMRSConfigurationType);
             baseGraphString = ['ldpc_base_graph_type::BG', num2str(ulschInfo.BGN)];
             codewordDescription = {...
                 rv, ...              % rv

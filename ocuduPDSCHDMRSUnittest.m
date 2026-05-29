@@ -203,11 +203,12 @@ classdef ocuduPDSCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
                 rbAllocationMask = RBallocationMask2string(PRBstart, PRBend);
 
                 precodingString = ['precoding_configuration::make_wideband(make_identity(' num2str(NumLayers) '))'];
+                dmrsTypeString = ['dmrs_config_type::type', num2str(DMRSConfigurationType)];
 
                 configCell = {...
                     slotPointConfig, ...                                     % slot
                     referencePointKrb, ...                                   % reference_point_k_rb
-                    ['dmrs_type::TYPE', num2str(DMRSConfigurationType)], ... % type
+                    dmrsTypeString, ...                                      % type
                     NIDNSCID, ...                                            % scrambling_id
                     NSCID,...                                                % n_scid
                     amplitude, ...                                           % amplitude

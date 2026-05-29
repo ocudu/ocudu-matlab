@@ -88,7 +88,11 @@ classdef ocuduPDSCHPTRSGeneratorUnittest < ocuduTest.ocuduBlockUnittest
         function addTestIncludesToHeaderFile(~, fileID)
         %addTestIncludesToHeaderFile Adds include directives to the test header file.
             fprintf(fileID, '#include "resource_grid_test_doubles.h"\n');
-            fprintf(fileID, '#include "ocudu/phy/upper/dmrs_mapping.h"\n');
+            fprintf(fileID, '#include "ocudu/phy/support/mask_types.h"\n');
+            fprintf(fileID, '#include "ocudu/phy/support/re_pattern.h"\n');
+            fprintf(fileID, '#include "ocudu/ran/dmrs/dmrs.h"\n');
+            fprintf(fileID, '#include "ocudu/ran/ptrs/ptrs.h"\n');
+            fprintf(fileID, '#include "ocudu/ran/resource_allocation/rb_bitmap.h"\n');
             fprintf(fileID, '#include "ocudu/ran/ptrs/ptrs.h"\n');
             fprintf(fileID, '#include "ocudu/ran/rnti.h"\n');
             fprintf(fileID, '#include "ocudu/ran/slot_point.h"\n');
@@ -100,7 +104,7 @@ classdef ocuduPDSCHPTRSGeneratorUnittest < ocuduTest.ocuduBlockUnittest
             fprintf(fileID, 'struct test_case_t {\n');
             fprintf(fileID, '  slot_point                                              slot;\n');
             fprintf(fileID, '  rnti_t                                                  rnti;\n');
-            fprintf(fileID, '  dmrs_type                                               dmrs_config_type;\n');
+            fprintf(fileID, '  dmrs_config_type                                        dmrs_type;\n');
             fprintf(fileID, '  unsigned                                                reference_point_k_rb;\n');
             fprintf(fileID, '  unsigned                                                scrambling_id;\n');
             fprintf(fileID, '  bool                                                    n_scid;\n');
@@ -260,6 +264,7 @@ classdef ocuduPDSCHPTRSGeneratorUnittest < ocuduTest.ocuduBlockUnittest
         frequencyDensityStr = ['ptrs_frequency_density::' words{FrequencyDensity}];
         timeDensityStr = ['ptrs_time_density::' words{TimeDensity}];
         reOffsetStr = ['ptrs_re_offset::offset' REOffset];
+        dmrsTypeStr = ['dmrs_config_type::type', num2str(DMRSConfigurationType)];
 
         % Becasue of memory issues, we cannot include the precoding configuration
         % in the cell config. We only include the number of layers and generate the
@@ -267,7 +272,7 @@ classdef ocuduPDSCHPTRSGeneratorUnittest < ocuduTest.ocuduBlockUnittest
         configCell = {...
             slotPointConfig, ...                                     % slot
             rntiStr, ...                                             % rnti
-            ['dmrs_type::TYPE', num2str(DMRSConfigurationType)], ... % dmrs_config_type
+            dmrsTypeStr, ...                                         % dmrs_config_type
             referencePointKrb, ...                                   % reference_point_k_rb
             NIDNSCID, ...                                            % scrambling_id
             NSCID,...                                                % n_scid
