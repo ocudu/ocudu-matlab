@@ -28,7 +28,7 @@ std::ostream& operator<<(std::ostream& os, const test_case_t& test_case)
              test_case.context.config.start_symbol_index,
              test_case.context.config.nof_symbols,
              test_case.context.config.dmrs_symb_pos,
-             test_case.context.config.dmrs_config_type == dmrs_type::TYPE1 ? 1 : 2,
+             test_case.context.config.dmrs_type == dmrs_config_type::type1 ? 1 : 2,
              test_case.context.config.nof_cdm_groups_without_data,
              test_case.context.config.n_id,
              test_case.context.config.nof_tx_layers,

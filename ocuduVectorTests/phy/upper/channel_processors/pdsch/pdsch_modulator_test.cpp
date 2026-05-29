@@ -26,7 +26,7 @@ std::ostream& operator<<(std::ostream& os, const test_case_t& test_case)
       test_case.config.freq_allocation,
       test_case.config.time_alloc,
       test_case.config.dmrs_symb_pos,
-      test_case.config.dmrs_config_type.to_string(),
+      test_case.config.dmrs_type,
       test_case.config.nof_cdm_groups_without_data,
       test_case.config.n_id,
       test_case.config.scaling,

@@ -22,7 +22,7 @@ std::ostream& operator<<(std::ostream& os, dmrs_pusch_estimator::configuration c
              "slot={}; type={}; scaling={:.3f}; cp={}; dmrs_pos={}; f_alloc={:x}; "
              "t_alloc={}:{}; tx_layers={}; rx_ports=[{}];",
              config.slot,
-             config.get_dmrs_type() == dmrs_type::TYPE1 ? "1" : "2",
+             config.get_dmrs_type() == dmrs_config_type::type1 ? "1" : "2",
              config.scaling,
              config.c_prefix.to_string(),
              config.symbols_mask,
@@ -160,7 +160,7 @@ TEST_P(DmrsPuschEstimatorFixture, Creation)
   dmrs_pusch_estimator::configuration config = GetParam().config;
 
   // The current estimator does not support Type2 DM-RS.
-  if (config.get_dmrs_type() == dmrs_type::TYPE2) {
+  if (config.get_dmrs_type() == dmrs_config_type::type2) {
     GTEST_SKIP() << "Configuration not supported yet, skipping.";
   }
 
@@ -232,7 +232,7 @@ TEST_P(DmrsPuschEstimatorFixture, Creation)
         ASSERT_TRUE(is_ok) << "All estimates in non-allocated REs should be 0.";
 
         // Get the channel estimates for the current OFDM symbol according to a mask.
-        re_prb_mask active_re_per_prb_dmrs = config.get_dmrs_type().get_dmrs_prb_mask(2);
+        re_prb_mask active_re_per_prb_dmrs = get_dmrs_prb_mask(config.get_dmrs_type(), 2);
         crb_bitmap  rb_mask_useful =
             config.rb_mask.slice(config.rb_mask.find_lowest(), config.rb_mask.find_highest() + 1);
         bounded_bitset<MAX_NOF_SUBCARRIERS> re_mask_dmrs =

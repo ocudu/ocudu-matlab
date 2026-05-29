@@ -21,7 +21,7 @@ std::ostream& operator<<(std::ostream& os, const test_case_t& test_case)
              "time_density={} re_offset={} nof_layers={}",
              test_case.slot,
              to_value(test_case.rnti),
-             test_case.dmrs_config_type.to_string(),
+             test_case.dmrs_type,
              test_case.reference_point_k_rb,
              test_case.scrambling_id,
              test_case.n_scid,
@@ -87,7 +87,7 @@ TEST_P(PtrsPdschGeneratorFixture, FromTestVector)
   ptrs_pdsch_generator::configuration config;
   config.slot                 = test_case.slot;
   config.rnti                 = test_case.rnti;
-  config.dmrs_config_type     = test_case.dmrs_config_type;
+  config.dmrs_type            = test_case.dmrs_type;
   config.reference_point_k_rb = test_case.reference_point_k_rb;
   config.scrambling_id        = test_case.scrambling_id;
   config.n_scid               = test_case.n_scid;

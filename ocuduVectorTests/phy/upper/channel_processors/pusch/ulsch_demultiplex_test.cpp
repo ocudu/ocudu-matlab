@@ -22,7 +22,7 @@ std::ostream& operator<<(std::ostream& os, const ulsch_demultiplex::configuratio
              config.start_symbol_index,
              config.nof_symbols,
              config.nof_harq_ack_rvd,
-             config.dmrs == dmrs_type::TYPE1 ? "type1" : "type2",
+             config.dmrs,
              config.dmrs_symbol_mask,
              config.nof_cdm_groups_without_data);
   return os;
