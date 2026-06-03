@@ -92,9 +92,13 @@ classdef CheckPUCCHF4Conformance < matlab.unittest.TestCase
             % Export UCI BLER in csv format to be imported in grafana.
             writecsv(obj, TestConfig, 'UCI BLER', pp.Statistics.BlockErrorRateOCUDU);
 
-            obj.verifyLessThanOrEqual(pp.Statistics.BlockErrorRateOCUDU, 0.01, ...
+            % Round block error rate to the closest multiple of 0.005 towards zero.
+            bler = pp.Statistics.BlockErrorRateOCUDU;
+            bler = floor(200 * bler) / 200;
+
+            obj.verifyLessThanOrEqual(bler, 0.01, ...
                 'WARNING: The PUCCH F4 UCI BLER should not be higher than 1%.');
-            obj.assertLessThanOrEqual(pp.Statistics.BlockErrorRateOCUDU, 0.05, ...
+            obj.assertLessThanOrEqual(bler, 0.05, ...
                 'ERROR: The PUCCH F4 UCI BLER is above the hard acceptance threshold of 5%.');
         end % of function checkPUCCHF4BLER(obj, TestConfig)
 

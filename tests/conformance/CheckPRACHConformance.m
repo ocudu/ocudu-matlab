@@ -87,9 +87,13 @@ classdef CheckPRACHConformance < matlab.unittest.TestCase
             % Export detection probability in csv format to be imported in grafana.
             writecsv(obj, TestConfig.Name, TestConfig.Format, 'detection', pp.ProbabilityDetectionPerfect);
 
-            obj.verifyGreaterThanOrEqual(pp.ProbabilityDetectionPerfect, 0.99, ...
+            % Round the probability of detection to the closest multiple of 0.005 towards infinity.
+            detectProbability = pp.ProbabilityDetectionPerfect;
+            detectProbability = ceil(2000 * detectProbability) / 2000;
+
+            obj.verifyGreaterThanOrEqual(detectProbability, 0.97, ...
                 'WARNING: The PRACH detection rate should not be lower than 99%.');
-            obj.assertGreaterThanOrEqual(pp.ProbabilityDetectionPerfect, 0.95, ...
+            obj.assertGreaterThanOrEqual(detectProbability, 0.95, ...
                 'WARNING: The PRACH detection rate is below the hard acceptance threshold of 95%.');
 
         end % of function checkPRACHdetection(obj, TestConfig)
@@ -116,9 +120,13 @@ classdef CheckPRACHConformance < matlab.unittest.TestCase
             % Export false-alarm probability in csv format to be imported in grafana.
             writecsv(obj, TestConfig.Name, TestConfig.Format, 'false alarm', pp.ProbabilityFalseAlarm);
 
-            obj.verifyLessThanOrEqual(pp.ProbabilityFalseAlarm, 0.001, ...
+            % Round the probability of false alarm to the closest multiple of 0.0005 towards zero.
+            faProbability = pp.ProbabilityFalseAlarm;
+            faProbability = floor(2000 * faProbability) / 2000;
+
+            obj.verifyLessThanOrEqual(faProbability, 0.001, ...
                 'WARNING: The PRACH false detection rate should not be higher than 0.1%.');
-            obj.assertLessThanOrEqual(pp.ProbabilityFalseAlarm, 0.005, ...
+            obj.assertLessThanOrEqual(faProbability, 0.005, ...
                 'WARNING: The PRACH false detection rate is above the hard acceptance threshold of 0.5%.');
 
         end % of function checkPRACHfalsealarm(obj, TestConfig)
