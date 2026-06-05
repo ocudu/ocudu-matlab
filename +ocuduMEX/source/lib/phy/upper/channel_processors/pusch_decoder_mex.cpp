@@ -154,7 +154,7 @@ void MexFunction::method_step(ArgumentList outputs, ArgumentList inputs)
 
   in_struct_array                 = inputs[5];
   Struct                in_buf_id = in_struct_array[0];
-  trx_buffer_identifier buf_id(in_buf_id["RNTI"][0], in_buf_id["HARQProcessID"][0]);
+  trx_buffer_identifier buf_id(to_rnti(in_buf_id["RNTI"][0]), in_buf_id["HARQProcessID"][0]);
 
   unsigned nof_codeblocks       = in_buf_id["NumCodeblocks"][0];
   unsigned nof_codeblocks_check = compute_nof_codeblocks(tbs, cfg.base_graph);
@@ -211,7 +211,7 @@ void MexFunction::method_reset_crcs(ArgumentList outputs, ArgumentList inputs)
 
   StructArray           in_struct_array = inputs[2];
   Struct                in_buf_id       = in_struct_array[0];
-  trx_buffer_identifier buf_id(in_buf_id["RNTI"][0], in_buf_id["HARQProcessID"][0]);
+  trx_buffer_identifier buf_id(to_rnti(in_buf_id["RNTI"][0]), in_buf_id["HARQProcessID"][0]);
 
   unsigned nof_codeblocks = in_buf_id["NumCodeblocks"][0];
 

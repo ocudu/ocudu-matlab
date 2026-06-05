@@ -241,7 +241,7 @@ void MexFunction::method_step(ArgumentList outputs, ArgumentList inputs)
   pusch_demodulator::configuration demodulator_config;
 
   // Set the RNTI.
-  demodulator_config.rnti = in_dem_cfg["RNTI"][0];
+  demodulator_config.rnti = to_rnti(in_dem_cfg["RNTI"][0]);
 
   // Build the RB allocation bitmask (contiguous PRB allocation is assumed).
   const TypedArray<bool> rb_mask_in = in_dem_cfg["RBMask"];
