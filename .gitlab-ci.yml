@@ -236,7 +236,7 @@ build and run vector unit tests:
     - DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends rsync
     - rsync -av ./artifacts/ ${CI_PROJECT_DIR}/ocuduVectorTests/
     - |
-      if [[ $COMPARE_TEST_VECTORS == "True" ]]; then
+      if [[ $COMPARE_HEADERS == "True" ]]; then
         if [[ $(git diff -U0 | grep -v -e "^\(+++\|---\|@@\|diff\|index\)" -e "^\(+\|-\)\(// This\|oid\|size\)" | wc -l) -gt 0 ]]; then
           echo "The new set of test vectors is not the standard one."
           git diff
@@ -384,7 +384,7 @@ build mex full tests:
     <<: *mex_artifacts
     reports:
       junit: build_mex_conformance_xunit.xml
-    expire_in: 10 days
+    expire_in: 20 days
   timeout: 24h
 
 build mex conformance even:
