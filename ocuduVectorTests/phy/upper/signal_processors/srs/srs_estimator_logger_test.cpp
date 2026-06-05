@@ -3,6 +3,7 @@
 
 #include "resource_grid_test_doubles.h"
 #include "srs_estimator_test_doubles.h"
+#include "ocudu/ocudulog/ocudulog.h"
 #include "ocudu/phy/upper/signal_processors/srs/formatters.h"
 #include "ocudu/phy/upper/signal_processors/srs/srs_estimator_configuration.h"
 #include "ocudu/phy/upper/signal_processors/srs/srs_estimator_factory.h"

@@ -5,6 +5,7 @@
 #include "ocudu/phy/upper/channel_processors/ssb/factories.h"
 #include "ocudu/phy/upper/channel_processors/ssb/formatters.h"
 #include "ocudu/phy/upper/signal_processors/ssb/factories.h"
+#include "ocudu/ran/cyclic_prefix.h"
 
 using namespace ocudu;
 

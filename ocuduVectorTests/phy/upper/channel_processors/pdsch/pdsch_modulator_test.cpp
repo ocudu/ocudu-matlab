@@ -19,7 +19,7 @@ std::ostream& operator<<(std::ostream& os, const test_case_t& test_case)
   fmt::print(
       os,
       "rnti={} bwp={} mod1={} mod2={} freq={} time={} dmrs={}/{} ncgwd={} n_id={} scaling={:.1f} rvd={} precoding={}",
-      to_rnti(test_case.config.rnti),
+      test_case.config.rnti,
       test_case.config.bwp,
       to_string(test_case.config.modulation1),
       to_string(test_case.config.modulation2),

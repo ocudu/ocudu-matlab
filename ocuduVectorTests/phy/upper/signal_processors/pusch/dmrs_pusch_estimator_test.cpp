@@ -11,6 +11,7 @@
 #include "ocudu/support/executors/inline_task_executor.h"
 #include "fmt/ostream.h"
 #include "gtest/gtest.h"
+#include <random>
 
 using namespace ocudu;
 
