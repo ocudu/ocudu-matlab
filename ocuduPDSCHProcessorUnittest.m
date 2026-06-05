@@ -323,6 +323,9 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             % starting PRB of the BWP.
             RBAllocationString = rbAllocationIndexes2String(pdsch.PRBSet);
 
+            % Convert RNTI to string.
+            rntiString = ['to_rnti(', num2str(pdsch.RNTI), ')'];
+
             % Convert cyclic prefix to string.
             cyclicPrefixStr = ['cyclic_prefix::', upper(carrier.CyclicPrefix)];
 
@@ -335,7 +338,7 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             pduDescription = {...
                 'std::nullopt', ...                      % context
                 slotConfig, ...                          % slot
-                pdsch.RNTI, ...                          % rnti
+                rntiString, ...                          % rnti
                 pdsch.NSizeBWP, ...                      % bwp_size_rb
                 pdsch.NStartBWP, ...                     % bwp_start_rb
                 cyclicPrefixStr, ...                     % cp
@@ -355,7 +358,7 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
                 'std::nullopt', ...                      % ptrs
                 betaDMRSdB, ...                          % ratio_pdsch_dmrs_to_sss_dB
                 betaDatadB, ...                          % ratio_pdsch_data_to_sss_dB
-                precodingString                          % precoding
+                precodingString ...                      % precoding
                 };
 
             contextDescription = {...

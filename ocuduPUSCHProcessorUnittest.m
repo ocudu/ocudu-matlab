@@ -423,10 +423,12 @@ classdef ocuduPUSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
 
             NRAPIDStr = sprintf('{%u}', NRAPID);
 
+            rntiString = ['to_rnti(', num2str(pusch.RNTI), ')'];
+
             pduDescription = {...
                 'std::nullopt', ...                           % context
                 slotConfig, ...                               % slot
-                pusch.RNTI, ...                               % rnti
+                rntiString, ...                               % rnti
                 pusch.NSizeBWP, ...                           % bwp_size_rb
                 pusch.NStartBWP, ...                          % bwp_start_rb
                 cyclicPrefixStr, ...                          % cp

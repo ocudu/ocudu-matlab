@@ -109,9 +109,11 @@ classdef ocuduPDCCHEncoderUnittest < ocuduTest.ocuduBlockUnittest
                 % write the encoded codeword to a binary file
                 testCase.saveDataFile('_test_output', testID, @writeUint8File, encodedMsg);
 
+                rntiString = ['to_rnti(', num2str(encoderConfig.RNTI), ')'];
+
                 % generate the test case entry
                 testCaseString = testCase.testCaseToString(testID, ...
-                    {encoderConfig.E, encoderConfig.RNTI}, true, ...
+                    {encoderConfig.E, rntiString}, true, ...
                     '_test_input', '_test_output');
 
                 % add the test to the file header

@@ -161,13 +161,14 @@ classdef ocuduPDSCHModulatorUnittest < ocuduTest.ocuduBlockUnittest
             end
             DMRSTypeString = sprintf('dmrs_config_type::type%d', pdsch.DMRS.DMRSConfigurationType);
 
+            rntiString = ['to_rnti(', num2str(pdsch.RNTI), ')'];
             precodingString = ['precoding_configuration::make_wideband(make_identity(' num2str(NumLayers) '))'];
 
             bwpConfig = {NStartBWP, NStartBWP + NSizeBWP};
             timeAlloc= {pdsch.SymbolAllocation(1), sum(pdsch.SymbolAllocation)};
 
             configCell = {...
-                pdsch.RNTI,...                          % rnti
+                rntiString, ...                         % rnti
                 bwpConfig, ...                          % bwp
                 modString1, ...                         % modulation1
                 modString1, ...                         % modulation2

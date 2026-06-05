@@ -252,13 +252,16 @@ classdef ocuduPDCCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             0, ...                     % shift_index
         };
 
+        rntiString = ['to_rnti(', num2str(pdcch.RNTI), ')'];
+        aggregationLevelString = ['aggregation_level::n', num2str(AggregationLevel)];
+
         dciConfig = {...
-            pdcch.RNTI, ...             % rnti
+            rntiString, ...             % rnti
             pdcch.DMRSScramblingID, ... % n_id_pdcch_dmrs
             pdcch.DMRSScramblingID, ... % n_id_pdcch_data
             pdcch.RNTI, ...             % n_rnti
             ncce, ...                   % cce_index
-            AggregationLevel, ...       % aggregation_level
+            aggregationLevelString, ... % aggregation_level
             0.0, ...                    % dmrs_power_offset_dB
             0.0, ...                    % data_power_offset_dB
             message, ...                % payload

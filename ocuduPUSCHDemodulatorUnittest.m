@@ -410,8 +410,10 @@ classdef ocuduPUSCHDemodulatorUnittest < ocuduTest.ocuduBlockUnittest
             % Generate a QAM modulation string.
             modString = ocuduModulationFromMatlab(obj.pusch.Modulation, 'full');
 
+            rntiString = ['to_rnti(', num2str(obj.pusch.RNTI), ')'];
+
             puschCellConfig = {...
-                obj.pusch.RNTI, ...                         % rnti
+                rntiString, ...                             % rnti
                 rbAllocationMask, ...                       % rb_mask
                 modString, ...                              % modulation
                 obj.pusch.SymbolAllocation(1), ...          % start_symbol_index
