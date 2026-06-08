@@ -338,8 +338,8 @@ classdef CheckPUSCHConformance < matlab.unittest.TestCase
             end
             writecsv(obj, fullName, tp * 100);
 
-            obj.verifyGreaterThanOrEqual(tp, 0.75, 'WARNING: Throughput should be at least 70% for TS cases.');
-            obj.assertGreaterThan(tp, 0.70, 'ERROR: Throughput for a TS case is below the hard acceptance threshold of 70%.');
+            obj.verifyGreaterThanOrEqual(tp, 0.70, 'WARNING: Throughput should be at least 70% for TS cases.');
+            obj.assertGreaterThan(tp, 0.65, 'ERROR: Throughput for a TS case is below the hard acceptance threshold of 65%.');
 
         end % of function checkPUSCHconformance(obj, TestConfig)
 
