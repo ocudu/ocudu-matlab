@@ -14,6 +14,7 @@
 #include "ocudu/hal/dpdk/dpdk_eal_factory.h"
 #include "ocudu/hal/phy/upper/channel_processors/hw_accelerator_factories.h"
 #include "ocudu/hal/phy/upper/channel_processors/hw_accelerator_pdsch_enc_factory.h"
+#include "ocudu/ocudulog/ocudulog.h"
 #endif // HWACC_PDSCH_ENABLED
 #include "fmt/ostream.h"
 #include <gtest/gtest.h>

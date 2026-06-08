@@ -25,6 +25,7 @@
 #include "ocudu/hal/phy/upper/channel_processors/pusch/ext_harq_buffer_context_repository_factory.h"
 #include "ocudu/hal/phy/upper/channel_processors/pusch/hw_accelerator_factories.h"
 #include "ocudu/hal/phy/upper/channel_processors/pusch/hw_accelerator_pusch_dec_factory.h"
+#include "ocudu/ocudulog/ocudulog.h"
 #endif // HWACC_PUSCH_ENABLED
 #include <getopt.h>
 
