@@ -85,7 +85,7 @@ TEST_P(NzpCsiRsGeneratorFixture, Vector)
   grid.assert_entries(testvector_symbols, std::sqrt(max_ports));
 }
 
-// Creates test suite with al the test cases.
+// Creates test suite with all the test cases.
 INSTANTIATE_TEST_SUITE_P(NzpCsiRsGenerator,
                          NzpCsiRsGeneratorFixture,
                          ::testing::ValuesIn(nzp_csi_rs_generator_test_data));

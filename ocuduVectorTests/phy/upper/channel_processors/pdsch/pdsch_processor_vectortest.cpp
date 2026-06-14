@@ -35,7 +35,7 @@ static std::unique_ptr<dpdk::dpdk_eal> dpdk_interface  = nullptr;
 // The function assumes that 'eal_arg' flags the start of the EAL arguments and that no more non-EAL arguments follow.
 static std::string capture_eal_args(int* argc, char*** argv)
 {
-  // Searchs for the EAL args (if any), flagged by 'eal_args', while removing all the rest (except argv[0]).
+  // Searches for the EAL args (if any), flagged by 'eal_args', while removing all the rest (except argv[0]).
   bool        eal_found = false;
   char**      mod_argv  = *argv;
   std::string eal_argv  = {mod_argv[0]};
@@ -123,7 +123,7 @@ private:
       return nullptr;
     }
 
-    // Intefacing to the bbdev-based hardware-accelerator.
+    // Interfacing to the bbdev-based hardware-accelerator.
     dpdk::bbdev_acc_configuration bbdev_config;
     bbdev_config.id                                    = 0;
     bbdev_config.nof_ldpc_enc_lcores                   = NOF_CONCURRENT_THREADS;

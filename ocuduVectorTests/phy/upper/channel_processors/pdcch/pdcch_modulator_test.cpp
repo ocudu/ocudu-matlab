@@ -40,13 +40,13 @@ int main()
     resource_grid_writer_spy              grid(max_ports, max_symb, max_prb);
     std::unique_ptr<resource_grid_mapper> mapper = rg_mapper_factory->create();
 
-    // Load input codeword from a testvector
+    // Load input codeword from a test vector.
     const std::vector<uint8_t> test_codeword = test_case.data.read();
 
     // Modulate.
     pdcch->modulate(grid, test_codeword, test_case.config);
 
-    // Load output golden data
+    // Load output golden data.
     const std::vector<resource_grid_writer_spy::expected_entry_t> testvector_symbols = test_case.symbols.read();
 
     // Assert resource grid entries.

@@ -15,7 +15,7 @@ namespace ocudu {
 std::ostream& operator<<(std::ostream& os, const dmrs_pucch_estimator::common_configuration& cc)
 {
   fmt::print(os,
-             "SCS {} kHz, intra-slot fr. hop. {}, port {}",
+             "SCS {} kHz, intraslot fr. hop. {}, port {}",
              15U * (1U << cc.slot.numerology()),
              (cc.second_hop_prb.has_value() ? "ON" : "OFF"),
              cc.ports[0]);

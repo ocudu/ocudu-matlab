@@ -246,7 +246,7 @@ TEST_P(OFHCompressionBfp9TestFixture, test_compr_param)
 
   // This test creates a vector of resource blocks. The Resource Blocks are
   // filled with zeros except one resource element that is set to a real value
-  // that is translated to a given exponent. The position of the writen resource
+  // that is translated to a given exponent. The position of the written resource
   // element is shifted across the 12 possibles positions for each of the
   // exponents.
   static constexpr unsigned nof_shifts = NOF_SUBCARRIERS_PER_RB;

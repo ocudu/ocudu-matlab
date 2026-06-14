@@ -10,7 +10,7 @@
 
 namespace fmt {
 
-/// \brief Custom formatter for \c pusch_tpmi_select_info
+/// \brief Custom formatters for \c pusch_tpmi_select_info
 template <>
 struct formatter<ocudu::pusch_tpmi_select_info> {
   /// Default constructor.

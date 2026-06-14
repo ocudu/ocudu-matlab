@@ -132,7 +132,7 @@ TEST_P(srsEstimatorValidatorFixture, srsEstimatorValidatorDeathTest)
   // Prepare receive data.
   std::vector<uint8_t> data;
 
-  // Process pdsch PDU.
+  // Process PDSCH PDU.
 #ifdef ASSERTS_ENABLED
   ASSERT_DEATH({ estimator->estimate(grid, config); }, param.expr);
 #endif // ASSERTS_ENABLED

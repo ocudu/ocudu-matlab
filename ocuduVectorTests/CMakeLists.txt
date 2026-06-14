@@ -7,7 +7,7 @@
 
 set(OCUDU_VECTORTESTS_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
-# Import clang-format and clang-tidy configuration from the OCUDU project (neede by some IDEs since this folder
+# Import clang-format and clang-tidy configuration from the OCUDU project (needed by some IDEs since this folder
 # is usually imported as a symbolic link).
 if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.clang-format)
     file(CREATE_LINK ${CMAKE_SOURCE_DIR}/.clang-format ${CMAKE_CURRENT_SOURCE_DIR}/.clang-format SYMBOLIC)

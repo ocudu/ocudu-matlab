@@ -261,7 +261,7 @@ TEST_P(DmrsPuschEstimatorFixture, Creation)
 // Creates random values for the dummy port channel estimators.
 static void fill_dummy_values(span<port_channel_estimator_spy::placeholders> dummy_values, unsigned nof_layers)
 {
-  // Exponential distribution for positive values, uniform (-1, 1) distibution for the rest.
+  // Exponential distribution for positive values, uniform (-1, 1) distribution for the rest.
   std::mt19937                          rgen(0);
   std::exponential_distribution<float>  exp(1.0);
   std::uniform_real_distribution<float> uniform(-10.0, 10.0);
@@ -283,7 +283,7 @@ static void fill_dummy_values(span<port_channel_estimator_spy::placeholders> dum
   }
 }
 
-// Creates a CSI report from the values in the dummy port channel estiamtors.
+// Creates a CSI report from the values in the dummy port channel estimators.
 static channel_state_information expected_csi(span<const port_channel_estimator_spy::placeholders> dummy_values)
 {
   float                epre          = 0.0F;
@@ -332,7 +332,7 @@ TEST_P(DmrsPuschEstimatorFixture, Interface)
   // This test verifies the results interface of the dmrs_pusch_estimator. The port channel estimators are replaced with
   // dummy versions that return preset values for all estimated metrics. The test checks whether the values retrieved
   // through the dmrs_pusch_estimator_results interface are compatible with the values in the dummy port channel
-  // estimators. The getter methods get_symbol_ch_estimate and get_path_ch_estimate are testsd in the previous test.
+  // estimators. The getter methods get_symbol_ch_estimate and get_path_ch_estimate are tested in the previous test.
 
   // Create actual channel estimator.
   std::unique_ptr<dmrs_pusch_estimator> estimator = estimator_interface_factory->create();

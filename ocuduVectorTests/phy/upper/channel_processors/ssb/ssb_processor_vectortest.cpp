@@ -33,7 +33,7 @@ int main()
 
   std::shared_ptr<dmrs_pbch_processor_factory> dmrs_pbch_proc_factory =
       create_dmrs_pbch_processor_factory_sw(prg_factory);
-  TESTASSERT(dmrs_pbch_proc_factory, "Invalid DMRS PBCH factory.");
+  TESTASSERT(dmrs_pbch_proc_factory, "Invalid DM-RS PBCH factory.");
 
   std::shared_ptr<pss_processor_factory> pss_proc_factory = create_pss_processor_factory_sw();
   TESTASSERT(pss_proc_factory, "Invalid PSS factory.");
