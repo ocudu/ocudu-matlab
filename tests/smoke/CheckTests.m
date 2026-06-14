@@ -61,7 +61,7 @@ classdef CheckTests < matlab.unittest.TestCase
     end
 
     properties (Hidden)
-        %Tempoary working directory.
+        %Temporary working directory.
         tmpOutputPath (1, :) char {mustBeFolder(tmpOutputPath)} = '.'
 
     end % of properties (Hidden)

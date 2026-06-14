@@ -41,7 +41,7 @@ classdef CheckSimulators < matlab.unittest.TestCase
 
     methods (TestMethodSetup)
         function resetrandomgenerator(obj)
-            % Reset random genenator after storing current state.
+            % Reset random generator after storing current state.
             orig = rng('default');
             % Random generator will be restored after the method.
             obj.addTeardown(@rng, orig);
@@ -74,7 +74,7 @@ classdef CheckSimulators < matlab.unittest.TestCase
             obj.assertEqual(pp.SNRrange, snrs', 'Wrong SNR range.');
             obj.assertEqual(pp.TBS, 1800, 'Wrong transport block size.');
             obj.assertEqual(pp.MaxThroughput, 1.8, 'Wrong maximum throughput.');
-            obj.assertEqual(pp.ThroughputMATLAB, [0.6312; 0.6957; 0.7473; 0.7595; 0.7773], "Wrong througuput curve.", RelTol=0.02);
+            obj.assertEqual(pp.ThroughputMATLAB, [0.6312; 0.6957; 0.7473; 0.7595; 0.7773], "Wrong throughput curve.", RelTol=0.02);
             obj.assertEqual(pp.BlockErrorRateMATLAB, [0.6494; 0.6135; 0.5848; 0.5780; 0.5682], "Wrong BLER curve.", RelTol=0.02);
         end % of function testPUSCHBLERmatlab(obj)
 
@@ -159,7 +159,7 @@ classdef CheckSimulators < matlab.unittest.TestCase
             try
                 pp(snrs, 100);
             catch ME
-                obj.assertFail(['PUCCHPERF could not run because of excetion: ', ...
+                obj.assertFail(['PUCCHPERF could not run because of exception: ', ...
                     ME.message]);
             end
 
@@ -393,7 +393,7 @@ classdef CheckSimulators < matlab.unittest.TestCase
             try
                 pp(snrs, 100);
             catch ME
-                obj.assertFail(['PUCCHPERF could not run because of excetion: ', ...
+                obj.assertFail(['PUCCHPERF could not run because of exception: ', ...
                     ME.message]);
             end
 

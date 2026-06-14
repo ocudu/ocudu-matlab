@@ -1,7 +1,7 @@
 %clipboard Overloads MATLAB clipboard function.
 %   clipboard('', STUFF) stores the content of STUFF in an internal register.
 %
-%   STR =clipboard('paste') sets variable STR to the content of the internal
+%   STR = clipboard('paste') sets variable STR to the content of the internal
 %   register (see above).
 %
 %   Example:

@@ -533,7 +533,7 @@ classdef CheckAnalyzers < matlab.unittest.TestCase
             obj.assertEqual(carrier.NStartGrid, 0, 'Wrong start of resource grid.');
 
             % Check the prach output.
-            obj.assertClass(prach, 'nrPRACHConfig', 'Output "prach" is not an nrPRACHConfig onject.');
+            obj.assertClass(prach, 'nrPRACHConfig', 'Output "prach" is not an nrPRACHConfig object.');
             obj.assertEqual(prach.FrequencyRange, 'FR1', 'Wrong frequency range.');
             obj.assertEqual(prach.DuplexMode, 'TDD', 'Wrong duplex mode.');
             obj.assertEqual(prach.SubcarrierSpacing, 30, 'Wrong subcarrier spacing.');

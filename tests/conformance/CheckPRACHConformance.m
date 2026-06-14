@@ -81,7 +81,7 @@ classdef CheckPRACHConformance < matlab.unittest.TestCase
             try
                 pp(TestConfig.SNR, nTests);
             catch ME
-                obj.assertFail(['PRACHPER simulation failed with error: ', ME.message]);
+                obj.assertFail(['PRACHPERF simulation failed with error: ', ME.message]);
             end
 
             % Export detection probability in csv format to be imported in grafana.
@@ -114,7 +114,7 @@ classdef CheckPRACHConformance < matlab.unittest.TestCase
             try
                 pp(TestConfig.SNR, nTests);
             catch ME
-                obj.assertFail(['PRACHPER simulation failed with error: ', ME.message]);
+                obj.assertFail(['PRACHPERF simulation failed with error: ', ME.message]);
             end
 
             % Export false-alarm probability in csv format to be imported in grafana.
@@ -188,7 +188,7 @@ classdef CheckPRACHConformance < matlab.unittest.TestCase
                 pp.PreambleIndex = 0;
                 pp.SequenceIndex = 0;
             else
-                error('ocudu_matlab:CheckPRACHConformance', 'Unknwon test name %s.', TestConfig.Name);
+                error('ocudu_matlab:CheckPRACHConformance', 'Unknown test name %s.', TestConfig.Name);
             end % of if contains(TestConfig.Name, '8.4.2.2-1')
 
             pp.IgnoreCFO = true;
