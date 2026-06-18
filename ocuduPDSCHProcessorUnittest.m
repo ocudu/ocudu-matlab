@@ -333,30 +333,29 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
 
             % Prepare PDSCH configuration.
             pduDescription = {...
-                'std::nullopt', ...            % context
-                slotConfig, ...                % slot
-                pdsch.RNTI, ...                % rnti
-                pdsch.NSizeBWP, ...            % bwp_size_rb
-                pdsch.NStartBWP, ...           % bwp_start_rb
-                cyclicPrefixStr, ...           % cp
-                {{modString1, rv}}, ...        % codewords
-                pdsch.NID, ...                 % n_id
-                refPointStr, ...               % ref_point
-                dmrsSymbolMask, ...            % dmrs_symbol_mask
-                dmrsTypeString, ...            % dmrs
-                NIDNSCID, ...                  % scrambling_id
-                NSCID, ...                     % n_scid
-                numCDMGroupsWithoutData, ...   % nof_cdm_groups_without_data
-                RBAllocationString, ...        % freq_alloc
-                pdsch.SymbolAllocation(1), ... % start_symbol_index
-                pdsch.SymbolAllocation(2), ... % nof_symbols
-                baseGraphString, ...           % ldpc_base_graph
-                TBSLBRMStr, ...                % tbs_lbrm
-                rvdREPatternList, ...          % reserved
-                'std::nullopt', ...            % ptrs
-                betaDMRSdB, ...                % ratio_pdsch_dmrs_to_sss_dB
-                betaDatadB, ...                % ratio_pdsch_data_to_sss_dB
-                precodingString                % precoding
+                'std::nullopt', ...                      % context
+                slotConfig, ...                          % slot
+                pdsch.RNTI, ...                          % rnti
+                pdsch.NSizeBWP, ...                      % bwp_size_rb
+                pdsch.NStartBWP, ...                     % bwp_start_rb
+                cyclicPrefixStr, ...                     % cp
+                {{modString1, rv, baseGraphString}}, ... % codewords
+                pdsch.NID, ...                           % n_id
+                refPointStr, ...                         % ref_point
+                dmrsSymbolMask, ...                      % dmrs_symbol_mask
+                dmrsTypeString, ...                      % dmrs
+                NIDNSCID, ...                            % scrambling_id
+                NSCID, ...                               % n_scid
+                numCDMGroupsWithoutData, ...             % nof_cdm_groups_without_data
+                RBAllocationString, ...                  % freq_alloc
+                pdsch.SymbolAllocation(1), ...           % start_symbol_index
+                pdsch.SymbolAllocation(2), ...           % nof_symbols
+                TBSLBRMStr, ...                          % tbs_lbrm
+                rvdREPatternList, ...                    % reserved
+                'std::nullopt', ...                      % ptrs
+                betaDMRSdB, ...                          % ratio_pdsch_dmrs_to_sss_dB
+                betaDatadB, ...                          % ratio_pdsch_data_to_sss_dB
+                precodingString                          % precoding
                 };
 
             contextDescription = {...
