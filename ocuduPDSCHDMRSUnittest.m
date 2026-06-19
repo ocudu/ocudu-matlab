@@ -1,5 +1,5 @@
-%ocuduPDSCHDMRSUnittest Unit tests for PDSCH DMRS processor functions.
-%   This class implements unit tests for the PDSCH DMRS processor functions using the
+%ocuduPDSCHDMRSUnittest Unit tests for PDSCH DM-RS processor functions.
+%   This class implements unit tests for the PDSCH DM-RS processor functions using the
 %   matlab.unittest framework. The simplest use consists in creating an object with
 %       testCase = ocuduPDSCHDMRSUnittest
 %   and then running all the tests with
@@ -19,10 +19,10 @@
 %
 %   numerology              - Defines the subcarrier spacing (0, 1).
 %   NumLayers               - Number of transmission layers (1, 2, 4, 8).
-%   DMRSTypeAPosition       - Position of the first DMRS OFDM symbol (2, 3).
-%   DMRSAdditionalPosition  - Maximum number of DMRS additional positions (0, 1, 2, 3).
-%   DMRSLength              - Number of consecutive front-loaded DMRS OFDM symbols (1, 2).
-%   DMRSConfigurationType   - DMRS configuration type (1, 2).
+%   DMRSTypeAPosition       - Position of the first DM-RS OFDM symbol (2, 3).
+%   DMRSAdditionalPosition  - Maximum number of DM-RS additional positions (0, 1, 2, 3).
+%   DMRSLength              - Number of consecutive front-loaded DM-RS OFDM symbols (1, 2).
+%   DMRSConfigurationType   - DM-RS configuration type (1, 2).
 %
 %   ocuduPDSCHDMRSUnittest Methods (TestTags = {'testvector'}):
 %
@@ -65,16 +65,16 @@ classdef ocuduPDSCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
         %Number of transmission layers (1, 2, 3, 4).
         NumLayers = {1, 2, 3, 4}
 
-        %Position of the first DMRS OFDM symbol (2, 3).
+        %Position of the first DM-RS OFDM symbol (2, 3).
         DMRSTypeAPosition = {2, 3}
 
-        %Maximum number of DMRS additional positions (0, 1, 2, 3).
+        %Maximum number of DM-RS additional positions (0, 1, 2, 3).
         DMRSAdditionalPosition = {0, 1, 2, 3}
 
-        %Number of consecutive front-loaded DMRS OFDM symbols (1, 2).
+        %Number of consecutive front-loaded DM-RS OFDM symbols (1, 2).
         DMRSLength = {1, 2}
 
-        %DMRS configuration type (1, 2).
+        %DM-RS configuration type (1, 2).
         DMRSConfigurationType = {1, 2}
     end
 
@@ -157,7 +157,7 @@ classdef ocuduPDSCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
                     CyclicPrefix=cyclicPrefix ...
                     );
 
-                % Configure the PDSCH DMRS symbols according to the test
+                % Configure the PDSCH DM-RS symbols according to the test
                 % parameters.
                 DMRS = nrPDSCHDMRSConfig( ...
                     DMRSConfigurationType=DMRSConfigurationType, ...
@@ -183,7 +183,7 @@ classdef ocuduPDSCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
                     PRBSet=PRBSet ...
                     );
 
-                % Call the PDSCH DMRS symbol processor MATLAB functions.
+                % Call the PDSCH DM-RS symbol processor MATLAB functions.
                 [DMRSsymbols, symbolIndices] = ocuduPDSCHDMRS(carrier, pdsch);
 
                 % Write each complex symbol into a binary file, and the

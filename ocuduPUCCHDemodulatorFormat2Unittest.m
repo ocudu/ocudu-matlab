@@ -58,7 +58,7 @@ classdef ocuduPUCCHDemodulatorFormat2Unittest < ocuduTest.ocuduBlockUnittest
         %   The symbol allocation is by a structure with two fields:
         %   - a two-element array with the starting symbol (0...13) and the length (1...14)
         %     of the PUCCH transmission. Example: [13, 1], and
-        %   - a logical flag for intra-slot frequency hopping.
+        %   - a logical flag for intraslot frequency hopping.
         SymbolAllocation = { ...
             struct('Allocation', [0, 1], 'FrequencyHopping', false), ...
             struct('Allocation', [6, 2], 'FrequencyHopping', false), ...
@@ -186,7 +186,7 @@ classdef ocuduPUCCHDemodulatorFormat2Unittest < ocuduTest.ocuduBlockUnittest
             % Number of PUCCH Subcarriers.
             nofPUCCHSubcs = PRBNum * 12;
 
-            % Number of PUCC Subcarriers used for DM-RS.
+            % Number of PUCCH Subcarriers used for DM-RS.
             % DM-RS is mapped to subcarriers 1, 4, 7, 10 of each PRB.
             nofPUCCHDMRSSubcs = 4 * PRBNum;
 

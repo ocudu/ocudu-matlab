@@ -190,7 +190,7 @@ classdef ocuduPDSCHModulatorUnittest < ocuduTest.ocuduBlockUnittest
             testCase.saveDataFile('_test_output', testID, ...
                 @writeResourceGridEntryFile, modulatedSymbols, symbolIndices);
 
-            % Generate DMRS symbol mask.
+            % Generate DM-RS symbol mask.
             [~, symbolIndices] = ocuduPDSCHDMRS(carrier, pdsch);
             dmrsSymbolMask = symbolAllocationMask2string(symbolIndices);
 

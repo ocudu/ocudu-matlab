@@ -190,7 +190,7 @@ classdef ocuduPDCCHModulatorUnittest < ocuduTest.ocuduBlockUnittest
                 % Generate random codeword, 54REs per CCE, 2 bits per QPSK symbol.
                 codeWord = randi([0 1], 54 * 2 * AggregationLevel, 1);
 
-                % Write the codeWord to a binary file.
+                % Write the codeword to a binary file.
                 testCase.saveDataFile('_test_input', testID, @writeUint8File, codeWord);
 
                 % Call the PDCCH modulator MATLAB functions.

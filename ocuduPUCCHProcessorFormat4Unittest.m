@@ -69,7 +69,7 @@ classdef ocuduPUCCHProcessorFormat4Unittest < ocuduTest.ocuduBlockUnittest
 
     properties (TestParameter)
 
-        %Relevant combinations of start symbol index {0, ..., 10} and number of symbols {4, ..., 14}. 
+        %Relevant combinations of start symbol index {0, ..., 10} and number of symbols {4, ..., 14}.
         SymbolAllocation = {[0, 14], [7, 7]};
 
         %Frequency hopping type ('neither', 'intraSlot').
@@ -114,7 +114,7 @@ classdef ocuduPUCCHProcessorFormat4Unittest < ocuduTest.ocuduBlockUnittest
                 CodeRate)
         % Sets secondary simulation variables and MATLAB NR configuration objects.
             PRBNum = 1;
-            
+
             % Generate random cell ID.
             nCellID = randi([0, 1007]);
 
@@ -136,7 +136,7 @@ classdef ocuduPUCCHProcessorFormat4Unittest < ocuduTest.ocuduBlockUnittest
             else
                 modulation = 'pi/2-BPSK';
             end
-        
+
             %Additional DM-RS flag. If true, more OFDM symbols are filled with DM-RS.
             additionalDMRS = (randi([0 1]) == 1);
 
@@ -473,7 +473,7 @@ function [TxGrid, UCIPayload, pucchDmrsIndices] = ...
         'UCI codeword length and number of PUCCH F4 RE are not consistent');
 
     % Generate UCI payload.
-    % For now, UCI multiplexing, applicable to UCI payloads contaning
+    % For now, UCI multiplexing, applicable to UCI payloads containing
     % CSI reports of two parts, is not considered. Therefore, all
     % UCI fields are appended into a single UCI segment.
     UCIPayload = randi([0, 1], nofUCIBits, 1);

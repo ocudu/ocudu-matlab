@@ -247,7 +247,7 @@ classdef ocuduPUCCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
                 additionalDMRS = randi([0 1]) == 1;
             end
 
-            % Randomly select secondHopStartPRB if intra-slot frequency
+            % Randomly select secondHopStartPRB if intraslot frequency
             % hopping is enabled.
             if intraSlotFreqHopping
                 secondHopStartPRB = generateRandomSecondHopPRB(nSizeGrid, PRBSet);

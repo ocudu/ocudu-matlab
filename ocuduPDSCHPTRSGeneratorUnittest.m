@@ -266,7 +266,7 @@ classdef ocuduPDSCHPTRSGeneratorUnittest < ocuduTest.ocuduBlockUnittest
         reOffsetStr = ['ptrs_re_offset::offset' REOffset];
         dmrsTypeStr = ['dmrs_config_type::type', num2str(DMRSConfigurationType)];
 
-        % Becasue of memory issues, we cannot include the precoding configuration
+        % Because of memory issues, we cannot include the precoding configuration
         % in the cell config. We only include the number of layers and generate the
         % precoding configuration at run time.
         configCell = {...

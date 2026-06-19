@@ -23,7 +23,7 @@
 %   PreambleFormat      - Generated preamble format.
 %   RestrictedSet       - Restricted set type.
 %   ZeroCorrelationZone - Cyclic shift configuration index {0, 15}.
-%   RBOffset            - Frequency-domain sequence mapping. 
+%   RBOffset            - Frequency-domain sequence mapping.
 %
 %   ocuduPRACHDemodulatorUnittest Methods (TestTags = {'testvector'}):
 %
@@ -122,7 +122,7 @@ classdef ocuduPRACHDemodulatorUnittest < ocuduTest.ocuduBlockUnittest
     methods (Test, TestTags = {'testvector'})
         function testvectorGenerationCases(testCase, DuplexMode, CarrierBandwidth, RestrictedSet, ZeroCorrelationZone, RBOffset)
         %testvectorGenerationCases Generates a test vector for the given
-        %   DuplexMode, CarrierBandwidth, RestrictedSet, 
+        %   DuplexMode, CarrierBandwidth, RestrictedSet,
         %   ZeroCorrelationZone and RBOffset. The parameters SequenceIndex,
         %   PreambleFormat and PreambleIndex are generated randomly.
 

@@ -89,7 +89,7 @@ classdef ocuduOFDMModulatorUnittest < ocuduTest.ocuduBlockUnittest
     methods (Test, TestTags = {'testvector'})
         function testvectorGenerationCases(testCase, numerology, DFTsize, CyclicPrefix)
         %testvectorGenerationCases Generates a test vector for the given numerology,
-        %   DFTsize and CyclicPrefix. NSlot, port index, scale and center carrier 
+        %   DFTsize and CyclicPrefix. NSlot, port index, scale and center carrier
         %   frequency are randomly generated.
 
             import ocuduLib.phy.helpers.ocuduRandomGridEntry

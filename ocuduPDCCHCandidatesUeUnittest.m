@@ -1,7 +1,7 @@
 %ocuduPDCCHCandidatesUeUnittest Unit tests for PDCCH Candidates generation in UE-Specific SS.
-%   This class implements unit tests for the PDCCH Candidates in 
-%   UE-Specific SS generation functions using the  matlab.unittest 
-%   framework. The simplest use consists in creating an object with 
+%   This class implements unit tests for the PDCCH Candidates in
+%   UE-Specific SS generation functions using the  matlab.unittest
+%   framework. The simplest use consists in creating an object with
 %       testCase = ocuduPDCCHCandidatesUeUnittest
 %   and then running all the tests with
 %       testResults = testCase.run
@@ -87,7 +87,7 @@ classdef ocuduPDCCHCandidatesUeUnittest < ocuduTest.ocuduBlockUnittest
         function testvectorGenerationCases(testCase, numCCEs, numCandidates, aggregationLevel)
         %testvectorGenerationCases Generates a test vector for the given
         %   number of CCE, number of candidates and AggregationLevel. It
-        %   randomly selects the CoresetId, the rnti and the slotNum. 
+        %   randomly selects the CoresetId, the rnti and the slotNum.
 
         % Skip test case if the number of CCEs for the CORESET cannot
         % fit all the candidates.
@@ -144,7 +144,7 @@ classdef ocuduPDCCHCandidatesUeUnittest < ocuduTest.ocuduBlockUnittest
 
         % Add the test to the file header.
         testCase.addTestToHeaderFile(testCase.headerFileID, testCaseString);
-            
+
         end % of function testvectorGenerationCases
     end % of methods (Test, TestTags = {'testvector'})
 end % of classdef ocuduPDCCHCandidatesUeUnittest< ocuduTest.ocuduBlockUnittest

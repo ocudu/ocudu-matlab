@@ -1,5 +1,5 @@
-%ocuduPDCCHDMRSUnittest Unit tests for PDCCH DMRS processor functions.
-%   This class implements unit tests for the PDCCH DMRS processor functions using the
+%ocuduPDCCHDMRSUnittest Unit tests for PDCCH DM-RS processor functions.
+%   This class implements unit tests for the PDCCH DM-RS processor functions using the
 %   matlab.unittest framework. The simplest use consists in creating an object with
 %       testCase = ocuduPDCCHDMRSUnittest
 %   and then running all the tests with
@@ -193,10 +193,10 @@ classdef ocuduPDCCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
                     );
                 pdcch.SearchSpace.SearchSpaceType = searchSpaceType;
 
-                % call the PDCCH DMRS symbol processor MATLAB functions
+                % call the PDCCH DM-RS symbol processor MATLAB functions
                 [DMRSsymbols, symbolIndices] = ocuduPDCCHDMRS(carrier, pdcch);
 
-                % put all generated DMRS symbols and indices in a single cell
+                % put all generated DM-RS symbols and indices in a single cell
                 [DMRSsymbolsVector, symbolIndicesVector] = ...
                     ocuduGetUniqueSymbolsIndices(DMRSsymbols, symbolIndices);
 

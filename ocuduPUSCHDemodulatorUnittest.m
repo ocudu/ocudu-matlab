@@ -142,7 +142,7 @@ classdef ocuduPUSCHDemodulatorUnittest < ocuduTest.ocuduBlockUnittest
                     Qm = 8;
             end
 
-            % Early return if the modulation order is not suffcient or the
+            % Early return if the modulation order is not sufficient or the
             % probability of placeholder is zero.
             if (Qm < 2) || (ProbPlaceholder == 0)
                 reIndices = {};
@@ -369,7 +369,7 @@ classdef ocuduPUSCHDemodulatorUnittest < ocuduTest.ocuduBlockUnittest
             eqNoise = nrLayerDemap(eqNoise);
             eqNoise = eqNoise{1};
 
-            % Estimate SINR from the equalizer noise esimation.
+            % Estimate SINR from the equalizer noise estimation.
             estimatedSinrdB = -10 * log10(mean(eqNoise));
 
             % Soft demapping.

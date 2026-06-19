@@ -185,7 +185,7 @@ classdef ocuduPRACHDetectorUnittest < ocuduTest.ocuduBlockUnittest
                 if strlength(PreambleFormat) == 1
                     zeroCorrelationZone = 1;
                 else
-                    if strcmp(DuplexMode, 'FDD') 
+                    if strcmp(DuplexMode, 'FDD')
                         zeroCorrelationZone = 11;
                     else
                         zeroCorrelationZone = 14;
@@ -206,7 +206,7 @@ classdef ocuduPRACHDetectorUnittest < ocuduTest.ocuduBlockUnittest
                 );
         end % of function setupsimulation(obj, PreambleFormat, UseZCZ)
 
-        function grid = generatePRACH(obj, nAntennas) 
+        function grid = generatePRACH(obj, nAntennas)
             import ocuduLib.phy.upper.channel_processors.ocuduPRACHgenerator
             import ocuduLib.phy.lower.modulation.ocuduPRACHdemodulator
 
@@ -235,7 +235,7 @@ classdef ocuduPRACHDetectorUnittest < ocuduTest.ocuduBlockUnittest
             % Demodulate the PRACH signal.
             grid = ocuduPRACHdemodulator(obj.carrier, obj.prach, gridset.Info, rxWaveform, info);
 
-        end % of function grid = generatePRACH(nAntennas) 
+        end % of function grid = generatePRACH(nAntennas)
     end % of methods (Access = Private)
 
     methods (Test, TestTags = {'testvector'})
@@ -356,8 +356,8 @@ classdef ocuduPRACHDetectorUnittest < ocuduTest.ocuduBlockUnittest
             %   mexTest(OBJ, DUPLEXMODE, CARRIERBANDWIDTH, PREAMBLEFORMAT,
             %   RESTRICTEDSET, ZEROCORRELATIONZONE, RBOFFSET) runs a short
             %   simulation with a UL transmission using a carrier with duplex
-            %   mode DUPLEXMODE and a bandiwth of CARRIERBANDWITH PRBs. This
-            %   transmision comprises a PRACH signal using preamble format
+            %   mode DUPLEXMODE and a bandwidth of CARRIERBANDWITH PRBs. This
+            %   transmission comprises a PRACH signal using preamble format
             %   PREAMBLEFORMAT, restricted set configuration RESTRICTEDSET,
             %   cyclic shift index configuration ZEROCORRELATIONINDEX and a RB
             %   offset RBOFFSET. The PRACH transmission is demodulated in

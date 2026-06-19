@@ -209,14 +209,14 @@ classdef ocuduSRSEstimatorUnittest < ocuduTest.ocuduBlockUnittest
                 end
             end
 
-            % Maximum time aligment that we expect in seconds.
+            % Maximum time alignment that we expect in seconds.
             maxTimeAligment = 16 / (2048 * 1000 * carrier.SubcarrierSpacing);
 
-            % Select random time aligment.
-            timeAligment = (2 * rand() - 1) * maxTimeAligment;
+            % Select random time alignment.
+            timeAlignment = (2 * rand() - 1) * maxTimeAligment;
 
-            % Create time aligment frequency shift.
-            freqResponse = exp(-2i * pi * (0:numSubcarriers - 1).' * timeAligment * 1000 * carrier.SubcarrierSpacing);
+            % Create time alignment frequency shift.
+            freqResponse = exp(-2i * pi * (0:numSubcarriers - 1).' * timeAlignment * 1000 * carrier.SubcarrierSpacing);
 
             % Apply frequency response in all the received grid.
             rxGrid = rxGrid .* repmat(freqResponse, 1, numOfdmSymbols, NumRxPorts);
@@ -271,7 +271,7 @@ classdef ocuduSRSEstimatorUnittest < ocuduTest.ocuduBlockUnittest
                 NumSRSPorts,... % nof_tx_ports
                 };
 
-            tAlignStr = sprintf('{%.9f}', timeAligment);
+            tAlignStr = sprintf('{%.9f}', timeAlignment);
 
             srsResourceCell = {...
                 numSRSPortsStr,...    % nof_antenna_ports

@@ -90,7 +90,7 @@ classdef ocuduOFHCompressionUnittest < ocuduTest.ocuduBlockUnittest
     methods (Test, TestTags = {'testvector'})
         function testvectorGenerationCases(testCase, nPRBs, method, cIQwidth)
         %testvectorGenerationCases(TESTCASE, NPRBS, METHOD, CIQWIDTH) Generates a test vector
-        %   for the given number of PRB NPRBS, compression method METHOD and 
+        %   for the given number of PRB NPRBS, compression method METHOD and
         %   compressed IQ width CIQWIDTH.
 
             import ocuduTest.helpers.writeUint8File

@@ -1,7 +1,7 @@
 %ocuduULSCHDemultiplexUnittest Unit tests for UL-SCH information functions.
 %   This class implements unit tests for the UL-SCH information
 %   functions using the matlab.unittest framework. The simplest use
-%   consists in creating an object with 
+%   consists in creating an object with
 %      testCase = ocuduULSCHDemultiplexUnittest
 %   and then running all the tests with
 %      testResults = testCase.run
@@ -103,7 +103,7 @@ classdef ocuduULSCHDemultiplexUnittest < ocuduTest.ocuduBlockUnittest
                 nofCsiPart1Bits, nofCsiPart2Bits)
         %testvectorGenerationCases Generates a test vectors given the
         %   combinations of Modulation, nofHarqAckBits,
-        %   nofCsiPart1Bits and nofCsiPart2Bits. 
+        %   nofCsiPart1Bits and nofCsiPart2Bits.
 
             import ocuduLib.phy.helpers.ocuduModulationFromMatlab
             import ocuduLib.phy.upper.signal_processors.ocuduPUSCHDMRS
@@ -196,7 +196,7 @@ classdef ocuduULSCHDemultiplexUnittest < ocuduTest.ocuduBlockUnittest
             % Save CSI-Part2.
             testCase.saveDataFile('_test_output_csi2', testID, @writeInt8File, csiPart2);
 
-            % Generate modulation cheme type string.
+            % Generate modulation scheme type string.
             modString = ocuduModulationFromMatlab(pusch.Modulation, 'full');
 
             % Generate DM-RS indices.

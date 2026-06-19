@@ -92,15 +92,15 @@ classdef ocuduLowPAPRSequenceUnittest < ocuduTest.ocuduBlockUnittest
 
     methods (Test, TestTags = {'testvector'})
         function testvectorGenerationCases(testCase, SequenceLength, MaxCyclicShift)
-        %testvectorGenerationCases Generates a test vector for the given 
-        %SequenceLength and MaxCyclicShift. The sequence group, base and 
+        %testvectorGenerationCases Generates a test vector for the given
+        %SequenceLength and MaxCyclicShift. The sequence group, base and
         %cyclic shift is selected randomly.
 
             import ocuduTest.helpers.writeComplexFloatFile
 
             % Generate a unique test ID
             TestID = testCase.generateTestID;
-            
+
             % Select sequence group.
             u = randi([0 29]);
 

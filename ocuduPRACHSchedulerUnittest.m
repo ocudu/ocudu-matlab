@@ -1,7 +1,7 @@
 %ocuduPRACHSchedulerUnittest Unit tests for the PRACH scheduler.
-%   This class implements unit tests for the PRACH scheduler functions 
+%   This class implements unit tests for the PRACH scheduler functions
 %   using the matlab.unittest framework. The simplest use consists in
-%   creating an object with 
+%   creating an object with
 %       testCase = ocuduPRACHSchedulerUnittest
 %   and then running all the tests with
 %       testResults = testCase.run
@@ -38,8 +38,8 @@
 %
 %   addTestIncludesToHeaderFile     - Adds include directives to the test
 %                                     header file.
-%   addTestDefinitionToHeaderFile   - Adds details (e.g., type/variable 
-%                                     declarations) to the test header 
+%   addTestDefinitionToHeaderFile   - Adds details (e.g., type/variable
+%                                     declarations) to the test header
 %                                     file.
 %
 %   See also matlab.unittest.
@@ -176,7 +176,7 @@ classdef ocuduPRACHSchedulerUnittest < ocuduTest.ocuduBlockUnittest
                 SubcarrierSpacing=prachSubcarrierSpacing ...
                 );
 
-            % Calculate number of frames and slots in a PRACH period. This 
+            % Calculate number of frames and slots in a PRACH period. This
             % is different than prach.PRACHSlotsPerPeriod.
             numFramesPeriod = configTable.x(ConfigurationIndex + 1);
             numSlotsPeriod = numFramesPeriod * carrier.SlotsPerFrame;
@@ -357,7 +357,7 @@ classdef ocuduPRACHSchedulerUnittest < ocuduTest.ocuduBlockUnittest
             end
 
             % Generate frequency domain occasions. The occasions are
-            % aranged in pairs containing the start and stop common 
+            % arranged in pairs containing the start and stop common
             % resource blocks.
             numFreqOccasions = testCase.PossibleNumFreqOccasions(...
                 randi([1, length(testCase.PossibleNumFreqOccasions)]));

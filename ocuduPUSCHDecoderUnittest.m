@@ -240,7 +240,7 @@ classdef ocuduPUSCHDecoderUnittest < ocuduTest.ocuduBlockUnittest
                     obj.encodedTBLength, RV, obj.HARQProcessID);
 
                 % Even though we could have different modulations, for the purposes of this
-                % simulation, real-valued BPSK is enough to generate meaningul LLRs.
+                % simulation, real-valued BPSK is enough to generate meaningful LLRs.
                 cwLLRs(:, iRV) = 10 - 20 * cw(:, iRV);
                 % Add some (very little) noise.
                 snr = 20; % dB
@@ -339,7 +339,7 @@ classdef ocuduPUSCHDecoderUnittest < ocuduTest.ocuduBlockUnittest
                     obj.encodedTBLength, RV, obj.HARQProcessID);
 
                 % Even though we could have different modulations, for the purposes of this
-                % simulation, real-valued BPSK is enough to generate meaningul LLRs.
+                % simulation, real-valued BPSK is enough to generate meaningful LLRs.
                 cwLLRs = 10 - 20 * double(cw);
                 % Add some (very little) noise.
                 cwLLRs = cwLLRs + 10 * randn(obj.encodedTBLength, 1) * 10^(-snr / 20);

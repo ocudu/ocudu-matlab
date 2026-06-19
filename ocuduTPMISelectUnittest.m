@@ -1,7 +1,7 @@
 %ocuduTPMISelectUnittest Unit tests for TPMI selection.
-%   This class implements unit tests for the Transmit Precoding Matrix 
+%   This class implements unit tests for the Transmit Precoding Matrix
 %   Indicator (TPMI) using the matlab.unittest framework. The simplest use
-%   consists in creating an object with 
+%   consists in creating an object with
 %      testCase = ocuduTPMISelectUnittest
 %   and then running all the tests with
 %      testResults = testCase.run

@@ -196,7 +196,7 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             % Additional DM-RS positions.
             DMRSAdditionalPosition = randi([0, maxDMRSAdditionalPosition]);
 
-            % Set carrier paramters.
+            % Set carrier parameters.
             carrier.NStartGrid = nStartGrid;
             carrier.NSizeGrid = nSizeGrid;
             carrier.NCellID = nCellID;
@@ -237,7 +237,7 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             csirs1.RBOffset = nStartBWP;
             csirs1.NID = NID;
 
-            % Create a second ZP-CSI-RS resource with differnt RE
+            % Create a second ZP-CSI-RS resource with different RE
             % allocations.
             csirs2 = nrCSIRSConfig;
             csirs2.CSIRSType = 'zp';

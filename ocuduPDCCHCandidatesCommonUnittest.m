@@ -1,7 +1,7 @@
 %ocuduPDCCHCandidatesCommonUnittest Unit tests for PDCCH Candidates generation in Common SS.
 %   This class implements unit tests for the PDCCH Candidates in Common SS
 %   generation functions using the  matlab.unittest framework. The simplest
-%   use consists in creating an object with 
+%   use consists in creating an object with
 %       testCase = ocuduPDCCHCandidatesCommonUnittest
 %   and then running all the tests with
 %       testResults = testCase.run
@@ -127,7 +127,7 @@ classdef ocuduPDCCHCandidatesCommonUnittest < ocuduTest.ocuduBlockUnittest
 
         % add the test to the file header
         testCase.addTestToHeaderFile(testCase.headerFileID, testCaseString);
-            
+
         end % of function testvectorGenerationCases
     end % of methods (Test, TestTags = {'testvector'})
 end % of classdef ocuduPDCCHCandidatesCommonUnittest< ocuduTest.ocuduBlockUnittest

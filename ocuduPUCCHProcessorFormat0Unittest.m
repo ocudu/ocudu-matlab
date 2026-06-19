@@ -19,7 +19,7 @@
 %
 %   numerology       - Subcarrier numerology (0, 1).
 %   allocation       - Structure containing the number of symbols and if it
-%                      uses intra-slot frequency hopping.
+%                      uses intraslot frequency hopping.
 %   payload          - Structure containing the number of ACK bits and a logical
 %                      flag indicating whether the PUCCH carries SR information
 %                      or not.
@@ -62,7 +62,7 @@ classdef ocuduPUCCHProcessorFormat0Unittest < ocuduTest.ocuduBlockUnittest
         %Subcarrier numerology (0, 1).
         numerology = {0, 1}
 
-        %Valid combinations of number of OFDM symbols and intra-slot
+        %Valid combinations of number of OFDM symbols and intraslot
         %frequency hopping.
         allocation = {...
             struct('numSymbols', 1, 'freqHopping', false), ...
@@ -262,7 +262,7 @@ function [rxGrid, pucchDataIndices, payloadData, pucch, carrier] = generateSimDa
     % Random frame number.
     NFrame = randi([0, 1023]);
 
-    % Randomly select SecondHopStartPRB if intra-slot frequency
+    % Randomly select SecondHopStartPRB if intraslot frequency
     % hopping is enabled.
     if allocation.freqHopping
         SecondHopStartPRB = randi([0, NSizeBWP - 1]);

@@ -70,7 +70,7 @@ classdef ocuduPUCCHProcessorFormat3Unittest < ocuduTest.ocuduBlockUnittest
 
     properties (TestParameter)
 
-        %Relevant combinations of start symbol index {0, ..., 10} and number of symbols {4, ..., 14}. 
+        %Relevant combinations of start symbol index {0, ..., 10} and number of symbols {4, ..., 14}.
         SymbolAllocation = {[0, 14], [7, 7]};
 
         %Frequency hopping type ('neither', 'intraSlot').
@@ -135,7 +135,7 @@ classdef ocuduPUCCHProcessorFormat3Unittest < ocuduTest.ocuduBlockUnittest
             else
                 modulation = 'pi/2-BPSK';
             end
-        
+
             % Additional DM-RS flag. If true, more OFDM symbols are filled with DM-RS.
             additionalDMRS = (randi([0 1]) == 1);
 

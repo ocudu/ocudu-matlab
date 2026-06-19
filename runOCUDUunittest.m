@@ -12,7 +12,7 @@
 %
 %   runOCUDUunittest('all', ...) runs all the tests of the specified type.
 %
-%   TEST = runOCUDUunittest(...) returns a Test object TEST withouth running it.
+%   TEST = runOCUDUunittest(...) returns a Test object TEST without running it.
 %   The test can be later executed with the command TEST.run.
 %
 %   [TEST, RUNNER] = runOCUDUunittest(...) also returns a TestRunner with

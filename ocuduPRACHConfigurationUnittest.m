@@ -107,7 +107,7 @@ classdef ocuduPRACHConfigurationUnittest < ocuduTest.ocuduBlockUnittest
                     y = thisConfig.y{1};
 
                     % In OCUDU, the PRACH configuration structure does not differentiate
-                    % between FR1 sumbrames and FR2 slots.
+                    % between FR1 subframes and FR2 slots.
                     if (tt ~= "ConfigurationsFR2")
                         slots = thisConfig.SubframeNumber{1};
                         nSlotsSubframe = thisConfig.PRACHSlotsPerSubframe;

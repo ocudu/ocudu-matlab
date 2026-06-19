@@ -1,5 +1,5 @@
-%ocuduPUSCHDMRSUnittest Unit tests for PUSCH DMRS processor functions.
-%   This class implements unit tests for the PUSCH DMRS processor functions using the
+%ocuduPUSCHDMRSUnittest Unit tests for PUSCH DM-RS processor functions.
+%   This class implements unit tests for the PUSCH DM-RS processor functions using the
 %   matlab.unittest framework. The simplest use consists in creating an object with
 %       testCase = ocuduPUSCHDMRSUnittest
 %   and then running all the tests with
@@ -19,10 +19,10 @@
 %
 %   numerology              - Defines the subcarrier spacing (0, 1).
 %   NumLayers               - Number of transmission layers (1, 2, 4, 8).
-%   DMRSTypeAPosition       - Position of the first DMRS OFDM symbol (2, 3).
-%   DMRSAdditionalPosition  - Maximum number of DMRS additional positions (0, 1, 2, 3).
-%   DMRSLength              - Number of consecutive front-loaded DMRS OFDM symbols (1, 2).
-%   DMRSConfigurationType   - DMRS configuration type (1, 2).
+%   DMRSTypeAPosition       - Position of the first DM-RS OFDM symbol (2, 3).
+%   DMRSAdditionalPosition  - Maximum number of DM-RS additional positions (0, 1, 2, 3).
+%   DMRSLength              - Number of consecutive front-loaded DM-RS OFDM symbols (1, 2).
+%   DMRSConfigurationType   - DM-RS configuration type (1, 2).
 %
 %   ocuduPUSCHDMRSUnittest Methods (TestTags = {'testvector'}):
 %
@@ -73,16 +73,16 @@ classdef ocuduPUSCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
         %Number of transmission layers (1, 2, 4).
         NumLayers = {1, 2, 4}
 
-        %Position of the first DMRS OFDM symbol (2, 3).
+        %Position of the first DM-RS OFDM symbol (2, 3).
         DMRSTypeAPosition = {2, 3}
 
-        %Maximum number of DMRS additional positions (0, 1, 2, 3).
+        %Maximum number of DM-RS additional positions (0, 1, 2, 3).
         DMRSAdditionalPosition = {0, 1, 2, 3}
 
-        %Number of consecutive front-loaded DMRS OFDM symbols (1, 2).
+        %Number of consecutive front-loaded DM-RS OFDM symbols (1, 2).
         DMRSLength = {1, 2}
 
-        %DMRS configuration type (1, 2).
+        %DM-RS configuration type (1, 2).
         DMRSConfigurationType = {1, 2}
     end
 
@@ -116,7 +116,7 @@ classdef ocuduPUSCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
         %testvectorGenerationCases Generates a test vector for the given
         %   numerology, NumLayers, DMRSTypeAPosition,
         %   DMRSAdditionalPosition, DMRSLength and DMRSConfigurationType.
-        %   NCellID, NSlot and PRB are randomly generated. 
+        %   NCellID, NSlot and PRB are randomly generated.
 
             import ocuduTest.helpers.cellarray2str
             import ocuduLib.phy.upper.signal_processors.ocuduPUSCHDMRS
@@ -166,7 +166,7 @@ classdef ocuduPUSCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
             PRBSet = PRBstart:PRBend;
             amplitude = sqrt(2);
 
-            % Select randomly transform precoding if only one layer and 
+            % Select randomly transform precoding if only one layer and
             % configuration type 1.
             transformPrecoding = 0;
             if (NumLayers == 1) && (DMRSConfigurationType == 1)
@@ -236,7 +236,7 @@ classdef ocuduPUSCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
                 floor(nSlot / carrier.SlotsPerSubframe), ...
                 rem(nSlot, carrier.SlotsPerSubframe)}, true);
 
-            % DMRS type
+            % DM-RS type
             DmrsTypeStr = ['dmrs_config_type::type', num2str(DMRSConfigurationType)];
 
             % Cyclic Prefix.
@@ -254,7 +254,7 @@ classdef ocuduPUSCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
                     NumLayers, ...           % nof_tx_layers
                     pusch.DMRS.NIDNSCID, ... % scrambling_id
                     pusch.DMRS.NSCID, ...    % n_scid
-                    }; 
+                    };
                 SequenceDescr = ['dmrs_pusch_estimator::pseudo_random_sequence_configuration('...
                     cellarray2str(SequenceConfig, true)...
                     ')'];
@@ -267,7 +267,7 @@ classdef ocuduPUSCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
                     ')'];
             end
 
-            % Prepare DMRS configuration cell
+            % Prepare DM-RS configuration cell
             dmrsConfigCell = { ...
                 slotPointConfig, ...             % slot
                 SequenceDescr, ...               % sequence_config

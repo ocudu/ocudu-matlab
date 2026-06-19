@@ -106,8 +106,8 @@ classdef ocuduUCIDecoderUnittest < ocuduTest.ocuduBlockUnittest
 
             % Get the number of bits per symbol
             bitsSymbol = ocuduGetBitsSymbol(Modulation);
-            
-            % The length of the rate-matched UCI codeword, E, depends on A 
+
+            % The length of the rate-matched UCI codeword, E, depends on A
             % and on the modulation scheme (maximum length = 8192).
             minE = A + 1;
             maxE = floor(8192 / bitsSymbol) * bitsSymbol;
@@ -132,17 +132,17 @@ classdef ocuduUCIDecoderUnittest < ocuduTest.ocuduBlockUnittest
             end
             minE  = minE + L;
 
-            % Select a number of rate macthed bits without exceeding the maximum. 
+            % Select a number of rate matched bits without exceeding the maximum.
             E = min(maxE, max(minE, ceil((A + L) / Rate)));
-    
-            % Round the number of rate macthed bits to the number of bits
+
+            % Round the number of rate matched bits to the number of bits
             % per symbol.
             E = ceil(E / bitsSymbol) * bitsSymbol;
 
             % Set up an SNR that can challenge the decoder.
             snrdB = 25;
             nVar = 10 ^ (-snrdB / 10);
-            
+
             % Encode the UCI bits.
             UCICodeWord = nrUCIEncode(UCIbits, E, Modulation);
 
@@ -154,20 +154,19 @@ classdef ocuduUCIDecoderUnittest < ocuduTest.ocuduBlockUnittest
             % Modulate signal.
             modulatedUCI = nrSymbolModulate(UCICodeWord, Modulation);
 
-            % Apply AWGN and try to decode. Repeat process until it is 
+            % Apply AWGN and try to decode. Repeat process until it is
             % possible to decode.
             decodedOk = false;
             while ~decodedOk
                 % Estimate the LLR soft bits.
                 rxSignal = awgn(modulatedUCI, snrdB);
                 LLRSoftBits = nrSymbolDemodulate(rxSignal, Modulation, nVar);
-    
+
                 % Decode the received UCI LLR soft bits.
                 decodedUCIBits = nrUCIDecode(LLRSoftBits, A, Modulation);
 
                 % Check if the message is decoded.
                 decodedOk = (sum(xor(UCIbits, decodedUCIBits)) == 0);
-           
             end
 
             % Clip and quantize the LLRs.

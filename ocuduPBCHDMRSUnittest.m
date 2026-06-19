@@ -1,5 +1,5 @@
-%ocuduPBCHDMRSUnittest Unit tests for PBCH DMRS processor functions.
-%   This class implements unit tests for the PBCH DMRS processor functions using the
+%ocuduPBCHDMRSUnittest Unit tests for PBCH DM-RS processor functions.
+%   This class implements unit tests for the PBCH DM-RS processor functions using the
 %   matlab.unittest framework. The simplest use consists in creating an object with
 %       testCase = ocuduPBCHDMRSUnittest
 %   and then running all the tests with
@@ -62,7 +62,7 @@ classdef ocuduPBCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
         %Maximum number of SSBs within a SSB set (4, 8, 64).
         Lmax = {4, 8, 64}
 
-        %Half-frame indicato (0, 1)
+        %Half-frame indicator (0, 1)
         nHF = {0, 1}
     end % of properties (TestParameter)
 
@@ -112,7 +112,7 @@ classdef ocuduPBCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
 
             % check if the current SSBindex value is possible with the current Lmax
             if Lmax > SSBindex
-                % call the PBCH DMRS symbol processor MATLAB functions
+                % call the PBCH DM-RS symbol processor MATLAB functions
                 [DMRSsymbols, symbolIndices] = ocuduPBCHDMRS(NCellIDLoc, SSBindex, Lmax, nHF);
 
                 % write each complex symbol into a binary file, and the associated indices to another

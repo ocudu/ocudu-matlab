@@ -154,7 +154,7 @@ classdef ocuduPUSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             maxGridBW = max(testCase.BWPSizes);
 
             % Randomly select BWP start and size values that satisfy the
-            % size constraints. 
+            % size constraints.
             BWPSize = testCase.BWPSizes(randi([1, numel(testCase.BWPSizes)]));
             BWPStart = randi([0, maxGridBW - BWPSize]);
             nSizeGrid = BWPStart + BWPSize;

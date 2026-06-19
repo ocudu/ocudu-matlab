@@ -450,7 +450,7 @@ function [rxGrid, pucchListIn, pucchListOut, configuration] = generateSimData(Nu
     for pucchIndex = 1:nPUCCHs
         key = pucchKeys(pucchIndex);
 
-        % Set initialy cyclic shift and OCC index.
+        % Set initially cyclic shift and OCC index.
         ics = mod(key, maxICS + 1);
         occi = floor(key / (maxICS + 1));
         assert(occi <= maxOCCindex);

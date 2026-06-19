@@ -1,7 +1,7 @@
 %ocuduTransformPrecoderUnittest Unit tests for transform precoding functions.
 %   This class implements unit tests for the transform precoding
 %   functions using the matlab.unittest framework. The simplest use
-%   consists in creating an object with 
+%   consists in creating an object with
 %      testCase = ocuduTransformPrecoderUnittest
 %   and then running all the tests with
 %      testResults = testCase.run
@@ -86,7 +86,7 @@ classdef ocuduTransformPrecoderUnittest < ocuduTest.ocuduBlockUnittest
 
     methods (Test, TestTags = {'testvector'})
         function testvectorGenerationCases(testCase, NumPRB)
-        %testvectorGenerationCases Generates a test vectors given the MRB. 
+        %testvectorGenerationCases Generates a test vectors given the MRB.
 
             import ocuduTest.helpers.writeComplexFloatFile
             import ocuduTest.helpers.writeFloatFile

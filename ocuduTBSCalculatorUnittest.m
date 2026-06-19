@@ -1,6 +1,6 @@
 %ocuduTBSCalculatorUnittest Unit tests for TBS calculation.
 %   This class implements unit tests for the TBS calculation. The simplest
-%   use consists in creating an object with 
+%   use consists in creating an object with
 %       testCase = ocuduTBSCalculatorUnittest
 %   and then running all the tests with
 %       testResults = testCase.run
@@ -24,12 +24,12 @@
 %                the physical shared channel.
 %   nsymb      - Number of symbols allocated for the data transmission in
 %                the physical shared channel.
-%   ndmrsprb   - Number of resource elements for DMRS allocated for the
+%   ndmrsprb   - Number of resource elements for DM-RS allocated for the
 %                data transmission in the physical shared channel.
 %   tcr        - Target code rate.
 %   xoh        - Additional overhead.
 %   tbscaling  - Scaling factor(s) for intermediate number of information
-%                bits. 
+%                bits.
 %
 %   ocuduTBSCalculatorUnittest Methods (TestTags = {'testvector'}):
 %
@@ -63,7 +63,7 @@ classdef ocuduTBSCalculatorUnittest < ocuduTest.ocuduBlockUnittest
 
     properties (TestParameter)
         %It must be specified as one of (2, 4, 6, 8). They refer to QPSK,
-        %16-QAM, 64-QAM and 256-QAM respectively. 
+        %16-QAM, 64-QAM and 256-QAM respectively.
         modOrder = {2, 4, 6, 8};
 
         %The value must be a scalar nonnegative integer. The nominal value
@@ -79,10 +79,10 @@ classdef ocuduTBSCalculatorUnittest < ocuduTest.ocuduBlockUnittest
         nsymb = {12};
 
         %The value must be a scalar nonnegative integer. The nominal value
-        %depends on the number of CDM groups, the DMRS type density and
-        %the number of symbols udes for DMRS transmission.
+        %depends on the number of CDM groups, the DM-RS type density and
+        %the number of symbols used for DM-RS transmission.
         %
-        %For example, for a Type1 DMRS has a density of six RE per PRB and
+        %For example, for a Type1 DM-RS has a density of six RE per PRB and
         %symbol. With two additional positions and two CDM groups without
         %data, it results in 36 RE per PRB.
         ndmrsprb = {6, 36};
@@ -169,7 +169,7 @@ classdef ocuduTBSCalculatorUnittest < ocuduTest.ocuduBlockUnittest
 
         % add the test to the file header
         testCase.addTestToHeaderFile(testCase.headerFileID, testCaseString);
-            
+
         end % of function testvectorGenerationCases
     end % of methods (Test, TestTags = {'testvector'})
 end % of classdef ocuduTBSCalculatorUnittest< ocuduTest.ocuduBlockUnittest
