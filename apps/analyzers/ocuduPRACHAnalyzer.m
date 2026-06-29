@@ -40,7 +40,7 @@ function ocuduPRACHAnalyzer(prach, filename, offset, prachSize)
     nPorts = floor(prachSize / prach.LRA / prach.PRACHDuration);
 
     assert(prachSize == prach.LRA * prach.PRACHDuration * nPorts, ['The buffer size %d ', ...
-        'is not consistend with a PRACH with %d replicas of %d ZC symbols.'], prachSize, prach.PRACHDuration, prach.LRA);
+        'is not consistent with a PRACH with %d replicas of %d ZC symbols.'], prachSize, prach.PRACHDuration, prach.LRA);
 
     samples = reshape(readComplexFloatFile(filename, offset, prachSize), [prach.LRA, prach.PRACHDuration, nPorts]);
 
@@ -108,7 +108,7 @@ function ocuduPRACHAnalyzer(prach, filename, offset, prachSize)
         figure(figTime);
         nexttile
         hPlot = plot(timeAxisMicros, AbsCorrTime);
-        xlabel('Time aligment from window [microseconds]');
+        xlabel('Time alignment from window [microseconds]');
         ylabel('Linear power');
         grid on;
 

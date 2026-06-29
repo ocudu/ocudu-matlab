@@ -7,7 +7,7 @@
 %   FormatDetailsF1 properties (read-only):
 %
 %   SNRrange                      - SNR range in dB.
-%   TransmittedACKsCtr            - Counter of tranmsitted ACK bits.
+%   TransmittedACKsCtr            - Counter of transmitted ACK bits.
 %   TransmittedNACKsCtr           - Counter of transmitted NACKs.
 %   ACKOccasionsCtr               - Counter of ACK occasions.
 %   MissedOccasionsMATLABCtr      - Counter of missed occasions (MATLAB case).
@@ -36,7 +36,7 @@ classdef FormatDetailsF1 < handle
     properties (SetAccess = private)
         %SNR range in dB.
         SNRrange = []
-        %Counter of tranmsitted ACK bits.
+        %Counter of transmitted ACK bits.
         TransmittedACKsCtr = []
         %Counter of transmitted NACKs.
         TransmittedNACKsCtr = []

@@ -22,7 +22,7 @@
 %   (similar ones can be found for PUCCH and PRACH transmissions, too).
 %   Important: The OCUDU gNB PHY log level must be set to "debug" to obtain detailed
 %   information as shown below. It may also be interesting to activate the
-%   "braadcast_enabled" logging option for keeping track of the PRACH opportunities.
+%   "broadcast_enabled" logging option for keeping track of the PRACH opportunities.
 %
 %   2023-06-07T20:54:24.497343 [UL-PHY1 ] [D] [   584.9] PUSCH: rnti=0x4601 h_id=0 prb=[4, 10) symb=[0, 14) mod=64QAM rv=0 tbs=544 crc=OK iter=2.0 snr=31.8dB t=135.0us
 %     rnti=0x4601

@@ -4,7 +4,7 @@
 %   channel. For all configurations, once the threshold is found, the function
 %   also estimates the detection probability in AWGN, and both the false-alarm
 %   and detection probabilities in under the TDLC300 channel. The results are
-%   saved in table form in the FILENAME file. If, when the funcion is called,
+%   saved in table form in the FILENAME file. If, when the function is called,
 %   FILENAME already contains a table of results, the simulation will not rerun
 %   the configurations in the table.
 %

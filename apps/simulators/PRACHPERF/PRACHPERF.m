@@ -246,7 +246,7 @@ classdef PRACHPERF < matlab.System
         end
 
         function checkExplorationFile(obj)
-            % The filename should poin to a valid foler.
+            % The filename should point to a valid folder.
             p = fileparts(obj.ExplorationFileName);
             assert(isempty(p) || isfolder(p), 'The folder %s does not exist.', p);
         end
@@ -524,7 +524,7 @@ classdef PRACHPERF < matlab.System
 
                                 % Test for acceptable timing error
                                 if (timingerror <= timeErrorTolerance)
-                                    % Detected preamble with timing error within tollerance.
+                                    % Detected preamble with timing error within tolerance.
                                     detectedPerfCount(snrIdx) = detectedPerfCount(snrIdx) + 1;
                                 end
                             end

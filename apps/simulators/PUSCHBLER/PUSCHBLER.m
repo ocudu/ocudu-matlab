@@ -768,7 +768,7 @@ classdef PUSCHBLER < matlab.System
                         if harqEntity.SequenceTimeout
                             resetSoftBuffer(obj.DecodeULSCH, harqEntity.HARQProcessID);
                         end
-                        % The OCUDU decoder must be reset explicitely in any case.
+                        % The OCUDU decoder must be reset explicitly in any case.
                         obj.DecodeULSCHocudu.resetCRCS(harqBufID);
                     end
 
@@ -814,7 +814,7 @@ classdef PUSCHBLER < matlab.System
                     % random generator, this implies each slot is a different fading process.
                     % However, by resetting the global random generator at the beginning of the
                     % SNR for loop, we still ensure that all SNR points will experience the
-                    % same channel ralizations.
+                    % same channel realizations.
                     if strcmp(obj.FadingTimeEvolution, 'Slot independent')
                         reset(obj.Channel);
                     end
@@ -866,8 +866,8 @@ classdef PUSCHBLER < matlab.System
                         rxGrid = cat(2, rxGrid, zeros(K, carrier.SymbolsPerSlot - L, R));
                     end
 
-                    % Optionally, compress and decompress the received resource grid 
-                    % to emulate the effect that thecompression used in the O-FH has 
+                    % Optionally, compress and decompress the received resource grid
+                    % to emulate the effect that the compression used in the O-FH has
                     % on the PUSCH decoding performance.
                     if compGrid
                         % Adjust the dynamic range of the signal to the compressor. We set the
@@ -1007,7 +1007,7 @@ classdef PUSCHBLER < matlab.System
                     maxThroughput(snrIdx) = maxThroughput(snrIdx) + trBlkSize;
 
                     % If the block was received correctly or if it's the last
-                    % restransmission, increment counter of transmitted transport blocks.
+                    % retransmission, increment counter of transmitted transport blocks.
                     if (~blkerrBoth || isLastRetransmission)
                         totalBlocks(snrIdx) = totalBlocks(snrIdx) + 1;
                     end

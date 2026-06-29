@@ -8,7 +8,7 @@
 %
 %   SNRrange                     - Simulated SNR range in dB.
 %   TotalBlocksCtr               - Counter of transmitted UCI blocks.
-%   TransmittedACKsCtr           - Counter of tranmsitted ACK bits.
+%   TransmittedACKsCtr           - Counter of transmitted ACK bits.
 %   MissedACKsMATLABCtr          - Counter of missed ACK bits (MATLAB case).
 %   MissedACKsOCUDUCtr           - Counter of missed ACK bits (OCUDU case).
 %   FalseACKsMATLABCtr           - Counter of false ACK bits (MATLAB case).
@@ -37,7 +37,7 @@ classdef FormatDetailsF0 < handle
         SNRrange = []
         %Counter of transmitted UCI messages.
         TotalBlocksCtr = []
-        %Counter of tranmsitted ACK bits.
+        %Counter of transmitted ACK bits.
         TransmittedACKsCtr = []
         %Counter of missed ACK bits (MATLAB case).
         MissedACKsMATLABCtr = []

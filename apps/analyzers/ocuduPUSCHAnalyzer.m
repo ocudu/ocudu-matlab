@@ -36,7 +36,7 @@ function ocuduPUSCHAnalyzer(carrier, pusch, extra, rgFilename, rgOffset, rgSize)
         rgSize     (1, 1) double {mustBeInteger, mustBePositive}
     end
 
-%% Imprt dependencies.
+%% Import dependencies.
 import ocuduTest.helpers.readComplexFloatFile
 
 %% Prepare configuration.
@@ -86,7 +86,7 @@ end
 % Make sure the TBS is consistent.
 transportBlockLength2 = nrTBS(pusch.Modulation, pusch.NumLayers, length(pusch.PRBSet), puschInfo.NREPerPRB, targetCodeRate);
 if transportBlockLength ~= transportBlockLength2
-    error('Incosistent configuration: the computed TBS is %d, the provided one is %d.', ...
+    error('Inconsistent configuration: the computed TBS is %d, the provided one is %d.', ...
         transportBlockLength2, transportBlockLength);
 end
 
