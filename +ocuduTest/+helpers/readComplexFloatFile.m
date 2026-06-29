@@ -3,7 +3,7 @@
 %   binary file FILENAME containing a set of complex symbols, formatted to
 %   match the 'file_vector<cf_t>' object used by the OCUDU gNB.
 %
-%   DATA = readComplexFloatFile(FILENAME, OFFSET, SIZE), simmilarly to the
+%   DATA = readComplexFloatFile(FILENAME, OFFSET, SIZE), similarly to the
 %   previous call, but the first sample offset and number of samples is
 %   specified through arguments.
 
@@ -15,15 +15,15 @@ function data = readComplexFloatFile(filename, varargin)
 fileID = fopen(filename, 'r');
 
 % If there is two additional argument, take it as the offset from the
-% beggining of the file (BOF).
+% beginning of the file (BOF).
 if length(varargin) == 2
     % Calculate offset in bytes assuming each sample consists of eight
     % bytes.
     offsetBytes = 8 * varargin{1};
     fseek(fileID, offsetBytes, 'bof');
 
-    % Calculate the number of samples assuming each sample consits of
-    % two single precission values.
+    % Calculate the number of samples assuming each sample consists of
+    % two single precision values.
     nofSingleDataReal = 2 * varargin{2};
 
     % Read all the samples.

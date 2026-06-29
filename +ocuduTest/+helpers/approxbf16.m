@@ -1,5 +1,5 @@
 %approxbf16 Approximates a brain floating point 16 conversion.
-%   Y = approxbf16(X) mimicks the effect of converting vector X into the brain
+%   Y = approxbf16(X) mimics the effect of converting vector X into the brain
 %   floating point 16 (bfloat16) format and back to the original floating point
 %   precision of X (either single or double). If X is a complex-valued vector,
 %   its real and imaginary parts are approximated independently.
@@ -45,7 +45,7 @@ function outbf16 = approxbf16(in)
     outbf16 = reshape(outbf16, dims);
 end
 
-% Only the 7 most significant bits of the fractional part are kept. The remainng
+% Only the 7 most significant bits of the fractional part are kept. The remaining
 % bits (16 in the single-precision case and 45 in the double-precision case) are
 % rounded off according to the "half to nearest even" method: when the removed
 % part is exactly 0.5 (i.e., a single one followed by all zeros), we take the

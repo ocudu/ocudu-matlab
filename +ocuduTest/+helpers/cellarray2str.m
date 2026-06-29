@@ -34,7 +34,6 @@ end
 function [outputString] = inputCell2str(inputCell)
     import ocuduTest.helpers.cell2str
     import ocuduTest.helpers.cellarray2str
-    
 
     % manage subcells within the input cell
     if iscell(inputCell{1})

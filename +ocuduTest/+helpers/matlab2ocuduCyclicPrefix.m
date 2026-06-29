@@ -1,7 +1,7 @@
 %matlab2ocuduCyclicPrefix Generates a Cyclic Prefix string.
 %   CYCLICPREFIXSTR = matlab2ocuduCyclicPrefix(CYCLICPREFIX) returns a
 %   CYCLICPREFIXSTR string that can be used to specify the Cyclic Prefix in
-%   the test header files. CYCLICPREFIX must be in the format specified by 
+%   the test header files. CYCLICPREFIX must be in the format specified by
 %   nrCarrierConfig.
 %
 %   See also nrCarrierConfig.CyclicPrefix.

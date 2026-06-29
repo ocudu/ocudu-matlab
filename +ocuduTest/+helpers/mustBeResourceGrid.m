@@ -34,27 +34,27 @@ function mustBeResourceGrid(a, options)
 
     if (numel(dims) > 4)
         eidType = 'mustBeResourceGrid:wrongNumberDimensions';
-        msgType = sprintf('The resuorce grid should have at most 4 dimensions, given %d.', numel(dims));
+        msgType = sprintf('The resource grid should have at most 4 dimensions, given %d.', numel(dims));
         throwAsCaller(MException(eidType, msgType));
     end
 
     if (~options.MultiLayer && ((numel(dims) > 3) || (numel(dims) < 2)))
         eidType = 'mustBeResourceGrid:wrongNumberDimensions';
-        msgType = sprintf('Without multilayer, the resuorce grid should have either 2 or 3 dimensions, given %d.', numel(dims));
+        msgType = sprintf('Without multilayer, the resource grid should have either 2 or 3 dimensions, given %d.', numel(dims));
         throwAsCaller(MException(eidType, msgType));
     end
 
     % Check number of OFDM symbols (columns).
     if dims(2) ~= 14
         eidType = 'mustBeResourceGrid:wrongNumberOFDMSymbols';
-        msgType = sprintf('The resuorce grid should have 14 OFDM symbols (columns), given %d.', dims(2));
+        msgType = sprintf('The resource grid should have 14 OFDM symbols (columns), given %d.', dims(2));
         throwAsCaller(MException(eidType, msgType));
     end
 
     % Check number of REs (rows).
     if mod(dims(1), 12) ~= 0
         eidType = 'mustBeResourceGrid:wrongNumberREs';
-        msgType = sprintf(['The number of REs per symbol in the resuorce grid ', ...
+        msgType = sprintf(['The number of REs per symbol in the resource grid ', ...
             'should be a multiple of 12, given %d.'], dims(1));
         throwAsCaller(MException(eidType, msgType));
     end

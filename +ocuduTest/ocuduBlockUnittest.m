@@ -47,7 +47,7 @@
 %   closeHeaderFile                - Adds the closing content to the test header file
 %                                    before closing it.
 %   addOpendingToHeaderFile        - Adds opening guards to a test header file.
-%   copyTestVectors                - Copies all the binary data files and the decription
+%   copyTestVectors                - Copies all the binary data files and the description
 %                                    header file to the output folder.
 %   packResults                    - Packs all generated test vectors in a
 %                                    single '.tar.gz' file.
@@ -92,7 +92,7 @@ classdef ocuduBlockUnittest < matlab.unittest.TestCase
         %in guard format (e.g., all capitals and with underscores).
         pathInRepo    (1, :) char
 
-        %Tempoary working directory.
+        %Temporary working directory.
         tmpOutputPath (1, :) char {mustBeFolder(tmpOutputPath)} = '.'
 
         %Test header file identifier.
@@ -269,7 +269,7 @@ classdef ocuduBlockUnittest < matlab.unittest.TestCase
 
         function testCaseString = testCaseToString(obj, testID, testCaseParams, isStruct, varargin)
         %testCaseToString Generates a test entry for the header file.
-        %   TESTCASESTRING = TESTCASETOSTRING(OBJ, TESTID, TESTCASEPARAMS, ISSTRUCT) 
+        %   TESTCASESTRING = TESTCASETOSTRING(OBJ, TESTID, TESTCASEPARAMS, ISSTRUCT)
         %   generates a data string TESTCASESTRING for test number TESTID.
         %   The data string is generated from the parameters in the cell
         %   array TESTCASEPARAMS. The flag ISSTRUCT instructs the method to
@@ -277,7 +277,7 @@ classdef ocuduBlockUnittest < matlab.unittest.TestCase
         %   TESTCASESTRING = TESTCASETOSTRING(..., FILE1, FILE2, ...) adds
         %   a reference to data files described by FILE1, FILE2 and so on
         %   to the data string. FILE can either be a string with the
-        %   filename suffix, or a two-element cell array, where the first 
+        %   filename suffix, or a two-element cell array, where the first
         %   element is the filename suffix and the second element is a cell
         %   array containing numeric parameters related to the file data
         %   format.
@@ -294,12 +294,12 @@ classdef ocuduBlockUnittest < matlab.unittest.TestCase
                     fileParams = fileInput{2};
                     fileName = ['test_data/' obj.ocuduBlock suffix num2str(testID) '.dat'];
                     fileString = cellarray2str({['"' fileName '"'], fileParams}, true);
-                    testCaseString = [testCaseString ', ', fileString]; %#ok<AGROW>                        
+                    testCaseString = [testCaseString ', ', fileString]; %#ok<AGROW>
                 else
                     suffix = fileInput;
                     fileName = ['test_data/' obj.ocuduBlock suffix num2str(testID) '.dat'];
-                    testCaseString = [testCaseString ', {"', fileName, '"}']; %#ok<AGROW>                                            
-                end          
+                    testCaseString = [testCaseString ', {"', fileName, '"}']; %#ok<AGROW>
+                end
             end
             testCaseString = sprintf('%s},\n', testCaseString);
         end
@@ -361,7 +361,7 @@ classdef ocuduBlockUnittest < matlab.unittest.TestCase
         end
 
         function copyTestVectors(obj, outputPath)
-        %copyTestVectors(OBJ, OUTPUTPATH) Copies all the binary data files and the decription
+        %copyTestVectors(OBJ, OUTPUTPATH) Copies all the binary data files and the description
         %   header file to the output folder.
 
             % Get header file list.

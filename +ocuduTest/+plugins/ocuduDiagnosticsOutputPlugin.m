@@ -152,4 +152,4 @@ classdef ocuduDiagnosticsOutputPlugin < matlab.unittest.plugins.DiagnosticsOutpu
             plugin.LinePrinter.printFormatted(appendNewlineIfNonempty(prependNewlineIfNonempty(reportStr)));
         end
     end
-end % of classdef outputDiagnosticsOutputPlugin < matlab.unittest.plugins.DiagnosticsOutputPlugin
+end % of classdef ocuduDiagnosticsOutputPlugin < matlab.unittest.plugins.DiagnosticsOutputPlugin

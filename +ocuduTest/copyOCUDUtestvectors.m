@@ -29,13 +29,13 @@ function copyOCUDUtestvectors(origin, destination, targetBlock, ocuduDir)
     % For all .m files...
     for iFile = 1:nFiles
         thisFile = filesDotM{iFile};
-        % ensure the file is a class
+        % Ensure the file is a class.
         thisClass = meta.class.fromName(thisFile(1:end-2));
         if isempty(thisClass)
             continue;
         end
         classProperties = thisClass.PropertyList;
-        % ensure the class has the properties ocuduBlock and ocuduBlockType
+        % Ensure the class has the properties ocuduBlock and ocuduBlockType.
         [~, blockIdx] = ismember('ocuduBlock', {classProperties.Name});
         [~, typeIdx] = ismember('ocuduBlockType', {classProperties.Name});
         if (blockIdx * typeIdx == 0)
@@ -44,14 +44,14 @@ function copyOCUDUtestvectors(origin, destination, targetBlock, ocuduDir)
         block = classProperties(blockIdx).DefaultValue;
         blockType = classProperties(typeIdx).DefaultValue;
 
-        % if the block is the targeted one (or if we target all blocks)
+        % If the block is the targeted one (or if we target all blocks)...
         if ismember(targetBlock, {'all', block})
-            % create file names
+            % Create file names.
             headerFile = fullfile(origin, [block '_test_data.h']);
             tarFile = fullfile(origin, [block '_test_data.tar.gz']);
             finalDest = fullfile(destination, blockType);
 
-            % ensure the finalDest exists
+            % Ensure the finalDest exists.
             if (~exist(finalDest, "dir"))
                 try
                     mkdir(finalDest);
@@ -60,7 +60,7 @@ function copyOCUDUtestvectors(origin, destination, targetBlock, ocuduDir)
                 end
             end
 
-            % copy files to finalDest
+            % Copy files to finalDest.
             if exist(headerFile, 'file') == 2
                 try
                     copyfile(headerFile, finalDest);
