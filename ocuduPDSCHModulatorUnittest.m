@@ -57,11 +57,11 @@ classdef ocuduPDSCHModulatorUnittest < ocuduTest.ocuduBlockUnittest
         %   of the PDSCH transmission. Example: [0, 14].
         SymbolAllocation = {[0, 14], [1, 13], [2, 12]}
 
-        %Modulation scheme ('QPSK', '16QAM', '64QAM', '256QAM').
-        Modulation = {'QPSK', '16QAM', '64QAM', '256QAM'}
+        %Modulation scheme ('QPSK', '16QAM', '64QAM', '256QAM', '1024QAM').
+        Modulation = {'QPSK', '16QAM', '64QAM', '256QAM', '1024QAM'}
 
-        %Number of transmission layers (1, 2, 4).
-        NumLayers = {1, 2, 4}
+        %Number of transmission layers (1, 2, 4, 8).
+        NumLayers = {1, 2, 4, 8}
 
         %Virtual to physical resource block interleaved mapping bundle
         %size. Zero means no interleaving.
@@ -78,7 +78,29 @@ classdef ocuduPDSCHModulatorUnittest < ocuduTest.ocuduBlockUnittest
         end
         function addTestDefinitionToHeaderFile(obj, fileID)
         %addTestDetailsToHeaderFile Adds details (e.g., type/variable declarations) to the test header file.
-            addTestDefinitionToHeaderFilePHYchproc(obj, fileID);
+            fprintf(fileID, [...
+                'struct context_t {\n' ...
+                '  rnti_t rnti;\n' ...
+                '  crb_interval bwp;\n' ...
+                '  modulation_scheme modulation1;\n' ...
+                '  std::optional<modulation_scheme> modulation2;\n' ...
+                '  rb_allocation freq_allocation;\n' ...
+                '  ofdm_symbol_range time_alloc;\n' ...
+                '  symbol_slot_mask dmrs_symb_pos;\n' ...
+                '  dmrs_config_type dmrs_type;\n' ...
+                '  unsigned nof_cdm_groups_without_data;\n' ...
+                '  unsigned n_id;\n' ...
+                '  float scaling;\n' ...
+                '  re_pattern_list reserved;\n' ...
+                '  unsigned nof_layers;\n' ...
+                '};\n' ...
+                '\n' ...
+                'struct test_case_t {\n' ...
+                '  context_t context;\n' ...
+                '  file_vector<uint8_t> data;\n' ...
+                '  file_vector<resource_grid_writer_spy::expected_entry_t> symbols;\n' ...
+                '};\n'...
+            ]);
         end
     end % of methods (Access = protected)
 
@@ -114,6 +136,13 @@ classdef ocuduPDSCHModulatorUnittest < ocuduTest.ocuduBlockUnittest
             VRBToPRBInterleaving = (VRBBundleSize ~= 0);
             VRBBundleSize = max([2, VRBBundleSize]);
 
+            % Determine the number of codewords. For more than 4 layers,
+            % two codewords are used.
+            numCWs = 1;
+            if (NumLayers > 4)
+                numCWs = 2;
+            end
+
             % Configure the PDSCH according to the test parameters.
             pdsch = nrPDSCHConfig( ...
                 NSizeBWP=NSizeBWP, ...
@@ -128,17 +157,31 @@ classdef ocuduPDSCHModulatorUnittest < ocuduTest.ocuduBlockUnittest
                 RNTI=RNTI ...
                 );
 
+            % DM-RS Type 1 requires TDD OCC for more than four ports.
+            if (NumLayers > 4)
+                pdsch.DMRS = nrPDSCHDMRSConfig('DMRSLength', 2);
+            end
+
             modOrder1 = ocuduGetBitsSymbol(pdsch.Modulation);
             modString1 = ocuduModulationFromMatlab(pdsch.Modulation, 'full');
 
             % Calculate number of encoded bits.
             nBits = length(nrPDSCHIndices(carrier, pdsch, "IndexStyle", "subscript")) * modOrder1;
+            
+            % Generate codeword bits.
+            cwData = randi([0, 1], nBits, 1);
 
-            % Generate codewords.
-            cws = randi([0,1], nBits, 1);
+            if (numCWs == 2)
+                % Build codeword-specific bit arrays.
+                cwDataSplit = reshape(cwData, [nBits / numCWs, numCWs]);
+                % Arrange codewords in cell array, one column vector per codeword.
+                cws = mat2cell(cwDataSplit, nBits / numCWs, ones(1, numCWs));
+            else
+                cws = cwData;
+            end
 
             % Write the DLSCH cw to a binary file.
-            testCase.saveDataFile('_test_input', testID, @writeUint8File, cws);
+            testCase.saveDataFile('_test_input', testID, @writeUint8File, cwData);
 
             % Call the PDSCH symbol modulation Matlab functions.
             [modulatedSymbols, symbolIndices] = ocuduPDSCHmodulator(carrier, pdsch, cws);
@@ -167,21 +210,30 @@ classdef ocuduPDSCHModulatorUnittest < ocuduTest.ocuduBlockUnittest
             bwpConfig = {NStartBWP, NStartBWP + NSizeBWP};
             timeAlloc= {pdsch.SymbolAllocation(1), sum(pdsch.SymbolAllocation)};
 
+            % The second modulation is only present when two codewords are used.
+            if (numCWs == 2)
+                modString2 = modString1;
+            else
+                modString2 = 'std::nullopt';
+            end
+
+            % The precoding configuration is built at runtime in the test from
+            % the number of layers.
             configCell = {...
                 rntiString, ...                         % rnti
                 bwpConfig, ...                          % bwp
                 modString1, ...                         % modulation1
-                modString1, ...                         % modulation2
+                modString2, ...                         % modulation2
                 RBAllocationString, ...                 % freq_allocation
                 timeAlloc, ...                          % time_alloc
                 dmrsSymbolMask, ...                     % dmrs_symb_pos
                 DMRSTypeString, ...                     % dmrs_config_type
-                pdsch.DMRS.NumCDMGroupsWithoutData, ... % nof_cmd_groups_without_data 
+                pdsch.DMRS.NumCDMGroupsWithoutData, ... % nof_cmd_groups_without_data
                 pdsch.NID, ...                          % n_id
                 1.0, ...                                % scaling
                 reservedString, ...                     % reserved
-                precodingString...                      % precoding
-                };
+                NumLayers ...                           % nof_layers
+            };
 
             testCaseString = testCase.testCaseToString(testID, ...
                 configCell, true, '_test_input', '_test_output');
