@@ -18,20 +18,20 @@ std::ostream& operator<<(std::ostream& os, const test_case_t& test_case)
 {
   fmt::print(
       os,
-      "rnti={} bwp={} mod1={} mod2={} freq={} time={} dmrs={}/{} ncgwd={} n_id={} scaling={:.1f} rvd={} precoding={}",
-      test_case.config.rnti,
-      test_case.config.bwp,
-      to_string(test_case.config.modulation1),
-      to_string(test_case.config.modulation2),
-      test_case.config.freq_allocation,
-      test_case.config.time_alloc,
-      test_case.config.dmrs_symb_pos,
-      test_case.config.dmrs_type,
-      test_case.config.nof_cdm_groups_without_data,
-      test_case.config.n_id,
-      test_case.config.scaling,
-      test_case.config.reserved.get_re_patterns(),
-      test_case.config.precoding);
+      "rnti={} bwp={} mod1={} mod2={} freq={} time={} dmrs={}/{} ncgwd={} n_id={} scaling={:.1f} rvd={} nof_layers={}",
+      test_case.context.rnti,
+      test_case.context.bwp,
+      to_string(test_case.context.modulation1),
+      test_case.context.modulation2.has_value() ? to_string(*test_case.context.modulation2) : "n/a",
+      test_case.context.freq_allocation,
+      test_case.context.time_alloc,
+      test_case.context.dmrs_symb_pos,
+      test_case.context.dmrs_type,
+      test_case.context.nof_cdm_groups_without_data,
+      test_case.context.n_id,
+      test_case.context.scaling,
+      test_case.context.reserved.get_re_patterns(),
+      test_case.context.nof_layers);
   return os;
 }
 
@@ -73,32 +73,80 @@ std::unique_ptr<pdsch_modulator> PdschModulatorFixture::pdsch = nullptr;
 TEST_P(PdschModulatorFixture, VectorTest)
 {
   const test_case_t& test_case = GetParam();
-  unsigned           max_prb   = test_case.config.bwp.stop();
-  unsigned           max_symb  = get_nsymb_per_slot(cyclic_prefix::NORMAL);
-  unsigned           max_ports = test_case.config.precoding.get_nof_ports();
+  const context_t&   context   = test_case.context;
+  unsigned           max_prb   = context.bwp.stop();
+
+  // Number of layers for the transmission in the range of [1...8].
+  unsigned nof_layers = context.nof_layers;
+
+  // For more than four layers, two codewords are modulated.
+  ASSERT_TRUE((nof_layers <= 4) || (context.modulation2.has_value()))
+      << fmt::format("For a {}-layer transmission, the modulation for the second codeword is required.", nof_layers);
+
+  // Number of codewords modulated.
+  unsigned nof_codewords = (nof_layers > 4) ? 2 : 1;
+
+  // Number of OFDM symbols per slot.
+  unsigned max_symb = get_nsymb_per_slot(cyclic_prefix::NORMAL);
+
+  // Build the precoding configuration for both codewords.
+  precoding_configuration precoding = precoding_configuration::make_wideband(make_identity(nof_layers));
+
+  // Build the modulator config from the test parameters.
+  pdsch_modulator::config_t config = {.rnti                        = context.rnti,
+                                      .bwp                         = context.bwp,
+                                      .modulation1                 = context.modulation1,
+                                      .modulation2                 = context.modulation2,
+                                      .freq_allocation             = context.freq_allocation,
+                                      .time_alloc                  = context.time_alloc,
+                                      .dmrs_symb_pos               = context.dmrs_symb_pos,
+                                      .dmrs_type                   = context.dmrs_type,
+                                      .nof_cdm_groups_without_data = context.nof_cdm_groups_without_data,
+                                      .n_id                        = context.n_id,
+                                      .scaling                     = context.scaling,
+                                      .reserved                    = context.reserved,
+                                      .precoding                   = precoding};
+
+  // Populate the list of resource grid ports for this transmission. Since the logical ports map physical ports, the
+  // list is trivial.
+  static_vector<uint8_t, precoding_constants::MAX_NOF_PORTS> ports(precoding.get_nof_ports());
+  std::iota(ports.begin(), ports.end(), 0);
+  config.ports = ports;
 
   // Prepare resource grid spy.
-  resource_grid_writer_spy grid(max_ports, max_symb, max_prb);
+  resource_grid_writer_spy grid((nof_layers > 4) ? 8 : 4, max_symb, max_prb);
 
-  // Read codeword.
+  // Read all input data.
   std::vector<uint8_t> data = test_case.data.read();
 
-  // Pack data.
-  dynamic_bit_buffer packed_data(data.size());
-  ocuduvec::bit_pack(packed_data, data);
+  // Codeword size in bits.
+  unsigned codeword_size = data.size() / nof_codewords;
 
-  // Prepare codewords.
+  // Packed codewords.
+  static_vector<dynamic_bit_buffer, pdsch_constants::MAX_NOF_CODEWORDS> packed_codewords;
+
+  // Views over the packed codewords for modulation.
   static_vector<bit_buffer, pdsch_constants::MAX_NOF_CODEWORDS> codewords;
-  codewords.emplace_back(packed_data);
+
+  for (unsigned i_codeword = 0; i_codeword != nof_codewords; ++i_codeword) {
+    // Get a view over this codeword data.
+    span<uint8_t> codeword = span(data.data(), data.size()).subspan(i_codeword * codeword_size, codeword_size);
+
+    // Pack codeword.
+    dynamic_bit_buffer& packed_codeword = packed_codewords.emplace_back(codeword_size);
+    ocuduvec::bit_pack(packed_codeword, codeword);
+
+    codewords.push_back(packed_codeword);
+  }
 
   // Modulate.
-  pdsch->modulate(grid, codewords, test_case.config);
+  pdsch->modulate(grid, codewords, config);
 
   // Read resource grid data.
   std::vector<resource_grid_writer_spy::expected_entry_t> rg_entries = test_case.symbols.read();
 
   // Assert resource grid entries.
-  grid.assert_entries(rg_entries, std::sqrt(max_ports));
+  grid.assert_entries(rg_entries, std::sqrt(static_cast<float>(nof_layers)));
 }
 
 INSTANTIATE_TEST_SUITE_P(PdschProcessorVectortest,
