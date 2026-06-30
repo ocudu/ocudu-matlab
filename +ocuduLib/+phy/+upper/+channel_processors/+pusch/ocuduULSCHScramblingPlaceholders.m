@@ -26,11 +26,11 @@ function [xInd, yInd] = ocuduULSCHScramblingPlaceholders(pusch, tcr, tbs, ...
     % Create CSI-Part1 bits to zero, encode and rate match.
     csi1Bits = zeros(OCsi1, 1);
     csi1EncBits = nrUCIEncode(csi1Bits, info.GCSI1, pusch.Modulation);
-    
+
     % Create CSI-Part2 bits to zero, encode and rate match.
     csi2Bits = zeros(OCsi2, 1);
     csi2EncBits = nrUCIEncode(csi2Bits, info.GCSI2, pusch.Modulation);
-    
+
     % Multiplex message, placeholders are marked as -2.
     encBits = nrULSCHMultiplex(pusch, tcr, tbs, schBits, ackEncBits, csi1EncBits, csi2EncBits);
 

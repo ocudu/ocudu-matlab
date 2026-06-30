@@ -22,7 +22,7 @@ function cpDurations = scs2cps(scs)
         % subframe.
         cpDurations = [34 18 18 18 18 18 18 18 18 18 18 18 18 18];
     else
-        error('ocudu_matlab:scs2cps', 'Unsupported subcarrierspacing %d kHz.', scs);
+        error('ocudu_matlab:scs2cps', 'Unsupported subcarrier spacing %d kHz.', scs);
     end
     cpDurations = cpDurations / sum(cpDurations) / scs;
 end

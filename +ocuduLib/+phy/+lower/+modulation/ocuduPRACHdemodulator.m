@@ -1,14 +1,14 @@
 %ocuduPRACHdemodulator Demodulate a 5G NR PRACH waveform.
 %   PRACHSYMBOLS = ocuduPRACHdemodulator(CARRIER, PRACH, GRIDINFO, WAVEFORM, INFO)
 %   returns a set of frequency-domain symbols PRACHSYMBOLS comprising the 5G
-%   5G NR physical random access channel (PRACH) given input CARRIER and 
-%   PRACH parameters, PRACH waveform WAVEFORM and two structure arrays 
+%   5G NR physical random access channel (PRACH) given input CARRIER and
+%   PRACH parameters, PRACH waveform WAVEFORM and two structure arrays
 %   GRIDINFO and INFO.
 %
 %   GRIDINFO is a structure array containing information corresponding to the
-%   PRACH OFDM modulation. If the PRACH is configured for FR2 or the PRACH 
+%   PRACH OFDM modulation. If the PRACH is configured for FR2 or the PRACH
 %   slot for the current configuration spans more than one subframe, some
-%   of the OFDM-related information may be different between PRACH slots. 
+%   of the OFDM-related information may be different between PRACH slots.
 %   In this case, the info structure is an array of the same length as the
 %   number of PRACH slots in the waveform.
 %
@@ -102,7 +102,7 @@ function PRACHSymbols = ocuduPRACHdemodulator(carrier, prach, gridInfo, waveform
 
         % Revert power scaling: MATLAB scales the transmitted power so that the
         % PSD is one when normalized wrt the carrier SCS (whereas we want a PSD
-        % of one when nomralized wrt the PRACH SCS).
+        % of one when normalized wrt the PRACH SCS).
         scaling = 1 / sqrt(prachDFTSize / carrierInfo.Nfft);
         PRACHSymbolTmp = PRACHSymbolTmp * scaling;
 

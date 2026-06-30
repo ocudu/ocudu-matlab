@@ -1,6 +1,6 @@
 %ocuduPDCCHmodulator Physical Downlink Control channel modulator.
 %   [MODULATEDSYMBOLS, SYMBOLINDICES] = ocuduPDCCHmodulator(CW, CARRIER, PDCCH, NID, RNTI)
-%   modulates the codeword CW using CARRIER and PDCCH objects and returns 
+%   modulates the codeword CW using CARRIER and PDCCH objects and returns
 %   the complex symbols MODULATEDSYMBOLS as well as a column vector of RE indices.
 %
 %   See also nrPDCCH, nrPDCCHResources.

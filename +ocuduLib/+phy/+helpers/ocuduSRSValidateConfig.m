@@ -26,9 +26,8 @@ function isValid = ocuduSRSValidateConfig(nrCarrier, srs)
     if (SymbolStart + NumSRSSymbols) > nrCarrier.SymbolsPerSlot
         isValid = false;
         return;
-    end 
+    end
 
- 
     % In NR, Extended CP is only used with 60 kHz subcarrier spacing.
     if (strcmp(nrCarrier.CyclicPrefix, 'extended') && (nrCarrier.SubcarrierSpacing ~= 60))
         isValid = false;

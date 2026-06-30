@@ -1,6 +1,6 @@
 %ocuduSelectPRACHConfigurationIndex selects a valid configuration index.
 %   CONFIGURATIONINDEX = ocuduSelectPRACHConfigurationIndex(DUPLEXMODE, PREAMBLEFORMAT)
-%   Gets the first configuration index CONFIGURATIONINDEX in a configurations table 
+%   Gets the first configuration index CONFIGURATIONINDEX in a configurations table
 %   selected by the duplex mode DUPLEXMODE with the given preamble format PREAMBLEFORMAT.
 
 % SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
@@ -22,7 +22,7 @@ function ConfigurationIndex = ocuduSelectPRACHConfigurationIndex(FrequencyRange,
     else
         error('Unhandled duplex mode %s.', DuplexMode);
     end
-    
+
     % Find the first row index in the table that matches the preamble format.
     rowIndex = find(strcmp(table.PreambleFormat, PreambleFormat), 1);
     ConfigurationIndex = table.ConfigurationIndex(rowIndex);

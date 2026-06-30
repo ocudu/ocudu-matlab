@@ -4,14 +4,14 @@
 %   Equalizes the Resource Elements (RE) in RXSYMBOLS using the estimated
 %   channel information CHESTS and the noise variance NOISEVAR, according
 %   to the equalization criteria EQTYPE, which can be either ZF (Zero
-%   Forcing) or MMSE (Minimum Mean Square Error). EQSYMBOLS contains the 
-%   equalized OFDM symbols, while EQNOISEVARS contains the equivalent 
+%   Forcing) or MMSE (Minimum Mean Square Error). EQSYMBOLS contains the
+%   equalized OFDM symbols, while EQNOISEVARS contains the equivalent
 %   post-equalization noise variances, which can be used for soft symbol
 %   demodulation. The TXSCALING scaling factor is the transmit symbol gain
 %   relative to the reference signals used for channel estimation.
 %
 %   RXSYMBOLS is a two-dimensional array. The first dimension corresponds
-%   to the Resource Elements and the second one to the receive antenna 
+%   to the Resource Elements and the second one to the receive antenna
 %   ports.
 %
 %   CHESTS is a three-dimensional array. The first dimension corresponds to
@@ -78,7 +78,7 @@ if strcmp(eqType, 'MMSE')
 elseif strcmp(eqType, 'ZF')
 
     % Zero Forcing equalization is equivalent to MMSE when the noise
-    % variance is 0, that is, in the absense of additive noise.
+    % variance is 0, that is, in the absence of additive noise.
     [eqSymbols, csi] = nrEqualizeMMSE(rxSymbols, chEsts, 0);
 
     % Calculate the equivalent, post-equalization noise variance.

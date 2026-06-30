@@ -22,14 +22,14 @@
 %   PRBstart          - First PRB dedicated to DM-RS (0-based indexing)
 %   nPRBs             - Number of PRBs dedicated to DM-RS
 %   maskPRBs          - PRBs dedicated to DM-RS (logical mask)
-%   startSymbol       - Index of the OFDM symbol (0-based) correspoding to the
+%   startSymbol       - Index of the OFDM symbol (0-based) corresponding to the
 %                       start of the hop
 %   nAllocatedSymbols - Number of OFDM symbols allocated to the PUxCH transmission
 %                       in the hop
 %
 %   Outputs:
 %   CHANNELESTRG   - Estimated channel coefficients organized in a resource grid
-%   NOISEEST       - Estiamted noise variance
+%   NOISEEST       - Estimated noise variance
 %   RSRP           - Estimated reference-signal received power
 %   EPRE           - Average receive-side energy per reference-signal resource
 %                    element (including noise)

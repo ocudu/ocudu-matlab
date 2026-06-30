@@ -57,16 +57,16 @@ for CSIRSIndex = 1:length(CSIRSResources)
     % Generate CSI-RS mapping information.
     [~, info] = nrCSIRSIndices(carrier, cfgCSIRS);
 
-    % Parametrize resource element pattern.
+    % Parameterize resource element pattern.
     RBStart = cfgCSIRS.RBOffset;
     RBEnd = cfgCSIRS.RBOffset + cfgCSIRS.NumRB;
 
     % Check if the CSI-RS is configured to start on an even RB.
     isEven = mod(RBStart, 2) == 0;
-    
+
     % If the CSI-RS density is set to odd RB and the RB start is even, or
     % if the CSI-RS density is set to even RB and the RB start is odd,
-    % No RE are used in the first RB, and therefore it must be excluded 
+    % No RE are used in the first RB, and therefore it must be excluded
     % from the pattern.
     if ((strcmp(cfgCSIRS.Density, 'dot5odd') && isEven) || ...
         (strcmp(cfgCSIRS.Density, 'dot5even') && ~isEven))
@@ -79,7 +79,7 @@ for CSIRSIndex = 1:length(CSIRSResources)
     if (strcmp(cfgCSIRS.Density, 'dot5even') || strcmp(cfgCSIRS.Density, 'dot5odd'))
         RBStride = 2;
     end
-    
+
     RBMask = zeros(1,12);
     SymbolMask = zeros(1,14);
 
@@ -88,7 +88,7 @@ for CSIRSIndex = 1:length(CSIRSResources)
 
     % CDM group RE time offsets.
     LPrime = info.LPrime{1};
-   
+
     % Create RE and symbol masks from KBarLbar.
     for KBarLBarIndex = 1:length(info.KBarLBar)
         KBarLBar = info.KBarLBar{KBarLBarIndex};

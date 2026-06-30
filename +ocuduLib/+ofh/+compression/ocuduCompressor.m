@@ -1,7 +1,7 @@
 %ocuduCompressor Generation of compressed IQ data from a complex input array.
 %   [CIQDATA, CPARAM] = ocuduCompressor(IQDATA, METHOD, CIQWIDTH)
-%   compresses the input IQ samples accordig to the requested METHOD and
-%   output bit width CIQWIDTH and returns the compressed IQ samples 
+%   compresses the input IQ samples according to the requested METHOD and
+%   output bit width CIQWIDTH and returns the compressed IQ samples
 %   in CIQDATA and compression parameters for each PRB in CPARAM.
 %
 %   See also nrORANBlockCompress.

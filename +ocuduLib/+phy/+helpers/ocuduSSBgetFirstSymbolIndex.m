@@ -12,7 +12,7 @@ function SSBfirstSymbolIndex = ocuduSSBgetFirstSymbolIndex(SSBpattern, SSBindex,
 
     % SSB parameters according to TS 38.213 Section 4.1
     switch SSBpattern
-        case 'B' % 30 kHz SCS (n = [0] for carrier frequenies <= 3 GHz, n = [0, 1] for carrier frequencies > 3 GHz)
+        case 'B' % 30 kHz SCS (n = [0] for carrier frequencies <= 3 GHz, n = [0, 1] for carrier frequencies > 3 GHz)
             n = [0, 1];
             SSBfirstSymbolIndexArray = [4, 8, 16, 20];
             offset = 28;
@@ -24,7 +24,7 @@ function SSBfirstSymbolIndex = ocuduSSBgetFirstSymbolIndex(SSBpattern, SSBindex,
             n = [0, 1, 2, 3, 5, 6, 7, 8, 10, 11, 12, 13, 15, 16, 17, 18];
             SSBfirstSymbolIndexArray = [8, 12, 16, 20, 32, 36, 40, 44];
             offset = 56;
-        otherwise % case 'A' 15 kHz SCS, case 'C' 30 kHz SCS (n = [0, 1] for carrier frequenies <= 3 GHz, n = [0, 1, 2, 3] for carrier frequencies > 3 GHz)
+        otherwise % case 'A' 15 kHz SCS, case 'C' 30 kHz SCS (n = [0, 1] for carrier frequencies <= 3 GHz, n = [0, 1, 2, 3] for carrier frequencies > 3 GHz)
             n = [0, 1, 2, 3];
             SSBfirstSymbolIndexArray = [2, 8];
             offset = 14;

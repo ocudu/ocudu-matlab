@@ -1,7 +1,7 @@
 %ocuduPUCCH4InverseBlockwiseSpreading PUCCH Format 4 blockwise spreading inversion.
 %   [originalSymbols, noiseVars] = ocuduPUCCH4InverseBlockwiseSpreading(...
 %       SPREADSYMBOLS, EQNOISEVARS, SPREADINGFACTOR, NOFMODSYMBOLS, OCCI)
-%   inverts the blockwise spreading applied to the SPREADSYMBOLS of a 
+%   inverts the blockwise spreading applied to the SPREADSYMBOLS of a
 %   PUCCH Format 4 transmission, returning the unspread ORIGINALSYMBOLS
 %   and NOISEVARS.
 

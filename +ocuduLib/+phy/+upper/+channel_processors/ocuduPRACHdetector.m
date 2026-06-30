@@ -31,7 +31,7 @@ function [indices, offsets, normMetrics, preamblePowers, rssi] = ocuduPRACHdetec
 
     % Working copy of the PRACH configuration.
     prach = prachConf;
-    % Reset the preamble index, since it is unkown.
+    % Reset the preamble index, since it is unknown.
     prach.PreambleIndex = 0;
 
     % Get the numerology index.
@@ -218,7 +218,7 @@ function info = getWindowInfo(prach, mu)
     % Express the CP as a number of samples at sampling frequency equal to LRA * SCS.
     CPprach = floor(CPms * prach.LRA * prach.SubcarrierSpacing);
 
-    % Each preamble correspond to a detection window whose width is the miniumum
+    % Each preamble correspond to a detection window whose width is the minimum
     % between the CP length and the NCS.
     winWidth = min(NCS, CPprach);
     if NCS == 0

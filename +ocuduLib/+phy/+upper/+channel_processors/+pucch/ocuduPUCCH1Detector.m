@@ -21,7 +21,7 @@
 %     pucch          - nrPUCCH1Config object with the PUCCH Format 1 configuration
 %                      parameters
 %     rxGrid         - resource grid with complex-valued samples. Dimensions are
-%                      number of subcarries, number of OFDM symbols in a slot and
+%                      number of subcarriers, number of OFDM symbols in a slot and
 %                      number of receive antenna ports
 %     ouci           - Number of uncoded UCI bits
 %     multiplexList  - List of multiplexed PUCCH transmissions as a structure array
@@ -130,7 +130,7 @@ function [results, epre, noiseVar] = ocuduPUCCH1Detector(carrier, pucch, rxGrid,
 
     switch nContributions
         case 2
-            % One port no frequency hppping.
+            % One port no frequency hopping.
             threshold = 0.9;
         case 4
             % One port and frequency hopping or two ports and no frequency hopping.
@@ -259,7 +259,7 @@ end % of function mustBeMultiplexList(a)
 function [hopData, epre, epreSamples, noiseVar, noiseSamples] = processHop(rblock, info, carrier, pucch, rxGrid, multiplexList)
     nSymbols = 14; % OFDM symbols per slot.
     nRE = 12;      % RE (subcarriers) per PRB.
-    nShifts = 12;  % Total numnber of initioal cyclic shifts.
+    nShifts = 12;  % Total number of initial cyclic shifts.
 
     % Create a boolean mask of the OFDM symbols carrying DM-RS in the entire slot.
     dmrsMask = false(nSymbols, 1);
