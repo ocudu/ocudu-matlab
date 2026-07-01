@@ -20,12 +20,16 @@
 %   SymbolAllocation - PUCCH Format 3 time allocation.
 %   FrequencyHopping - Frequency hopping type ('neither', 'intraSlot').
 %   PRBNum           - Number of PRBs (1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 16).
-%   CodeRate         - Code rate (0.08, 0.15, 0.25, 0.35, 0.45, 0.6, 0.8).
+%   MaxCodeRate      - Maximum code rate (0.08, 0.15, 0.25, 0.35, 0.45, 0.6, 0.8).
 %
 %   ocuduPUCCHProcessorFormat3Unittest Methods (TestTags = {'testvector'}):
 %
 %   testvectorGenerationCases - Generates a test vector according to the provided
 %                               parameters.
+%
+%   ocuduPUCCHProcessorFormat3Unittest Methods (TestTags = {'testmex'}):
+%
+%   mexTest - Tests the mex wrapper of the OCUDU PUCCH processor for Format 3.
 %
 %   ocuduPUCCHProcessorFormat3Unittest Methods (Access = protected):
 %
@@ -76,9 +80,9 @@ classdef ocuduPUCCHProcessorFormat3Unittest < ocuduTest.ocuduBlockUnittest
         % Number of PRBs (1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 16).
         PRBNum = {1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 16};
 
-        %Code rate, from TS38.331 Section 6.3.2, PUCCH-config
+        %Maximum code rate, from TS38.331 Section 6.3.2, PUCCH-config
         %   information element (0.08, 0.15, 0.25, 0.35, 0.45, 0.6, 0.8).
-        CodeRate = {0.08, 0.15, 0.25, 0.35, 0.45, 0.6, 0.8};
+        MaxCodeRate = {0.08, 0.15, 0.25, 0.35, 0.45, 0.6, 0.8};
     end
 
     methods (Access = protected)
@@ -109,8 +113,8 @@ classdef ocuduPUCCHProcessorFormat3Unittest < ocuduTest.ocuduBlockUnittest
     end % of methods (Access = protected)
 
     methods (Access = private)
-        function [nofUCIBits, pucchDataIndices, info] = setupsimulation(testCase, SymbolAllocation, ...
-                FrequencyHopping, PRBNum, CodeRate)
+        function [nofUCIBitsPart1, nofUCIBitsPart2, pucchDataIndices, info] = setupsimulation(testCase, SymbolAllocation, ...
+                FrequencyHopping, PRBNum, MaxCodeRate)
         % Sets secondary simulation variables and MATLAB NR configuration objects.
 
             % Generate random cell ID.
@@ -190,32 +194,38 @@ classdef ocuduPUCCHProcessorFormat3Unittest < ocuduTest.ocuduBlockUnittest
 
             [pucchDataIndices, info] = nrPUCCHIndices(testCase.Carrier, testCase.PUCCH);
 
-            % Maximum number of bits of the code block.
-            nofCodeBlockBits = min(floor(info.G * CodeRate), 1706);
+            % Maximum number of bits of the code block for each part.
+            nofCodeBlockBits = floor(min(floor(info.G * MaxCodeRate), 1706) / 2);
 
             % If needed, remove the CRC bits from the UCI payload.
             if (nofCodeBlockBits < 12)
-                nofUCIBits = nofCodeBlockBits;
+                nofUCIBitsPart1 = nofCodeBlockBits;
             elseif (nofCodeBlockBits < 20 + 6)
-                nofUCIBits = nofCodeBlockBits - 6;
+                nofUCIBitsPart1 = nofCodeBlockBits - 6;
             elseif (nofCodeBlockBits < 360 + 11)
-                nofUCIBits = nofCodeBlockBits - 11;
+                nofUCIBitsPart1 = nofCodeBlockBits - 11;
             else
                 % The UCI payload is split into two codeblocks when
                 %   (A>=360 and E>=1088) or A>=1013
                 % which means 11 more CRC bits are used.
                 % Remove the extra CRC bits so that the effective code rate
                 % doesn't exceed the maximum.
-                nofUCIBits = nofCodeBlockBits - 2*11;
+                nofUCIBitsPart1 = nofCodeBlockBits - 2*11;
             end
+            if (nofUCIBitsPart1 < 5)
+                    nofUCIBitsPart1 = 2 * nofUCIBitsPart1;
+                    nofUCIBitsPart2 = 0;
+	    else
+                    nofUCIBitsPart2 = nofUCIBitsPart1;
+	    end
 
             % Ensure that the UCI codeword is greater or equal to the minimum
             % number of UCI bits for PUCCH Format 3.
-            assert(nofUCIBits >= 3, ...
+            assert(nofUCIBitsPart1 >= 3, ...
                 'ocudu_matlab:ocuduPUCCHProcessorFormat3Unittest', ...
                 ['The UCI payload size for the configuration (i.e., %d) is ' ...
                 'smaller than the minimum UCI payload size for PUCCH Format 3 ' ...
-                '(i.e., 3 bits)'], nofUCIBits);
+                '(i.e., 3 bits)'], nofUCIBitsPart1);
 
         end % of function setupsimulation(testCase, SymbolAllocation, ...
 
@@ -223,11 +233,12 @@ classdef ocuduPUCCHProcessorFormat3Unittest < ocuduTest.ocuduBlockUnittest
 
     methods (Test, TestTags = {'testvector'})
         function testvectorGenerationCases(testCase, SymbolAllocation, ...
-                FrequencyHopping, PRBNum, CodeRate)
+                FrequencyHopping, PRBNum, MaxCodeRate)
         %testvectorGenerationCases Generates a test vector for the given
         %   Symbol allocation, frequency hopping, number of PRBs and code rate.
 
             import ocuduLib.phy.upper.channel_processors.pucch.ocuduPUCCH3Demodulator
+	    import ocuduLib.phy.upper.channel_processors.pucch.ocuduUCICodeWordLengths
             import ocuduTest.helpers.matlab2ocuduCyclicPrefix
             import ocuduTest.helpers.writeResourceGridEntryFile
             import ocuduTest.helpers.writeUint8File
@@ -236,8 +247,8 @@ classdef ocuduPUCCHProcessorFormat3Unittest < ocuduTest.ocuduBlockUnittest
             % Generate a unique test ID.
             testID = testCase.generateTestID;
 
-            [nofUCIBits, pucchDataIndices, info] = testCase.setupsimulation(...
-                SymbolAllocation, FrequencyHopping, PRBNum, CodeRate);
+            [nofUCIBitsPart1, nofUCIBitsPart2, pucchDataIndices, info] = testCase.setupsimulation(...
+                SymbolAllocation, FrequencyHopping, PRBNum, MaxCodeRate);
 
             % Define some aliases.
             carrier = testCase.Carrier;
@@ -245,7 +256,8 @@ classdef ocuduPUCCHProcessorFormat3Unittest < ocuduTest.ocuduBlockUnittest
             numRxPorts = testCase.NumRxPorts;
 
             [grid, UCIPayload, pucchDmrsIndices] = createTxGrid(...
-                carrier, pucch, pucchDataIndices, info, nofUCIBits);
+                carrier, pucch, pucchDataIndices, info, nofUCIBitsPart1, ...
+                nofUCIBitsPart2, MaxCodeRate);
 
             % Init received signals.
             rxGrid = nrResourceGrid(carrier, numRxPorts, OutputDataType='single');
@@ -282,7 +294,18 @@ classdef ocuduPUCCHProcessorFormat3Unittest < ocuduTest.ocuduBlockUnittest
             softBits = ocuduPUCCH3Demodulator(pucch, rxSymbols, dataChEsts, noiseVar);
 
             % Decode UCI message to check for errors.
-            rxUCIPayload = nrUCIDecode(softBits, nofUCIBits, pucch.Modulation);
+            [part1CodeWordLength, part2CodeWordLength] = ocuduUCICodeWordLengths(nofUCIBitsPart1, nofUCIBitsPart2, ...
+                length(softBits), info.G / info.Gd, MaxCodeRate);
+            rxUCIPayloadPart1 = nrUCIDecode(softBits(1:part1CodeWordLength), nofUCIBitsPart1);
+            if (part2CodeWordLength > 0)
+                rxUCIPayloadPart2 = nrUCIDecode(softBits((part1CodeWordLength + 1):end), nofUCIBitsPart2);
+                assert(isequal(size(rxUCIPayloadPart2, 2), 1), ...
+                    'ocudu_matlab:ocuduPUCCHProcessorFormat2Unittest', ...
+                    'Ambiguous CSI Part 2 message.');
+            else
+                rxUCIPayloadPart2 = [];
+            end
+            rxUCIPayload = [rxUCIPayloadPart1; rxUCIPayloadPart2];
 
             assert(isequal(rxUCIPayload, UCIPayload), ...
                 'ocudu_matlab:ocuduPUCCHProcessorFormat3Unittest', ...
@@ -350,12 +373,13 @@ classdef ocuduPUCCHProcessorFormat3Unittest < ocuduTest.ocuduBlockUnittest
                 pucch.RNTI, ...                             % rnti
                 carrier.NCellID, ....                       % n_id_hopping
                 pucch.NID, ...                              % n_id_scrambling
-                nofUCIBits, ...                             % nof_harq_ack
+                0, ...                                      % nof_harq_ack
                 0, ...                                      % nof_sr
-                0, ...                                      % nof_csi_part1
-                0, ...                                      % nof_csi_part2
+                nofUCIBitsPart1, ...                        % nof_csi_part1
+                nofUCIBitsPart2, ...                        % nof_csi_part2
                 pucch.AdditionalDMRS, ...                   % additional_dmrs
                 strcmp(pucch.Modulation, 'pi/2-BPSK'), ...  % pi2_bpsk
+		MaxCodeRate, ...                            % max_code_rate
                 };
 
             % Generate test case context.
@@ -377,7 +401,7 @@ classdef ocuduPUCCHProcessorFormat3Unittest < ocuduTest.ocuduBlockUnittest
 
     methods (Test, TestTags = {'testmex'})
         function mexTest(testCase, SymbolAllocation, FrequencyHopping, ...
-                PRBNum, CodeRate)
+                PRBNum, MaxCodeRate)
         %mexTest  Tests the mex wrapper of the OCUDU PUCCH processor for Format 3.
         %   mexTest(OBJ, symbolAllocation, frequencyHopping, modulation,
         %   additionalDMRS, nofHarqAck, nofSR, nofCSIPart1, nofCSIPart2,
@@ -386,9 +410,9 @@ classdef ocuduPUCCHProcessorFormat3Unittest < ocuduTest.ocuduBlockUnittest
         %   and CSI Part 2 payloads, and the maximum code rate. The Cell ID,
         %   NID and RNTI are randomly generated.
 
-            [nofUCIBits, pucchDataIndices, info] = ...
+            [nofUCIBitsPart1, nofUCIBitsPart2, pucchDataIndices, info] = ...
                 testCase.setupsimulation(SymbolAllocation, FrequencyHopping, ...
-                PRBNum, CodeRate);
+                PRBNum, MaxCodeRate);
 
             % Define some aliases.
             carrier = testCase.Carrier;
@@ -396,7 +420,7 @@ classdef ocuduPUCCHProcessorFormat3Unittest < ocuduTest.ocuduBlockUnittest
             numRxPorts = testCase.NumRxPorts;
 
             [grid, UCIPayload] = createTxGrid(carrier, pucch, ...
-                pucchDataIndices, info, nofUCIBits);
+                pucchDataIndices, info, nofUCIBitsPart1, nofUCIBitsPart2, MaxCodeRate);
 
             % Init received signals.
             rxGrid = nrResourceGrid(carrier, numRxPorts, OutputDataType='single');
@@ -422,18 +446,18 @@ classdef ocuduPUCCHProcessorFormat3Unittest < ocuduTest.ocuduBlockUnittest
 
             pucchProcessor = ocuduMEX.phy.ocuduPUCCHProcessor();
 
-            message = pucchProcessor(carrier, pucch, rxGrid, NumHARQAck=nofUCIBits, ...
-                NumSR=0, NumCSIPart1=0, NumCSIPart2=0);
+            message = pucchProcessor(carrier, pucch, rxGrid, NumHARQAck=0, ...
+                NumSR=0, NumCSIPart1=nofUCIBitsPart1, NumCSIPart2=nofUCIBitsPart2, MaxCodeRate=MaxCodeRate);
 
             assertTrue(testCase, message.isValid, 'The PUCCH Processor should return a valid message.');
-            assertEqual(testCase, message.HARQAckPayload, int8(UCIPayload), ...
+            assertEqual(testCase, message.HARQAckPayload, zeros(0, 1, 'int8'), ...
                 'The HARQ payload doesn''t match.');
             assertEqual(testCase, message.SRPayload, zeros(0, 1, 'int8'), ...
                 'The SR payload doesn''t match.');
-            assertEqual(testCase, message.CSI1Payload, zeros(0, 1, 'int8'), ...
-                'The CSI1 payload doesn''t match.');
-            assertEqual(testCase, message.CSI2Payload, zeros(0, 1, 'int8'), ...
-                'The CSI2 payload doesn''t match.');
+            assertEqual(testCase, message.CSI1Payload, int8(UCIPayload(1:nofUCIBitsPart1)), ...
+                'The CSI Part 1 payload doesn''t match.');
+            assertEqual(testCase, message.CSI2Payload, int8(UCIPayload((nofUCIBitsPart1 + 1):end)), ...
+                'The CSI Part 2 payload doesn''t match.');
         end % of function mexTest(testCase, SymbolAllocation, ...
     end % of methods (Test, TestTags = {'testmex'}}
 end % of classdef ocuduPUCCHProcessorFormat3Unittest
@@ -441,7 +465,9 @@ end % of classdef ocuduPUCCHProcessorFormat3Unittest
 %Generates a PUCCH Format 3 resource grid (Tx side). Also returns the transmitted
 %   payload, and the indices of DM-RS.
 function [TxGrid, UCIPayload, pucchDmrsIndices] = ...
-    createTxGrid(carrier, pucch, pucchDataIndices, info, nofUCIBits)
+    createTxGrid(carrier, pucch, pucchDataIndices, info, nofUCIBitsPart1, nofUCIBitsPart2, maxCodeRate)
+
+    import ocuduLib.phy.upper.channel_processors.pucch.ocuduUCIEncode
 
     % Derive the actual UCI codeword length from the radio
     % resources. This is used for rate matching.
@@ -457,14 +483,13 @@ function [TxGrid, UCIPayload, pucchDmrsIndices] = ...
         'ocudu_matlab:ocuduPUCCHProcessorFormat3Unittest', ...
         'UCI codeword length and number of PUCCH F3 RE are not consistent');
 
-    % Generate UCI payload.
-    % For now, UCI multiplexing, applicable to UCI payloads contaning
-    % CSI reports of two parts, is not considered. Therefore, all
-    % UCI fields are appended into a single UCI segment.
-    UCIPayload = randi([0, 1], nofUCIBits, 1);
+    % Generate Part 1 and Part 2 UCI payloads.
+    payloadPart1 = randi([0, 1], nofUCIBitsPart1, 1);
+    payloadPart2 = randi([0, 1], nofUCIBitsPart2, 1);
+    UCIPayload = [payloadPart1; payloadPart2];
 
     % Encode UCI payload.
-    uciCW = nrUCIEncode(UCIPayload, CodeWordLength, pucch.Modulation);
+    uciCW = ocuduUCIEncode(payloadPart1, payloadPart2, CodeWordLength, modulationOrder, maxCodeRate);
 
     % Create resource grid.
     TxGrid = nrResourceGrid(carrier, OutputDataType='single');

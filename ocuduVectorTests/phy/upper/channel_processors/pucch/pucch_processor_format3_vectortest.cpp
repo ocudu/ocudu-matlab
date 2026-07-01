@@ -1,11 +1,13 @@
 // SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 // SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
+#include "compare_sequences.h"
 #include "pucch_processor_format3_test_data.h"
 #include "pucch_processor_test_fixture.h"
 #include "ocudu/phy/antenna_ports.h"
 #include "ocudu/phy/upper/channel_processors/prach/formatters.h"
 #include "ocudu/phy/upper/channel_processors/pucch/formatters.h"
+#include "ocudu/ran/uci/uci_formatters.h"
 #include "fmt/ostream.h"
 #include <gtest/gtest.h>
 
@@ -18,16 +20,26 @@ namespace ocudu {
 std::ostream& operator<<(std::ostream& os, const test_case_t& test_case)
 {
   fmt::print(os,
-             "grid: {} RB x {} symb, PUCCH config: {}",
+             "grid: {} RB x {} symb, PUCCH config: {} nof_harq_ack={} nof_sr={} nof_csi_part1={} csi_part2_size={}",
              test_case.context.grid_nof_prb,
              test_case.context.grid_nof_symbols,
-             test_case.context.config);
+             test_case.context.config,
+             test_case.context.config.nof_harq_ack,
+             test_case.context.config.nof_sr,
+             test_case.context.config.nof_csi_part1,
+             test_case.context.config.csi_part2_size);
   return os;
 }
 
 std::ostream& operator<<(std::ostream& os, span<const uint8_t> data)
 {
   fmt::print(os, "{}", data);
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os, uci_status status)
+{
+  fmt::print(os, "{}", to_string(status));
   return os;
 }
 
@@ -61,10 +73,17 @@ TEST_P(PucchProcessorF3Fixture, PucchProcessorF3VectorTest)
 
   // Assert expected UCI payload.
   ASSERT_EQ(result.message.get_status(), uci_status::valid);
-  ASSERT_EQ(span<const uint8_t>(result.message.get_harq_ack_bits()), span<const uint8_t>(uci_bits));
-  ASSERT_EQ(span<const uint8_t>(result.message.get_sr_bits()), span<const uint8_t>());
-  ASSERT_EQ(span<const uint8_t>(result.message.get_csi_part1_bits()), span<const uint8_t>());
-  ASSERT_EQ(span<const uint8_t>(result.message.get_csi_part2_bits()), span<const uint8_t>());
+  ASSERT_EQ(result.message.get_harq_ack_bits().size(), config.nof_harq_ack);
+  ASSERT_EQ(result.message.get_sr_bits().size(), config.nof_sr);
+  ASSERT_EQ(result.message.get_csi_part1_bits().size(), config.nof_csi_part1);
+  ASSERT_EQ(result.message.get_csi_part2_bits().size(),
+            (config.csi_part2_size.entries.empty()) ? 0 : config.csi_part2_size.entries.front().map.front());
+  error_type<std::string> payload_ok = compare_sequences(
+      span<const uint8_t>(result.message.get_full_payload()),
+      span<const uint8_t>(uci_bits),
+      [](uint8_t a, uint8_t b) { return std::abs(static_cast<int>(a) - static_cast<int>(b)); },
+      0);
+  ASSERT_TRUE(payload_ok.has_value()) << payload_ok.error();
 }
 
 TEST_P(PucchProcessorF3Fixture, PucchProcessorF3VectorZerosTest)

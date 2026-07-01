@@ -211,10 +211,11 @@ static pucch_processor::format2_configuration populate_f2_configuration(const St
   cfg.n_id_0 = static_cast<unsigned>(in_cfg["NID0"][0]);
 
   // Set the lengths of UCI fields.
-  cfg.nof_harq_ack  = static_cast<unsigned>(in_cfg["NumHARQAck"][0]);
-  cfg.nof_sr        = static_cast<unsigned>(in_cfg["NumSR"][0]);
-  cfg.nof_csi_part1 = static_cast<unsigned>(in_cfg["NumCSIPart1"][0]);
-  cfg.nof_csi_part2 = static_cast<unsigned>(in_cfg["NumCSIPart2"][0]);
+  cfg.nof_harq_ack   = static_cast<unsigned>(in_cfg["NumHARQAck"][0]);
+  cfg.nof_sr         = static_cast<unsigned>(in_cfg["NumSR"][0]);
+  cfg.nof_csi_part1  = static_cast<unsigned>(in_cfg["NumCSIPart1"][0]);
+  cfg.csi_part2_size = uci_part2_size_description(static_cast<unsigned>(in_cfg["NumCSIPart2"][0]));
+  cfg.max_code_rate  = static_cast<float>(in_cfg["MaxCodeRate"][0]);
 
   return cfg;
 }
@@ -272,10 +273,11 @@ static pucch_processor::format3_configuration populate_f3_configuration(const St
   cfg.pi2_bpsk        = static_cast<bool>(in_cfg["Pi2BPSK"][0]);
 
   // Set the lengths of UCI fields.
-  cfg.nof_harq_ack  = static_cast<unsigned>(in_cfg["NumHARQAck"][0]);
-  cfg.nof_sr        = static_cast<unsigned>(in_cfg["NumSR"][0]);
-  cfg.nof_csi_part1 = static_cast<unsigned>(in_cfg["NumCSIPart1"][0]);
-  cfg.nof_csi_part2 = static_cast<unsigned>(in_cfg["NumCSIPart2"][0]);
+  cfg.nof_harq_ack   = static_cast<unsigned>(in_cfg["NumHARQAck"][0]);
+  cfg.nof_sr         = static_cast<unsigned>(in_cfg["NumSR"][0]);
+  cfg.nof_csi_part1  = static_cast<unsigned>(in_cfg["NumCSIPart1"][0]);
+  cfg.csi_part2_size = uci_part2_size_description(static_cast<unsigned>(in_cfg["NumCSIPart2"][0]));
+  cfg.max_code_rate  = static_cast<float>(in_cfg["MaxCodeRate"][0]);
 
   return cfg;
 }
@@ -334,10 +336,11 @@ static pucch_processor::format4_configuration populate_f4_configuration(const St
   cfg.occ_length = static_cast<unsigned>(in_cfg["SpreadingFactor"][0]);
 
   // Set the lengths of UCI fields.
-  cfg.nof_harq_ack  = static_cast<unsigned>(in_cfg["NumHARQAck"][0]);
-  cfg.nof_sr        = static_cast<unsigned>(in_cfg["NumSR"][0]);
-  cfg.nof_csi_part1 = static_cast<unsigned>(in_cfg["NumCSIPart1"][0]);
-  cfg.nof_csi_part2 = static_cast<unsigned>(in_cfg["NumCSIPart2"][0]);
+  cfg.nof_harq_ack   = static_cast<unsigned>(in_cfg["NumHARQAck"][0]);
+  cfg.nof_sr         = static_cast<unsigned>(in_cfg["NumSR"][0]);
+  cfg.nof_csi_part1  = static_cast<unsigned>(in_cfg["NumCSIPart1"][0]);
+  cfg.csi_part2_size = uci_part2_size_description(static_cast<unsigned>(in_cfg["NumCSIPart2"][0]));
+  cfg.max_code_rate  = static_cast<float>(in_cfg["MaxCodeRate"][0]);
 
   return cfg;
 }

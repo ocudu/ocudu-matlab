@@ -86,6 +86,7 @@ add_test(pucch_processor_format2_vectortest pucch_processor_format2_vectortest)
 add_test_vector(pucch_processor_format2_vectortest pucch_processor_format2_test_data.tar.gz "")
 
 add_executable(pucch_processor_format3_vectortest pucch_processor_format3_vectortest.cpp)
+target_include_directories(pucch_processor_format3_vectortest PRIVATE ${OCUDU_VECTORTESTS_DIR}/support)
 target_link_libraries(pucch_processor_format3_vectortest
         ocudu_channel_processors
         ocudu_channel_equalizer

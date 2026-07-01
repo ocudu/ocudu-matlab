@@ -370,6 +370,7 @@ classdef ocuduPUCCHProcessorFormat4Unittest < ocuduTest.ocuduBlockUnittest
                 strcmp(pucch.Modulation, 'pi/2-BPSK'), ...  % pi2_bpsk
                 pucch.OCCI, ...                             % occ_index
                 pucch.SpreadingFactor, ...                  % occ_length
+                CodeRate, ...                               % max_code_rate
                 };
 
             % Generate test case context.
@@ -437,7 +438,7 @@ classdef ocuduPUCCHProcessorFormat4Unittest < ocuduTest.ocuduBlockUnittest
             pucchProcessor = ocuduMEX.phy.ocuduPUCCHProcessor();
 
             message = pucchProcessor(carrier, pucch, rxGrid, NumHARQAck=nofUCIBits, ...
-                NumSR=0, NumCSIPart1=0, NumCSIPart2=0);
+                NumSR=0, NumCSIPart1=0, NumCSIPart2=0, MaxCodeRate=CodeRate);
 
             assertTrue(testCase, message.isValid, 'The PUCCH Processor should return a valid message.');
             assertEqual(testCase, message.HARQAckPayload, int8(UCIPayload), ...

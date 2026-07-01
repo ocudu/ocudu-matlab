@@ -6,6 +6,7 @@
 #include "ocudu/phy/antenna_ports.h"
 #include "ocudu/phy/upper/channel_processors/prach/formatters.h"
 #include "ocudu/phy/upper/channel_processors/pucch/formatters.h"
+#include "ocudu/ran/uci/uci_formatters.h"
 #include "fmt/ostream.h"
 #include <gtest/gtest.h>
 
@@ -16,10 +17,20 @@ namespace ocudu {
 std::ostream& operator<<(std::ostream& os, const test_case_t& test_case)
 {
   fmt::print(os,
-             "grid: {} RB x {} symb, PUCCH config: {}",
+             "grid: {} RB x {} symb, PUCCH config: {} nof_harq_ack={} nof_sr={} nof_csi_part1={} csi_part2_size={}",
              test_case.context.grid_nof_prb,
              test_case.context.grid_nof_symbols,
-             test_case.context.config);
+             test_case.context.config,
+             test_case.context.config.nof_harq_ack,
+             test_case.context.config.nof_sr,
+             test_case.context.config.nof_csi_part1,
+             test_case.context.config.csi_part2_size);
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os, span<const uint8_t> data)
+{
+  fmt::print(os, "[{}]", data);
   return os;
 }
 
@@ -49,7 +60,8 @@ TEST_P(PucchProcessorF2Fixture, PucchProcessorF2VectorTest)
   std::vector<uint8_t> expected_csi_part_2 = test_case.csi_part_2.read();
 
   // Make sure configuration is valid.
-  ASSERT_TRUE(validator->is_valid(config));
+  error_type<std::string> valid = validator->is_valid(config);
+  ASSERT_TRUE(valid) << valid.error();
 
   // Process PUCCH.
   pucch_processor_result result = processor->process(grid, config);
