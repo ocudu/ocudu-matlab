@@ -24,6 +24,8 @@ function ocudumod = ocuduModulationFromMatlab(matlabmod, fullname)
             ocudumod = 'QAM64';
         case '256QAM'
             ocudumod = 'QAM256';
+        case '1024QAM'
+            ocudumod = 'QAM1024';
         case {'BPSK', 'QPSK'}
             ocudumod = matlabmod;
         otherwise

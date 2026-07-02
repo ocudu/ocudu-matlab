@@ -22,6 +22,8 @@ function nBits = ocuduGetBitsSymbol(modulation)
             nBits = 6;
         case {'256QAM', 'QAM256'}
             nBits = 8;
+        case {'1024QAM', 'QAM1024'}
+            nBits = 10;
         otherwise
             error('ocudu_matlab:ocuduGetBitsSymbol', 'Unknown modulation %s.', modulation);
     end
