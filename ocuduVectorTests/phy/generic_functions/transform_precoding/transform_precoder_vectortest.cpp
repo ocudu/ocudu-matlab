@@ -62,6 +62,9 @@ protected:
                               ->M_rb;
 
       std::shared_ptr<dft_processor_factory> dft_proc_factory = create_dft_processor_factory_fftw_slow();
+      if (!dft_proc_factory) {
+        dft_proc_factory = create_dft_processor_factory_generic();
+      }
       ASSERT_TRUE(dft_proc_factory);
 
       std::shared_ptr<transform_precoder_factory> precoder_factory =

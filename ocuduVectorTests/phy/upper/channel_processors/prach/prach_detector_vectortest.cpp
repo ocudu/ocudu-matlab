@@ -53,7 +53,7 @@ protected:
     if (!dft_factory) {
       dft_factory = create_dft_processor_factory_generic();
     }
-    ASSERT_NE(dft_factory, nullptr);
+    ASSERT_NE(dft_factory, nullptr) << "Cannot create DFT factory.";
 
     std::shared_ptr<prach_generator_factory> generator_factory = create_prach_generator_factory_sw();
     ASSERT_NE(generator_factory, nullptr);

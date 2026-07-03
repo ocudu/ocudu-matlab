@@ -82,7 +82,10 @@ protected:
       ASSERT_NE(prg_factory, nullptr) << "Cannot create pseudo-random generator factory";
 
       std::shared_ptr<dft_processor_factory> dft_factory = create_dft_processor_factory_fftw_slow();
-      ASSERT_NE(dft_factory, nullptr) << "Cannot create DFT processor factory";
+      if (!dft_factory) {
+        dft_factory = create_dft_processor_factory_generic();
+      }
+      ASSERT_NE(dft_factory, nullptr) << "Cannot create DFT factory.";
 
       std::shared_ptr<transform_precoder_factory> precoding_factory =
           create_dft_transform_precoder_factory(dft_factory, pucch_constants::f4::NOF_RBS + 1);

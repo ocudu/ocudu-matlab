@@ -44,6 +44,9 @@ protected:
   void SetUp() override
   {
     std::shared_ptr<dft_processor_factory> dft_proc_factory = create_dft_processor_factory_fftw_slow();
+    if (!dft_proc_factory) {
+      dft_proc_factory = create_dft_processor_factory_generic();
+    }
     ASSERT_NE(dft_proc_factory, nullptr);
 
     std::shared_ptr<time_alignment_estimator_factory> ta_estimator_factory =
