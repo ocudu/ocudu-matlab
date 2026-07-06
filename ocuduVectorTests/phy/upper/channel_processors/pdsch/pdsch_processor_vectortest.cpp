@@ -390,23 +390,35 @@ TEST_P(PdschProcessorFixture, PdschProcessorVectortest)
   const test_case_context&     context   = test_case.context;
   pdsch_processor::pdu_t       config    = context.pdu;
 
-  unsigned max_symb  = context.rg_nof_symb;
-  unsigned max_prb   = context.rg_nof_rb;
-  unsigned max_ports = config.precoding.get_nof_ports();
+  unsigned max_symb   = context.rg_nof_symb;
+  unsigned max_prb    = context.rg_nof_rb;
+  unsigned max_ports  = config.precoding.get_nof_ports();
+  unsigned nof_layers = config.precoding.get_nof_layers();
+
+  // Number of codewords processed.
+  unsigned nof_codewords = (nof_layers > 4) ? 2 : 1;
 
   // Prepare resource grid and resource grid mapper spies.
   resource_grid_writer_spy grid(max_ports, max_symb, max_prb);
 
-  // Read input data as a bit-packed transport block.
-  std::vector<uint8_t> transport_block = test_case.sch_data.read();
-  ASSERT_FALSE(transport_block.empty()) << "Failed to load transport block.";
+  // Read all input data.
+  std::vector<uint8_t> data = test_case.sch_data.read();
+  ASSERT_FALSE(data.empty()) << "Failed to load transport block.";
+
+  // Codeword size in bits.
+  unsigned codeword_size = data.size() / nof_codewords;
 
   // Prepare transport blocks view.
   static_vector<shared_transport_block, pdsch_processor::MAX_NOF_TRANSPORT_BLOCKS> transport_blocks;
-  transport_blocks.emplace_back(transport_block);
+
+  for (unsigned i_cw = 0; i_cw != nof_codewords; ++i_cw) {
+    span<uint8_t> transport_block = span(data.data(), data.size()).subspan(i_cw * codeword_size, codeword_size);
+    transport_blocks.emplace_back(transport_block);
+  }
 
   // Make sure the configuration is valid.
-  ASSERT_TRUE(pdu_validator->is_valid(config));
+  error_type<std::string> is_valid = pdu_validator->is_valid(config);
+  ASSERT_TRUE(is_valid.has_value()) << is_valid.error();
 
   // Process PDSCH.
   pdsch_proc->process(grid, notifier_spy, transport_blocks, config);
