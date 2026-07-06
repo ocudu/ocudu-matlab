@@ -48,9 +48,6 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
         %Type of the tested block.
         ocuduBlockType = 'phy/upper/channel_processors/pdsch'
 
-        %Maximum number of layers.
-        MaxNumLayers = 4
-
         %Symbols allocated to the PDSCH transmission.
         %   The symbol allocation is described by a two-element array with the starting
         %   symbol (0...13) and the length (1...14) of the PDSCH transmission.
@@ -76,6 +73,9 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
         %PDSCH DM-RS subcarrier reference point.
         %    It can be either CRB 0 or PRB 0 within the BWP.
         DMRSReferencePoint = {'CRB0', 'PRB0'};
+
+        %Number of transmission layers (1, 2, 4, 8).
+        NumLayers = {1, 2, 4, 8}
     end
 
     methods (Access = protected)
@@ -114,7 +114,7 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
 
     methods (Test, TestTags = {'testvector'})
         function testvectorGenerationCases(testCase, BWPConfig, Modulation, ...
-                DMRSReferencePoint)
+                DMRSReferencePoint, NumLayers)
         %testvectorGenerationCases Generates a test vector for the given
         %   BWP, modulation scheme, and DM-RS reference point settings.
         %   Other parameters, such as subcarrier spacing, PDSCH frequency
@@ -136,7 +136,22 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
 
             % Random parameters.
             nCellID = randi([0, 1007]);
-            numLayers = randi([1, testCase.MaxNumLayers]);
+
+            % Set the maximum additional DM-RS positions and the DM-RS
+            % length - DM-RS Type 1 requires TDD OCC for more than four
+            % ports. Also, if more than four layers are used, two transport
+            % blocks (i.e., two codewords) are transmitted.
+            if (NumLayers <= 4)
+                maxDMRSAdditionalPosition = 3;
+                DMRSLength = 1;
+
+                numCWs = 1;
+            else
+                maxDMRSAdditionalPosition = 1;
+                DMRSLength = 2;
+
+                numCWs = 2;
+            end
 
             % BWP allocation, referenced to CRB0.
             nStartBWP = BWPConfig(1);
@@ -179,7 +194,7 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             PdschNumRB = randi([MinNumPrb, nSizeBWP - PdschStartRB]);
 
             % Additional DM-RS positions.
-            DMRSAdditionalPosition = randi([0, 3]);
+            DMRSAdditionalPosition = randi([0, maxDMRSAdditionalPosition]);
 
             % Set carrier paramters.
             carrier.NStartGrid = nStartGrid;
@@ -200,7 +215,8 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             pdsch.DMRS.NIDNSCID = NIDNSCID;
             pdsch.DMRS.NSCID = NSCID;
             pdsch.DMRS.DMRSReferencePoint = DMRSReferencePoint;
-            pdsch.NumLayers = numLayers;
+            pdsch.DMRS.DMRSLength = DMRSLength;
+            pdsch.NumLayers = NumLayers;
 
             % Create a ZP-CSI-RS resource, occupying the first symbol.
             csirs1 = nrCSIRSConfig;
@@ -208,7 +224,14 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             csirs1.CSIRSPeriod = 'on';
             csirs1.RowNumber = 1;
             csirs1.Density = 'three';
-            csirs1.SymbolLocations = {3};
+            % For more than four layers, double-symbol DM-RS occupies symbols 2
+            % and 3, so place this resource off symbol 3 to prevent its reserved
+            % REs from colliding with the DM-RS.
+            if (NumLayers <= 4)
+                csirs1.SymbolLocations = {3};
+            else
+                csirs1.SymbolLocations = {5};
+            end
             csirs1.SubcarrierLocations = {0};
             csirs1.NumRB = nSizeBWP;
             csirs1.RBOffset = nStartBWP;
@@ -267,20 +290,28 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             % Generate PDSCH DM-RS resource grid indices.
             pdschDMRSIndices = nrPDSCHDMRSIndices(carrier, pdsch, 'IndexStyle','subscript', 'IndexBase','0based');
 
-            % Select a valid TBS.
+            % Select a valid TBS. When two codewords are used, nrTBS returns
+            % a two-element vector with the (identical) size of each transport
+            % block. Keep a single scalar value, as both are equal.
             tbs = nrTBS(pdsch.Modulation, pdsch.NumLayers, length(pdsch.PRBSet), pdschInfo.NREPerPRB, targetCodeRate);
+            assert(isscalar(tbs) || (tbs(1) == tbs(2)), 'With the current set-up, the two codewords should have the same TBS.');
+            tbs = tbs(1);
 
             % Get DL-SCH information.
             dlschInfo = nrDLSCHInfo(tbs, targetCodeRate);
 
-            % Generate random data.
-            schTransportBlock = randi([0, 1], tbs, 1);
+            % Generate random data, one transport block per codeword.
+            schTransportBlocks = randi([0, 1], tbs, numCWs);
 
             % Encode data.
             encDL = nrDLSCH;
             encDL.TargetCodeRate = targetCodeRate;
-            setTransportBlock(encDL, schTransportBlock);
-            schCodeword = encDL(Modulation, pdsch.NumLayers, pdschInfo.G, rv);
+            for cwIndex = 0:numCWs - 1
+                setTransportBlock(encDL, schTransportBlocks(:, cwIndex + 1), cwIndex);
+            end
+
+            % The redundancy version must provide one entry per codeword.
+            schCodeword = encDL(Modulation, pdsch.NumLayers, pdschInfo.G, rv * ones(1, numCWs));
 
             % Generate DL-SCH symbols.
             betaDatadB = 0;
@@ -293,8 +324,9 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             transportBlockFileName = '_test_input_transport_block';
             pdschGridFileName = '_test_output_grid';
 
-            % Write the bit-packed DL-SCH transport block to a binary file.
-            testCase.saveDataFile(transportBlockFileName, testID, @writeUint8File, bitPack(schTransportBlock));
+            % Write the bit-packed DL-SCH transport block(s) to a binary file,
+            % one after another.
+            testCase.saveDataFile(transportBlockFileName, testID, @writeUint8File, bitPack(schTransportBlocks(:)));
 
             % Concatenate data and DM-RS symbols.
             allIndices = [pdschDataIndices; pdschDMRSIndices];
@@ -332,7 +364,11 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             % Convert modulation type to string.
             modString1 = ocuduModulationFromMatlab(pdsch.Modulation, 'full');
 
-            precodingString = ['precoding_configuration::make_wideband(make_identity(' num2str(numLayers) '))'];
+            precodingString = ['precoding_configuration::make_wideband(make_identity(' num2str(NumLayers) '))'];
+
+            % Build the per-codeword description. When two codewords are used,
+            % both share the same modulation, redundancy version and base graph.
+            codewordsString = repmat({{modString1, rv, baseGraphString}}, 1, numCWs);
 
             % Prepare PDSCH configuration.
             pduDescription = {...
@@ -342,7 +378,7 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
                 pdsch.NSizeBWP, ...                      % bwp_size_rb
                 pdsch.NStartBWP, ...                     % bwp_start_rb
                 cyclicPrefixStr, ...                     % cp
-                {{modString1, rv, baseGraphString}}, ... % codewords
+                codewordsString, ...                     % codewords
                 pdsch.NID, ...                           % n_id
                 refPointStr, ...                         % ref_point
                 dmrsSymbolMask, ...                      % dmrs_symbol_mask
