@@ -426,7 +426,7 @@ classdef ocuduPUSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             rntiString = ['to_rnti(', num2str(pusch.RNTI), ')'];
 
             pduDescription = {...
-                'std::nullopt', ...                           % context
+                'INVALID_HARQ_ID', ...                        % harq_id
                 slotConfig, ...                               % slot
                 rntiString, ...                               % rnti
                 pusch.NSizeBWP, ...                           % bwp_size_rb
