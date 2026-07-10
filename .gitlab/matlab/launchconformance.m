@@ -1,4 +1,4 @@
-function testResults = launchconformance(tests, expression, filename, propertymarker)
+function testResults = launchconformance(tests, expression, filename)
 %launchconformance Launch conformance tests
 %   RESULTS = launchconformance(TESTS, EXPRESSION) launches the subset of TESTS
 %   whose name matches the given regular EXPRESSION. It returns the test results.
@@ -12,7 +12,6 @@ function testResults = launchconformance(tests, expression, filename, propertyma
         tests           char {mustBeTextScalar}
         expression      char {mustBeTextScalar}
         filename        char {mustBeTextScalar}
-        propertymarker  char {mustBeTextScalar}
     end
 
     import matlab.unittest.selectors.HasName
@@ -28,6 +27,3 @@ function testResults = launchconformance(tests, expression, filename, propertyma
     addPlugin(runner, plugin);
 
     testResults = run(runner, selectedTests);
-
-    % Modify the XML report to add the marker property.
-    extendJUnitXML(filename, propertymarker);

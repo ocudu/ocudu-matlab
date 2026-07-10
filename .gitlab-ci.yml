@@ -372,18 +372,20 @@ build mex full tests:
     - allow_failure: true
   variables:
     TEST: ""
-    TESTMARKER: ""
     SUBSET: ""
+    TESTMARKER: ""
+    JUNITFILE: build_mex_conformance_xunit.xml
   script:
     - |
       matlab -sd ./ -batch "addpath('.', '.gitlab/matlab'); \
-      res = launchconformance('tests/conformance/${TEST}', '${SUBSET}', 'build_mex_conformance_xunit.xml', '${TESTMARKER}'); \
+      res = launchconformance('tests/conformance/${TEST}', '${SUBSET}', '${JUNITFILE}'); \
+      extendJUnitXML('${JUNITFILE}', '${OCUDU_COMMIT}', '${CI_COMMIT_SHA}', '${CI_JOB_URL}', '${TESTMARKER}'); \
       postprocessconformance(res);" \
       -logfile matlablog.log
   artifacts:
     <<: *mex_artifacts
     reports:
-      junit: build_mex_conformance_xunit.xml
+      junit: $JUNITFILE
     expire_in: 20 days
   timeout: 24h
 
