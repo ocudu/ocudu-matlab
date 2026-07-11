@@ -58,15 +58,15 @@ private:
   ///   - A three-dimensional array of \c cf_t containing the estimated channel coefficients for all REs of all Rx ports
   ///     (currently, only one transmission layer is supported).
   ///   - A \c float providing the noise variance.
-  ///   - A one-dimesional structure that describes the PUSCH demodulator configuration. The fields are
+  ///   - A one-dimensional structure that describes the PUSCH demodulator configuration. The fields are
   ///      - \c RNTI, radio network temporary identifier;
   ///      - \c RBMask, allocation RB list (as a boolean mask);
   ///      - \c Modulation, modulation scheme used for transmission;
   ///      - \c StartSymbolIndex, start symbol index of the time domain allocation within a slot;
   ///      - \c NumSymbols, number of symbols of the time domain allocation within a slot;
-  ///      - \c DMRSSymbPos, boolean mask flagging the OFDM symbols containing DMRS;
-  ///      - \c DMRSConfigType, DMRS configuration type;
-  ///      - \c NumCdmGroupsWithoutData, number of DMRS CDM groups without data;
+  ///      - \c DMRSSymbPos, boolean mask flagging the OFDM symbols containing DM-RS;
+  ///      - \c DMRSConfigType, DM-RS configuration type;
+  ///      - \c NumCdmGroupsWithoutData, number of DM-RS CDM groups without data;
   ///      - \c NID, scrambling identifier;
   ///      - \c NumLayers, number of transmit layers;
   ///      - \c Placeholders, ULSCH Scrambling placeholder list;

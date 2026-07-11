@@ -51,7 +51,7 @@ private:
   /// The method takes three inputs.
   ///   - The string <tt>"step"</tt>.
   ///   - An array of \c cf_t containing the baseband input signal.
-  ///   - A one-dimesional structure that describes the PRACH configuration. The fields are
+  ///   - A one-dimensional structure that describes the PRACH configuration. The fields are
   ///      - \c SequenceIndex, the root sequence index;
   ///      - \c Format, preamble format;
   ///      - \c RestrictedSet, restricted set configuration;
@@ -63,7 +63,7 @@ private:
   ///     fields:
   ///      - \c NumDetectedPreambles, number of detected PRACH preambles (should be one);
   ///      - \c RSSIDecibel, average RSSI value in dB;
-  ///      - \c TimeResolution, time resoultion of the PRACH detector, in seconds;
+  ///      - \c TimeResolution, time resolution of the PRACH detector, in seconds;
   ///      - \c MaxTimeAdvance, maximum timing of the PRACH detector, in seconds;
   ///      - \c PreambleIndices, array of indices of the detected preamble;
   ///      - \c TimeAdvance, array of timing advance between the observed arrival time and the reference uplink time,

@@ -63,7 +63,7 @@ private:
   ///      - \c SubcarrierSpacing, the subcarrier spacing in kHz (either 15 or 30);
   ///      - \c Symbols, a boolean mask specifying the OFDM symbols carrying DM-RS;
   ///      - \c RBMask, a boolean mask specifying the allocated PRBs (in the first hop);
-  ///      - \c HoppingIndex, the index of the first OFDM symbol after intraslot frequency hopping (leave emtpy for no
+  ///      - \c HoppingIndex, the index of the first OFDM symbol after intraslot frequency hopping (leave empty for no
   ///        frequency hopping.
   ///      - \c RBMask2, a boolean mask specifying the allocated PRBs in the second hop (if pertinent);
   ///      - \c REPattern, a boolean mask specifying the position of the reference symbols within an RB;

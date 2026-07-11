@@ -93,7 +93,7 @@ inline ocudu::dmrs_config_type matlab_to_ocudu_dmrs_type(unsigned type)
   if (type == 2) {
     return ocudu::dmrs_config_type::type2;
   }
-  ocudu::ocudu_terminate("Unknown DMRS type {}.", type);
+  ocudu::ocudu_terminate("Unknown DM-RS type {}.", type);
 }
 
 /// \brief Converts a MATLAB cyclic prefix string into an OCUDU cyclic prefix.

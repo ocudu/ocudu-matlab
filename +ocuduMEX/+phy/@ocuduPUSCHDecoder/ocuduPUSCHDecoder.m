@@ -53,7 +53,7 @@
 %      NumCodeblocks  - the number of codeblocks forming the codeword.
 %   TBK is a vector of bytes of length equal to the transport block size.
 %
-%   TBK = step(..., FORMAT) allows specifing the format of the output transport
+%   TBK = step(..., FORMAT) allows specifying the format of the output transport
 %   block: 'packed' bytes (default) or 'unpacked' bits.
 %
 %   [TBK, STATS] = step(...) also returns some statistics about the decoder. The
@@ -265,7 +265,7 @@ classdef ocuduPUSCHDecoder < matlab.System
         %   generates a segment configuration SEGMENTCFG and a decoder configuration DECODERCFG for
         %   a given target code rate TARGETCODERATE, a number of HARQ processes equal to NHARQPROCESS
         %   (default 1) and XOH bits of additional overhead (default 0). CARRIER and PUSCH are the nrCarrierConfig
-        %   and nrPUSCHConfig objects, respectively, describing the tranmsission.
+        %   and nrPUSCHConfig objects, respectively, describing the transmission.
             arguments
                 carrier        (1, 1) nrCarrierConfig
                 pusch          (1, 1) nrPUSCHConfig

@@ -5,7 +5,7 @@
 %   PUSCHDEM = ocuduPUSCHDemodulator creates a PHY PUSCH demodulator object.
 %
 %   PUSCHDEM = ocuduPUSCHDemodulator(NAME, VALUE, ...) creates a PHY PUSCH demodulator object
-%   with properties (see below) set accorgin to the NAME-VALUE pairs.
+%   with properties (see below) set according to the NAME-VALUE pairs.
 %
 %   ocuduPUSCHDemodulator Methods:
 %

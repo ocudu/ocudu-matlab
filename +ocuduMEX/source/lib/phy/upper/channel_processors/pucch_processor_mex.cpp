@@ -380,7 +380,7 @@ MexFunction::call_processor(const resource_grid_reader& grid_reader, const Struc
 
     unsigned nof_pucchs = batch_results.size();
     if (nof_pucchs != mux_f1.getNumberOfElements()) {
-      mex_abort("The number of processed PUCCH F1 transmsissions {} does not match the configured ones {}.",
+      mex_abort("The number of processed PUCCH F1 transmissions {} does not match the configured ones {}.",
                 nof_pucchs,
                 mux_f1.getNumberOfElements());
     }
@@ -494,7 +494,7 @@ MexFunction::call_processor(const resource_grid_reader& grid_reader, const Struc
       break;
     }
     default:
-      mex_abort("Unsupported or unkown PUCCH Format {}", pucch_format);
+      mex_abort("Unsupported or unknown PUCCH Format {}", pucch_format);
       break;
   }
 

@@ -32,7 +32,7 @@
 %                           is [] for no frequency hopping).
 %   'BetaScaling'         - DM-RS to data amplitude gain (default is 1).
 %
-%   ocuduMultiPortChannelEstimator propertires (nontunable):
+%   ocuduMultiPortChannelEstimator properties (nontunable):
 %
 %   ImplementationType - Channel estimator implementation ('MEX', 'noMEX').
 %   Smoothing          - Frequency-domain smoothing strategy ('filter', 'mean', 'none').
