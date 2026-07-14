@@ -3,9 +3,10 @@
 
 #include "ofdm_modulator_test_data.h"
 #include "resource_grid_test_doubles.h"
+#include "ocudu/phy/antenna_ports.h"
 #include "ocudu/phy/generic_functions/generic_functions_factories.h"
 #include "ocudu/phy/lower/modulation/modulation_factories.h"
-#include <fmt/ostream.h>
+#include "fmt/ostream.h"
 #include <gtest/gtest.h>
 
 namespace ocudu {
@@ -69,7 +70,7 @@ TEST_P(ofdm_modulator_tester, vector)
   unsigned input_offset = 0;
   // Map the read data into a reader_spy structure.
   unsigned                 nsymb = get_nsymb_per_slot(test_case.test_config.config.cp);
-  resource_grid_reader_spy rg;
+  resource_grid_reader_spy rg(MAX_PORTS, nsymb, test_case.test_config.config.bw_rb);
   for (unsigned symbol_idx = 0; symbol_idx != nsymb; ++symbol_idx) {
     for (unsigned subc_idx = 0; subc_idx != nsubc; ++subc_idx) {
       resource_grid_reader_spy::expected_entry_t entry = {};
