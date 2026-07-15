@@ -19,6 +19,8 @@ switch modulation
         modString = 'modulation_scheme::QAM64';
     case '256QAM'
         modString = 'modulation_scheme::QAM256';
+    case '1024QAM'
+        modString = 'modulation_scheme::QAM1024';
 end
 
 mcsDescr = {modString, round(1024 * targetCodeRate, 1)};

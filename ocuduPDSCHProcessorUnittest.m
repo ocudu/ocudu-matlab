@@ -67,8 +67,8 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
         %   Example: [0, 25].
         BWPConfig = {[1, 25], [2, 52], [0, 106]}
 
-        %Modulation {QPSK, 16-QAM, 64-QAM, 256-QAM}.
-        Modulation = {'QPSK', '16QAM', '64QAM', '256QAM'}
+        %Modulation {QPSK, 16-QAM, 64-QAM, 256-QAM, 1024-QAM}.
+        Modulation = {'QPSK', '16QAM', '64QAM', '256QAM', '1024QAM'}
 
         %PDSCH DM-RS subcarrier reference point.
         %    It can be either CRB 0 or PRB 0 within the BWP.
@@ -348,7 +348,7 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             baseGraphString = ['ldpc_base_graph_type::BG', num2str(dlschInfo.BGN)];
 
             % Transport block size for limited buffer rate match.
-            TBSLBRM = nrTBS('256QAM', 4, 273, 156, 948 / 1024) / 8;
+            TBSLBRM = nrTBS('1024QAM', 4, 273, 156, 948 / 1024) / 8;
             TBSLBRMStr = ['units::bytes(' num2str(TBSLBRM) ')'];
 
             % Generate Resource Block allocation string, referenced to the

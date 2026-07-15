@@ -37,8 +37,10 @@ std::ostream& operator<<(std::ostream& os, modulation_scheme mod)
     case modulation_scheme::QAM64:
       return os << "64QAM";
     case modulation_scheme::QAM256:
-    default:
       return os << "256QAM";
+    case modulation_scheme::QAM1024:
+    default:
+      return os << "1024QAM";
   }
 }
 
@@ -130,6 +132,37 @@ TEST_P(LDPCRateMatchingFixture, LDPCRateMatchingTest)
 {
   const LDPCRateMatchingParams& params = GetParam();
 
+  test_case_t                                    test_data = std::get<1>(params);
+  modulation_scheme                              mod       = test_data.mod_scheme;
+  unsigned                                       rm_length = test_data.rm_length;
+  std::vector<uint8_t>                           matched(rm_length);
+  static_bit_buffer<ldpc::MAX_CODEBLOCK_RM_SIZE> matched_packed(rm_length);
+  unsigned                                       n_ref           = test_data.is_lbrm ? test_data.n_ref : 0;
+  unsigned                                       nof_filler_bits = test_data.nof_filler;
+
+  std::vector<uint8_t>     codeblock = test_data.full_cblock.read();
+  ldpc_encoder_buffer_impl rm_buffer(codeblock);
+  codeblock_metadata       rm_cfg    = {};
+  rm_cfg.tb_common.rv                = test_data.rv;
+  rm_cfg.tb_common.mod               = mod;
+  rm_cfg.tb_common.Nref              = n_ref;
+  rm_cfg.cb_specific.nof_filler_bits = nof_filler_bits;
+
+  matcher->rate_match(matched_packed, rm_buffer, rm_cfg);
+
+  // Unpack rate matched.
+  ocuduvec::bit_unpack(matched, matched_packed);
+
+  // Compare the rate matched codeblocks with the expected ones.
+  std::vector<uint8_t> expected_matched = test_data.rm_cblock.read();
+  ASSERT_EQ(expected_matched.size(), rm_length);
+  EXPECT_EQ(span<const uint8_t>(matched), span<const uint8_t>(expected_matched)) << "Wrong rate matching.";
+
+  // 1024-QAM is currently validated on TX only.
+  if (mod == modulation_scheme::QAM1024) {
+    return;
+  }
+
   // Get the rate dematcher implementation type.
   std::string rate_dematcher_type = std::get<0>(params);
 
@@ -157,32 +190,6 @@ TEST_P(LDPCRateMatchingFixture, LDPCRateMatchingTest)
 
   // Check that the dematcher is successfully instantiated.
   ASSERT_NE(dematcher, nullptr) << "Cannot create rate dematcher.";
-
-  test_case_t                                    test_data = std::get<1>(params);
-  modulation_scheme                              mod       = test_data.mod_scheme;
-  unsigned                                       rm_length = test_data.rm_length;
-  std::vector<uint8_t>                           matched(rm_length);
-  static_bit_buffer<ldpc::MAX_CODEBLOCK_RM_SIZE> matched_packed(rm_length);
-  unsigned                                       n_ref           = test_data.is_lbrm ? test_data.n_ref : 0;
-  unsigned                                       nof_filler_bits = test_data.nof_filler;
-
-  std::vector<uint8_t>     codeblock = test_data.full_cblock.read();
-  ldpc_encoder_buffer_impl rm_buffer(codeblock);
-  codeblock_metadata       rm_cfg    = {};
-  rm_cfg.tb_common.rv                = test_data.rv;
-  rm_cfg.tb_common.mod               = mod;
-  rm_cfg.tb_common.Nref              = n_ref;
-  rm_cfg.cb_specific.nof_filler_bits = nof_filler_bits;
-
-  matcher->rate_match(matched_packed, rm_buffer, rm_cfg);
-
-  // Unpack rate matched.
-  ocuduvec::bit_unpack(matched, matched_packed);
-
-  // Compare the rate matched codeblocks with the expected ones.
-  std::vector<uint8_t> expected_matched = test_data.rm_cblock.read();
-  ASSERT_EQ(expected_matched.size(), rm_length);
-  EXPECT_EQ(span<const uint8_t>(matched), span<const uint8_t>(expected_matched)) << "Wrong rate matching.";
 
   // Transform rate-matched bits into log-likelihood ratios.
   std::vector<log_likelihood_ratio> llrs(rm_length);

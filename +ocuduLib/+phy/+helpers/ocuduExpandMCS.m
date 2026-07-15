@@ -3,7 +3,7 @@
 %   rate TARGETCODERATE and modulation order QM (according to the 3GPP convention:
 %   i.e., the number of bits per symbol) given a specific modulation and coding
 %   scheme index MCS (0-28) and associated table MCSTABLE ('qam64', 'qam256',
-%   'qam64LowSE'), as defined in TS 38.214 Section 5.1.3.1.
+%   'qam64LowSE', 'qam1024'), as defined in TS 38.214 Section 5.1.3.1.
 
 % SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 % SPDX-License-Identifier: BSD-3-Clause-Open-MPI
@@ -18,6 +18,8 @@ function [targetCodeRate, Qm] = ocuduExpandMCS(mcs, mcsTable)
         requestedTable = allTables.QAM64Table;
     elseif strcmp(mcsTable, 'qam256')
         requestedTable = allTables.QAM256Table;
+    elseif strcmp(mcsTable, 'qam1024')
+        requestedTable = allTables.QAM1024Table;
     elseif strcmp(mcsTable, 'qam64LowSE')
         requestedTable = allTables.QAM64LowSETable;
     else

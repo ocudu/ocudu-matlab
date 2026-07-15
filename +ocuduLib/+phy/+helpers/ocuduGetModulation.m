@@ -30,9 +30,12 @@ function [modulation, ocudumodulation] = ocuduGetModulation(Qm)
         case 8
             modulation = '256QAM';
             ocudumodulation = 'QAM256';
+        case 10
+            modulation = '1024QAM';
+            ocudumodulation = 'QAM1024';
         otherwise
             error('ocudu_matlab:ocuduGetModulation', ...
-                'The supported modulation orders are (1, 2, 4, 6, 8), provided %d', Qm);
+                'The supported modulation orders are (1, 2, 4, 6, 8, 10), provided %d', Qm);
     end
 
 end

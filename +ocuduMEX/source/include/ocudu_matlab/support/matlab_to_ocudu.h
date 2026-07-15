@@ -40,6 +40,9 @@ inline ocudu::modulation_scheme matlab_to_ocudu_modulation(const std::string& mo
   if ((modulation_name == "QAM256") || (modulation_name == "256QAM")) {
     return ocudu::modulation_scheme::QAM256;
   }
+  if ((modulation_name == "QAM1024") || (modulation_name == "1024QAM")) {
+    return ocudu::modulation_scheme::QAM1024;
+  }
   ocudu::ocudu_terminate("Unknown modulation {}.", modulation_name);
 }
 

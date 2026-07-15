@@ -19,6 +19,7 @@
 %
 %   SymbolAllocation        - Symbols allocated to the PDSCH transmission.
 %   PRBAllocation           - PRBs allocated to the PDSCH transmission.
+%   mcsTable                - MCS table ('qam256', 'qam1024').
 %   mcs                     - Modulation scheme index (0, 28).
 %
 %   ocuduPDSCHEncoderUnittest Methods (TestTags = {'testvector'}):
@@ -61,6 +62,9 @@ classdef ocuduPDSCHEncoderUnittest < ocuduTest.ocuduBlockUnittest
         %   full usage (0) and partial usage (1).
         PRBAllocation = {0, 1}
 
+        %MCS table.
+        mcsTable = {'qam256', 'qam1024'}
+
         %Modulation and coding scheme index.
         mcs = num2cell(0:28)
     end
@@ -87,9 +91,9 @@ classdef ocuduPDSCHEncoderUnittest < ocuduTest.ocuduBlockUnittest
     end % of methods (Access = protected)
 
     methods (Test, TestTags = {'testvector'})
-        function testvectorGenerationCases(testCase, SymbolAllocation, PRBAllocation, mcs)
+        function testvectorGenerationCases(testCase, SymbolAllocation, PRBAllocation, mcsTable, mcs)
         %testvectorGenerationCases Generates a test vector for the given SymbolAllocation,
-        %   PRBAllocation and mcs. Other parameters (e.g., the HARQProcessID) are
+        %   PRBAllocation, mcsTable and mcs. Other parameters (e.g., the HARQProcessID) are
         %   generated randomly.
 
             import ocuduLib.phy.helpers.ocuduExpandMCS
@@ -117,13 +121,13 @@ classdef ocuduPDSCHEncoderUnittest < ocuduTest.ocuduBlockUnittest
             nStartBWP = 0;
             nSizeBWP = nSizeGrid;
             PRBSet = PRBstart:PRBend;
-            mcsTable = 'qam256';
             multipleHARQProcesses = true;
             rv = 0;
             cwIdx = 0;
 
             % Skip those invalid configuration cases.
-            isMCSConfigOK = (~strcmp(mcsTable, 'qam256') || mcs < 28);
+            isMCSConfigOK = (~strcmp(mcsTable, 'qam256') || mcs < 28) && ...
+                (~strcmp(mcsTable, 'qam1024') || mcs < 27);
 
             if ~isMCSConfigOK
                 return;

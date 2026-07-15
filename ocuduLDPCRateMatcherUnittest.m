@@ -74,7 +74,7 @@ classdef ocuduLDPCRateMatcherUnittest < ocuduTest.ocuduBlockUnittest
         rmLength = {0.3, 0.6, 1, 5, 10}
 
         %Modulation scheme.
-        Modulation = {'BPSK', 'QPSK', '16QAM', '64QAM', '256QAM'}
+        Modulation = {'BPSK', 'QPSK', '16QAM', '64QAM', '256QAM', '1024QAM'}
 
         %Limited buffer rate matching indicator.
         isLBRM = {false, true}

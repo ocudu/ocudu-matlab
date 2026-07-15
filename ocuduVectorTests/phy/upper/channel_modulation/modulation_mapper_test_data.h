@@ -3,7 +3,7 @@
 
 #pragma once
 
-// This file was generated using the following MATLAB class on 11-12-2025 (seed 0):
+// This file was generated using the following MATLAB class on 15-07-2026 (seed 0):
 //   + "ocuduModulationMapperUnittest.m"
 
 #include "resource_grid_test_doubles.h"
@@ -26,11 +26,13 @@ static const std::vector<test_case_t> modulation_mapper_test_data = {
   {257, modulation_scheme::QAM16, {"test_data/modulation_mapper_test_input2.dat"}, {"test_data/modulation_mapper_test_output2.dat"}},
   {257, modulation_scheme::QAM64, {"test_data/modulation_mapper_test_input3.dat"}, {"test_data/modulation_mapper_test_output3.dat"}},
   {257, modulation_scheme::QAM256, {"test_data/modulation_mapper_test_input4.dat"}, {"test_data/modulation_mapper_test_output4.dat"}},
-  {997, modulation_scheme::BPSK, {"test_data/modulation_mapper_test_input5.dat"}, {"test_data/modulation_mapper_test_output5.dat"}},
-  {997, modulation_scheme::QPSK, {"test_data/modulation_mapper_test_input6.dat"}, {"test_data/modulation_mapper_test_output6.dat"}},
-  {997, modulation_scheme::QAM16, {"test_data/modulation_mapper_test_input7.dat"}, {"test_data/modulation_mapper_test_output7.dat"}},
-  {997, modulation_scheme::QAM64, {"test_data/modulation_mapper_test_input8.dat"}, {"test_data/modulation_mapper_test_output8.dat"}},
-  {997, modulation_scheme::QAM256, {"test_data/modulation_mapper_test_input9.dat"}, {"test_data/modulation_mapper_test_output9.dat"}},
+  {257, modulation_scheme::QAM1024, {"test_data/modulation_mapper_test_input5.dat"}, {"test_data/modulation_mapper_test_output5.dat"}},
+  {997, modulation_scheme::BPSK, {"test_data/modulation_mapper_test_input6.dat"}, {"test_data/modulation_mapper_test_output6.dat"}},
+  {997, modulation_scheme::QPSK, {"test_data/modulation_mapper_test_input7.dat"}, {"test_data/modulation_mapper_test_output7.dat"}},
+  {997, modulation_scheme::QAM16, {"test_data/modulation_mapper_test_input8.dat"}, {"test_data/modulation_mapper_test_output8.dat"}},
+  {997, modulation_scheme::QAM64, {"test_data/modulation_mapper_test_input9.dat"}, {"test_data/modulation_mapper_test_output9.dat"}},
+  {997, modulation_scheme::QAM256, {"test_data/modulation_mapper_test_input10.dat"}, {"test_data/modulation_mapper_test_output10.dat"}},
+  {997, modulation_scheme::QAM1024, {"test_data/modulation_mapper_test_input11.dat"}, {"test_data/modulation_mapper_test_output11.dat"}},
     // clang-format on
 };
 
