@@ -47,6 +47,8 @@ stages:
 
 variables:
   OCUDU_DIR: &ocudu_dir ${CI_PROJECT_DIR}/ocudu
+  OCUDU_MATLAB_PROJECT_PATH: ocudu/ocudu_elements/ocudu-matlab # $CI_PROJECT_PATH
+  OCUDU_MATLAB_REGISTRY_URI: ${OCUDU_REGISTRY_SERVER}/${OCUDU_MATLAB_PROJECT_PATH}
 
 ################################################################################
 # CI
@@ -147,7 +149,7 @@ vector include guards:
 ################################################################################
 run matlab unit tests:
   stage: matlab unit tests
-  image: ${CI_REGISTRY_IMAGE}/${MATLAB_RELEASE}:${MATLAB_IMAGE_VERSION}
+  image: ${OCUDU_MATLAB_REGISTRY_URI}/${MATLAB_RELEASE}:${MATLAB_IMAGE_VERSION}
   tags:
     - matlab
   rules:
@@ -177,7 +179,7 @@ run matlab unit tests:
 ################################################################################
 build test vectors:
   stage: test vectors
-  image: ${CI_REGISTRY_IMAGE}/${MATLAB_RELEASE}:${MATLAB_IMAGE_VERSION}
+  image: ${OCUDU_MATLAB_REGISTRY_URI}/${MATLAB_RELEASE}:${MATLAB_IMAGE_VERSION}
   tags:
     - matlab
   variables:
@@ -287,7 +289,7 @@ build ocudu with export on:
 
 .build mex:
   stage: mex
-  image: ${CI_REGISTRY_IMAGE}/${MATLAB_RELEASE}:${MATLAB_IMAGE_VERSION}
+  image: ${OCUDU_MATLAB_REGISTRY_URI}/${MATLAB_RELEASE}:${MATLAB_IMAGE_VERSION}
   variables:
     INFLUX_VERSION: 2.7.5
   tags:
