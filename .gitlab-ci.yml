@@ -50,6 +50,10 @@ variables:
   OCUDU_MATLAB_PROJECT_PATH: ocudu/ocudu_elements/ocudu-matlab # $CI_PROJECT_PATH
   OCUDU_MATLAB_REGISTRY_URI: ${OCUDU_REGISTRY_SERVER}/${OCUDU_MATLAB_PROJECT_PATH}
 
+.mlm_license_file_check: &mlm_license_file_check
+  if: $MLM_LICENSE_FILE == null || $MLM_LICENSE_FILE == ""
+  when: never
+
 ################################################################################
 # CI
 ################################################################################
@@ -57,6 +61,8 @@ version check:
   stage: ci
   extends: .version increased
   rules:
+    - if: $ON_MR_FORK
+      when: never
     - if: $CI_MERGE_REQUEST_LABELS =~ /ci-no-container/
       when: never
     - if: $ON_MR
@@ -70,6 +76,8 @@ publish container:
   stage: ci
   extends: .docker-builder
   rules:
+    - if: $ON_MR_FORK
+      when: never
     - if: $CI_MERGE_REQUEST_LABELS =~ /ci-no-container/
       when: never
     - if: $ON_MR
@@ -82,6 +90,15 @@ publish container:
     KUBERNETES_EPHEMERAL_STORAGE_REQUEST: "80Gi"
     KUBERNETES_EPHEMERAL_STORAGE_LIMIT: "80Gi"
     MODE: publish
+
+build container:
+  extends: publish container
+  rules:
+    - if: $ON_MR && $ON_MR_FORK
+      changes:
+        - Dockerfile
+  variables:
+    MODE: build
 
 ################################################################################
 # Static
@@ -153,6 +170,7 @@ run matlab unit tests:
   tags:
     - matlab
   rules:
+    - *mlm_license_file_check
     - if: $ON_MR
   needs:
     - job: publish container
@@ -185,6 +203,7 @@ build test vectors:
   variables:
     RANDOM_TESTS: "false"
   rules:
+    - *mlm_license_file_check
     - if: $ON_MR
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Nightly/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Weekly/
@@ -333,6 +352,7 @@ build ocudu with export on:
 build mex basic tests:
   extends: .build mex
   rules:
+    - *mlm_license_file_check
     - if: $ON_MR
   script:
     - |
@@ -349,6 +369,7 @@ build mex full tests:
   variables:
     RANDOM_TESTS: "false"
   rules:
+    - *mlm_license_file_check
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Nightly/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Weekly/
       variables:
@@ -394,6 +415,7 @@ build mex full tests:
 build mex conformance even:
   extends: .build mex conformance
   rules:
+    - *mlm_license_file_check
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /WeeklyEven/
   parallel:
     matrix:
@@ -466,6 +488,7 @@ build mex conformance even:
 build mex conformance odd:
   extends: .build mex conformance
   rules:
+    - *mlm_license_file_check
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /WeeklyOdd/
   parallel:
     matrix:
