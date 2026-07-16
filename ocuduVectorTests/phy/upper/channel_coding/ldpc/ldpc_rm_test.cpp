@@ -160,7 +160,7 @@ TEST_P(LDPCRateMatchingFixture, LDPCRateMatchingTest)
 
   // 1024-QAM is currently validated on TX only.
   if (mod == modulation_scheme::QAM1024) {
-    return;
+    GTEST_SKIP() << "1024-QAM is currently validated on TX only.";
   }
 
   // Get the rate dematcher implementation type.
