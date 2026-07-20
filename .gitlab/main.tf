@@ -2,12 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 terraform {
-  required_providers {
-    gitlab = {
-      source  = "gitlabhq/gitlab"
-      version = ">= 18.0"
-    }
-  }
   backend "http" {}
 }
 
@@ -160,8 +154,8 @@ module "settings" {
     main = {
       allow_force_push             = false
       code_owner_approval_required = false
-      merge_access_level           = "developer"
-      push_access_level            = "no one"
+      allowed_to_merge             = [{ access_level = "developer" }]
+      allowed_to_push              = [{ access_level = "no one" }]
     }
   }
 
