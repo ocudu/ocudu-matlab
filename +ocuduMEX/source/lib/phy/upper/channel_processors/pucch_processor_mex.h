@@ -164,7 +164,7 @@ create_pucch_processor()
 
   channel_estimate::channel_estimate_dimensions channel_estimate_dimensions;
   channel_estimate_dimensions.nof_tx_layers = 1;
-  channel_estimate_dimensions.nof_rx_ports  = 4;
+  channel_estimate_dimensions.nof_rx_ports  = 8;
   channel_estimate_dimensions.nof_symbols   = MAX_NSYMB_PER_SLOT;
   channel_estimate_dimensions.nof_prb       = MAX_NOF_PRBS;
 
