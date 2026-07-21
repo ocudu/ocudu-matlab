@@ -139,8 +139,11 @@ function [results, epre, noiseVar] = ocuduPUCCH1Detector(carrier, pucch, rxGrid,
             % Two ports and frequency hopping or four ports and no frequency hopping.
             threshold = 4.45;
         case 16
-            % Four ports and frequency hopping.
+            % Four ports and frequency hopping or eight ports and no frequency hopping.
             threshold = 6.95;
+        case 32
+            % Eight ports and frequency hopping.
+            threshold = 11.35;
         otherwise
             error('ocuduPUCCH1Detector:WrongCongiguration', ...
                 'The configuration results in %d degrees of freedom, which is not supported.', nContributions);

@@ -23,6 +23,7 @@
 %   payload          - Structure containing the number of ACK bits and a logical
 %                      flag indicating whether the PUCCH carries SR information
 %                      or not.
+%   NumRxPorts       - Number of receive antenna ports (1, 2, 4, 8).
 %
 %   ocuduPUCCHProcessorFormat0Unittest Methods (TestTags = {'testvector'}):
 %
@@ -80,7 +81,7 @@ classdef ocuduPUCCHProcessorFormat0Unittest < ocuduTest.ocuduBlockUnittest
             }
 
         %Number of receive ports.
-        NumRxPorts = {1, 2, 4}
+        NumRxPorts = {1, 2, 4, 8}
     end % of properties (TestParameter)
 
     methods (Access = protected)

@@ -18,7 +18,7 @@
 %   ocuduPUCCHProcessorFormat1Unittest Properties (TestParameter):
 %
 %   Numerology           - Subcarrier numerology (0, 1).
-%   NumRxPorts           - Number of Rx antenna ports (2, 4).
+%   NumRxPorts           - Number of Rx antenna ports (2, 4, 8).
 %   SymbolAllocation     - PUCCH Format 1 time allocation as array
 %                          containing the start symbol index and the number
 %                          of symbols.
@@ -64,8 +64,8 @@ classdef ocuduPUCCHProcessorFormat1Unittest < ocuduTest.ocuduBlockUnittest
         %Defines the subcarrier numerology (0, 1).
         Numerology = {0, 1}
 
-        %Number of Rx antenna ports (2, 4).
-        NumRxPorts = {2, 4}
+        %Number of Rx antenna ports (2, 4, 8).
+        NumRxPorts = {2, 4, 8}
 
         %PUCCH symbol allocation.
         %   The symbol allocation is described by a two-element row array with,

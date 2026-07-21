@@ -59,9 +59,9 @@ function mustBeResourceGrid(a, options)
         throwAsCaller(MException(eidType, msgType));
     end
 
-    % Check the number of ports is at most 4.
+    % Check the number of ports is at most 8.
     if (numel(dims) >= 3)
-        if (dims(3) > 4)
+        if (dims(3) > 8)
             eidType = 'mustBeResourceGrid:wrongNumberRxPorts';
             msgType = sprintf('The maximum supported number of Rx ports is 4, given %d.', dims(3));
             throwAsCaller(MException(eidType, msgType));
