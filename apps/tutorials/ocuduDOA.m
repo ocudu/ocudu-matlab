@@ -76,7 +76,7 @@ numRxAntennas = 8;
 carrierFrequency = 3.48942e9; % hertz
 
 % Compute the wavelength in meters.
-lightSpeed = 2.998e8; % meters per second
+lightSpeed = physconst("LightSpeed"); % meters per second
 wavelength = lightSpeed / carrierFrequency; % meters
 
 % Maximum delay, assuming antennas are half-wavelength far apart.
@@ -136,6 +136,30 @@ noiseMatrix = (randn(gridSize) + 1j * randn(gridSize)) * sqrt(noiseVar / 2);
 gridRx(:, :, 1) = gridRx(:, :, 1) + noiseMatrix;
 
 %%
+% For a more interesting example, we can add a second source. The signal is
+% generated as before (except that no extra noise is added).
+
+addSecondSource = true;
+if addSecondSource
+    % Set to true if the second source is simply a reflection of the first one
+    % (same SRS, but different channel). If false, the SRS generator will be
+    % initialized with a different cyclic shift, while maintaining all other parameters.
+    isReflection = true;
+    broadsideAngle2 = -20;
+
+    arrayGeometry.NumRxAntennas = numRxAntennas;
+    arrayGeometry.ElementDistance = elementDistance;
+
+    % The generation of the second source follows the same steps as before (no
+    % extra noise is added).
+    gridRx = gridRx + secondSource(srs, isReflection, arrayGeometry, carrier, carrierFrequency, broadsideAngle2);
+
+    nSources = 2;
+else
+    nSources = 1; %#ok<UNRCH>
+end
+
+%%
 % Finally, the estimation algorithm is applied to the received signal.
 
 % First, compute the "sample covariance matrix."
@@ -145,11 +169,22 @@ for iAntenna = 1:numRxAntennas
 end
 sampleCovMatrix = allSamples * allSamples';
 
-[doa, spectrum] = musicDoA(sampleCovMatrix, 1);
+[doa, spectrum] = musicDoA(sampleCovMatrix, nSources);
 figure
 plot(-90:90, spectrum);
 xlabel('Broadside angle [degrees]')
 ylabel('MUSIC spectrum')
+hold on;
+plot(broadsideAngle * [1, 1], [0, max(spectrum)], ':k')
+labels(1:nSources+1) = "";
+labels(1) = "MUSIC";
+labels(2) = "true DoA source 1";
+
+if addSecondSource
+    plot(broadsideAngle2 * [1, 1], [0, max(spectrum)], '-.k')
+    labels(3) = "true DoA source 2";
+end
+legend(labels)
 
 %% Helper functions
 
@@ -201,9 +236,59 @@ function [doas, spectrum] = musicDoA(sampleCovMatrix, nSignals)
     spectrum = nan(nPoints, 1);
     for iPoint = 1:nPoints
         q = sweepPoints(iPoint);
-        signature = exp(-2j * pi * (0:nAntennas-1)' * 0.5 * sin(pi * q / 180));
+        % The signature depends on the ratio between the distance between consecutive
+        % antennas and the wavelength. In this simplified implementation, we only
+        % consider the ratio to be 0.5.
+        distanceOverLambda = 0.5;
+        signature = exp(-2j * pi * (0:nAntennas-1)' * distanceOverLambda * sin(pi * q / 180));
         spectrum(iPoint) = 1 / real(signature' * noiseProj * signature);
     end
     [~, ix] = sort(spectrum, "descend");
     doas = sweepPoints(ix(1: nSignals));
+end
+
+function gridRx = secondSource(srs, isReflection, arrayGeometry, carrier, carrierFrequency, broadsideAngle)
+    % Generate a second source. The process is the same as the one explained in
+    % the main body of the tutorial and, hence, is not fully commented.
+
+    if ~isReflection
+        % If the second source is not a reflection of the first one, pick a different
+        % cyclic shift to SRSs orthogonal.
+        srs.CyclicShift = 4;
+    end
+    srsSymbols = nrSRS(carrier, srs);
+    srsIndices = nrSRSIndices(carrier, srs);
+    gridTx = nrResourceGrid(carrier);
+    gridTx(srsIndices) = srsSymbols;
+
+    % Compute the wavelength in meters.
+    lightSpeed = 2.998e8; % meters per second
+    wavelength = lightSpeed / carrierFrequency; % meters
+
+    % Maximum delay, assuming antennas are half-wavelength far apart.
+    elementDistance = arrayGeometry.ElementDistance;
+    numRxAntennas = arrayGeometry.NumRxAntennas;
+
+    % Create a channel frequency response and apply it to the signal, together with
+    % the delay due to the array geometry. Also, add some noise.
+    channelFR = generatechannel(carrier);
+
+    gridSize = size(gridTx);
+    gridRx = complex(nan([gridSize numRxAntennas]));
+    gridRx(:, :, 1) = channelFR .* gridTx;
+
+    % Set the broadside angle of arrival.
+    broadsideAngleSin = sin(broadsideAngle * pi / 180);
+
+    % At this point, we consider each subcarrier as a different plane wave. Therefore,
+    % at each antenna element, the phase shift depends on the "radio frequency" of
+    % each subcarrier, that is, for subcarrier n,
+    %   carrierFrequency + n * subcarrierSpacing.
+    n = (0:(gridSize(1)-1))';
+    carrierCorrection = 1 + n * carrier.SubcarrierSpacing * 1000 / carrierFrequency;
+    for iAntenna = 2:numRxAntennas
+        delayNormalized = broadsideAngleSin * (iAntenna - 1) * elementDistance / wavelength;
+        phaseShift = exp(-2j * pi * delayNormalized * carrierCorrection);
+        gridRx(:, :, iAntenna) = phaseShift .* gridRx(:, :, 1);
+    end
 end
