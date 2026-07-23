@@ -223,7 +223,7 @@ imagesc([0.5, 13.5], [0.5, 11.5], max(resGrid(1:12,:,:), [], 3));
 set(gca, 'YDir','normal');
 axis([0 14 0 12]);
 xticks(0:2:14);
-title('CSI-RS positioning with a resource block');
+title('CSI-RS positioning within a resource block');
 xlabel('OFDM symbol index');
 ylabel('Resource element');
 grid on;
