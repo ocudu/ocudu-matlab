@@ -244,7 +244,8 @@ function flag = isMultiplexed(pucchGrant, grants)
 
     % From all grants, only check those that correspond to a PUCCH channel with the
     % same format as pucchGrant.
-    mask = strcmp([grants.Channel], "PUCCH") & ([grants.Format] == pucchGrant.Format);
+    mask = strcmp([grants.Channel], "PUCCH");
+    mask(mask) = mask(mask) & ([grants(mask).Format] == pucchGrant.Format);
 
     flag = false;
     for u = grants(mask)'
