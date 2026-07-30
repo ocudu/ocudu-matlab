@@ -3,14 +3,13 @@
 
 #pragma once
 
-// This file was generated using the following MATLAB class on 20-05-2026 (seed 0):
+// This file was generated using the following MATLAB class on 30-07-2026 (seed 0):
 //   + "ocuduPRACHSchedulerUnittest.m"
 
 #include "ocudu/ran/duplex_mode.h"
 #include "ocudu/ran/resource_allocation/ofdm_symbol_range.h"
 #include "ocudu/ran/resource_allocation/rb_interval.h"
 #include "ocudu/ran/subcarrier_spacing.h"
-#include <set>
 #include <vector>
 
 namespace ocudu {
@@ -23,7 +22,7 @@ struct test_case_t {
   /// Common subcarrier spacing.
   subcarrier_spacing pusch_scs;
   /// System slot indices in which PRACH is enabled.
-  std::set<unsigned> active_slots;
+  std::vector<unsigned> active_slots;
   /// Number of slots in a PRACH period.
   unsigned nof_slots_period;
   /// Frequency-domain location of PRACH occasions.
