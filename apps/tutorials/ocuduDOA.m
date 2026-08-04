@@ -253,7 +253,7 @@ function gridRx = secondSource(srs, isReflection, arrayGeometry, carrier, carrie
 
     if ~isReflection
         % If the second source is not a reflection of the first one, pick a different
-        % cyclic shift to SRSs orthogonal.
+        % cyclic shift to obtain an SRS that is orthogonal to the first one.
         srs.CyclicShift = 4;
     end
     srsSymbols = nrSRS(carrier, srs);
@@ -262,7 +262,7 @@ function gridRx = secondSource(srs, isReflection, arrayGeometry, carrier, carrie
     gridTx(srsIndices) = srsSymbols;
 
     % Compute the wavelength in meters.
-    lightSpeed = 2.998e8; % meters per second
+    lightSpeed = physconst("LightSpeed"); % meters per second
     wavelength = lightSpeed / carrierFrequency; % meters
 
     % Maximum delay, assuming antennas are half-wavelength far apart.
