@@ -3,6 +3,7 @@
 
 #include "tbs_calculator_test_data.h"
 #include "ocudu/support/ocudu_test.h"
+#include <array>
 
 using namespace ocudu;
 
