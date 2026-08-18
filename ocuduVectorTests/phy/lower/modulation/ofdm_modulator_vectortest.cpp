@@ -83,9 +83,13 @@ TEST_P(ofdm_modulator_tester, vector)
     input_offset += nsubc;
   }
 
+  // Build port weights vector for the modulator. Only the selected port is active.
+  std::vector<cf_t> port_weights(MAX_PORTS);
+  port_weights[test_case.test_config.port_idx] = cf_t{1, 0};
+
   // Modulate signal.
   std::vector<cf_t> output(modulator->get_slot_size(test_case.test_config.slot_idx));
-  modulator->modulate(output, rg, test_case.test_config.port_idx, test_case.test_config.slot_idx);
+  modulator->modulate(output, rg, port_weights, test_case.test_config.slot_idx);
 
   for (unsigned i = 0; i != expected.size(); ++i) {
     float max_error = get_max_abs_error(expected[i]);

@@ -1,9 +1,11 @@
 // SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 // SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
+#include "compare_sequences.h"
 #include "ofdm_prach_demodulator_test_data.h"
 #include "prach_buffer_test_doubles.h"
-#include "ocudu/ocuduvec/sc_prod.h"
+#include "ocudu/ocuduvec/compare.h"
+#include "ocudu/ocuduvec/conversion.h"
 #include "ocudu/phy/lower/modulation/modulation_factories.h"
 #include "ocudu/phy/support/support_factories.h"
 #include "ocudu/ran/prach/prach_preamble_information.h"
@@ -11,21 +13,6 @@
 #include <gtest/gtest.h>
 
 namespace ocudu {
-
-static float ASSERT_MAX_ERROR = 1e-3;
-
-static std::ostream& operator<<(std::ostream& os, span<const cbf16_t> data)
-{
-  fmt::print(os, "{}", data);
-  return os;
-}
-
-static bool operator==(span<const cbf16_t> lhs, span<const cbf16_t> rhs)
-{
-  return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end(), [](cbf16_t lhs_val, cbf16_t rhs_val) {
-    return (std::abs(to_cf(lhs_val) - to_cf(rhs_val)) <= ASSERT_MAX_ERROR);
-  });
-}
 
 std::ostream& operator<<(std::ostream& os, const ofdm_prach_demodulator::configuration& config)
 {
@@ -52,10 +39,27 @@ std::ostream& operator<<(std::ostream& os, test_case_t test_case)
 
 } // namespace ocudu
 
+static constexpr float max_abs_symbols_error = 1e-2;
+
 template <>
 struct fmt::formatter<ocudu::ofdm_prach_demodulator::configuration> : ostream_formatter {};
 
 using namespace ocudu;
+
+static auto compare_symbols = [](cbf16_t left_cbf, cbf16_t right_cbf) {
+  cf_t left  = to_cf(left_cbf);
+  cf_t right = to_cf(right_cbf);
+
+  // If one of the inputs is not normal, the two inputs must be exactly the same. Return an error equal to infinity if
+  // not to make sure it's bigger than the tolerance.
+  if (!std::isnormal(left.real()) || !std::isnormal(left.imag()) || !std::isnormal(right.real()) ||
+      !std::isnormal(right.imag())) {
+    return (left == right) ? 0.0F : std::numeric_limits<float>::infinity();
+  }
+  float absolute_error = std::abs(left - right);
+  float relative_error = absolute_error / std::abs(left);
+  return relative_error;
+};
 
 class ofdm_prach_demodulator_tester : public ::testing::TestWithParam<test_case_t>
 {
@@ -94,11 +98,21 @@ TEST_P(ofdm_prach_demodulator_tester, vector)
   auto prach_buffer_pool =
       create_spy_prach_buffer_pool(long_preamble, config.nof_fd_occasions, config.nof_td_occasions);
 
-  // Read input waveform.
-  std::vector<cf_t> input = test_case.input.read();
+  // Read input waveform in single precision.
+  std::vector<cf_t> input_cf = test_case.input.read();
 
-  // Read raw expected output.
+  // Calculate maximum absolute value for correcting the input amplitude.
+  unsigned abs_max_pos;
+  float    abs_max_value;
+  std::tie(abs_max_pos, abs_max_value) = ocuduvec::max_abs_element(input_cf);
+
+  // Convert input to 16-bit integer.
+  std::vector<ci16_t> input_ci16(input_cf.size());
+  ocuduvec::convert(input_ci16, input_cf, ocuduvec::scaling_factor_cf_to_ci16 / abs_max_value);
+
+  // Read raw expected output and correct the scaling.
   std::vector<cf_t> expected_output = test_case.output.read();
+  ocuduvec::sc_prod(expected_output, expected_output, 1 / abs_max_value);
 
   // Select preamble information.
   prach_preamble_information preamble_info =
@@ -114,22 +128,26 @@ TEST_P(ofdm_prach_demodulator_tester, vector)
 
   // Run demodulator.
   auto buffer = prach_buffer_pool->get();
-  demodulator->demodulate(*buffer, input, GetParam().context.config);
+  demodulator->demodulate(*buffer, input_ci16, GetParam().context.config);
 
-  // For each port, time-domain occasion, frequency-domain occasion and symbol,
-  // ...
+  // Validate the demodulated sequence matches with the expected for each port, time-domain occasion, frequency-domain
+  // occasion and symbol.
   for (unsigned i_port = 0; i_port != 1; ++i_port) {
     for (unsigned i_td_occasion = 0; i_td_occasion != config.nof_td_occasions; ++i_td_occasion) {
       for (unsigned i_fd_occasion = 0; i_fd_occasion != config.nof_fd_occasions; ++i_fd_occasion) {
         for (unsigned i_symbol = 0; i_symbol != nof_symbols; ++i_symbol) {
-          ASSERT_EQ(span<const cbf16_t>(expected_buffer.get_symbol(i_port, i_td_occasion, i_fd_occasion, i_symbol)),
-                    span<const cbf16_t>(buffer->get_symbol(i_port, i_td_occasion, i_fd_occasion, i_symbol)))
-              << fmt::format("i_port={}; i_td_occasion={}; i_fd_occasion={}; "
-                             "i_symbol={};",
-                             i_port,
-                             i_td_occasion,
-                             i_fd_occasion,
-                             i_symbol);
+          error_type<std::string> demod_symbols_ok =
+              compare_sequences(buffer->get_symbol(i_port, i_td_occasion, i_fd_occasion, i_symbol),
+                                expected_buffer.get_symbol(i_port, i_td_occasion, i_fd_occasion, i_symbol),
+                                compare_symbols,
+                                max_abs_symbols_error);
+          ASSERT_TRUE(demod_symbols_ok.has_value()) << fmt::format("i_port={}; i_td_occasion={}; i_fd_occasion={}; "
+                                                                   "i_symbol={}; ",
+                                                                   i_port,
+                                                                   i_td_occasion,
+                                                                   i_fd_occasion,
+                                                                   i_symbol)
+                                                    << demod_symbols_ok.error();
         }
       }
     }

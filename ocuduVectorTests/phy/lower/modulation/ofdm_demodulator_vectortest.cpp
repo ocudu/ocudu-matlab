@@ -1,8 +1,10 @@
 // SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 // SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
+#include "compare_sequences.h"
 #include "ofdm_demodulator_test_data.h"
 #include "resource_grid_test_doubles.h"
+#include "ocudu/ocuduvec/conversion.h"
 #include "ocudu/phy/antenna_ports.h"
 #include "ocudu/phy/generic_functions/generic_functions_factories.h"
 #include "ocudu/phy/lower/modulation/modulation_factories.h"
@@ -28,6 +30,8 @@ static std::ostream& operator<<(std::ostream& os, const test_case_t& test_case)
 } // namespace ocudu
 
 using namespace ocudu;
+
+static constexpr float max_abs_symbols_error = 1e-2;
 
 class ofdm_demodulator_tester : public ::testing::TestWithParam<test_case_t>
 {
@@ -60,18 +64,32 @@ TEST_P(ofdm_demodulator_tester, vector)
 
   resource_grid_writer_spy grid(MAX_PORTS, MAX_NSYMB_PER_SLOT, test_case.test_config.config.bw_rb);
 
-  // Load the input data.
-  std::vector<cf_t> data(demodulator->get_slot_size(test_case.test_config.slot_idx));
-  data = test_case.data.read();
+  // Load the input data in floating point.
+  std::vector<cf_t> input_cf;
+  input_cf = test_case.data.read();
+
+  // Convert input to 16-bit integer.
+  std::vector<ci16_t> input_ci16(input_cf.size());
+  ocuduvec::convert(input_ci16, input_cf, ocuduvec::scaling_factor_cf_to_ci16);
 
   // Demodulate signal.
-  demodulator->demodulate(grid, data, test_case.test_config.port_idx, test_case.test_config.slot_idx);
+  demodulator->demodulate(grid, input_ci16, test_case.test_config.port_idx, test_case.test_config.slot_idx);
 
-  // Load the golden data.
-  const std::vector<resource_grid_writer_spy::expected_entry_t> demodulated = test_case.demodulated.read();
+  // Load the golden data and  build grid with the expected demodulated data.
+  resource_grid_reader_spy expected_demodulated_grid(MAX_PORTS, MAX_NSYMB_PER_SLOT, test_case.test_config.config.bw_rb);
+  expected_demodulated_grid.write(test_case.demodulated.read());
 
-  // Assert resource grid entries.
-  grid.assert_entries(demodulated);
+  // Validate each OFDM symbol within the slot.
+  for (unsigned i_symbol = 0, nof_symbols = get_nsymb_per_slot(test_case.test_config.config.cp);
+       i_symbol != nof_symbols;
+       ++i_symbol) {
+    error_type<std::string> demod_symbols_ok = compare_sequences(
+        grid.get_view(test_case.test_config.port_idx, i_symbol),
+        expected_demodulated_grid.get_view(test_case.test_config.port_idx, i_symbol),
+        [](const cbf16_t& actual, const cbf16_t& expected) { return std::abs(to_cf(actual) - to_cf(expected)); },
+        max_abs_symbols_error);
+    ASSERT_TRUE(demod_symbols_ok.has_value()) << demod_symbols_ok.error();
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(ofdm_demodulator_vectortest,
