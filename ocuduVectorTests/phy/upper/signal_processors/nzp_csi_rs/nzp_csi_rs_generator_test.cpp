@@ -5,7 +5,7 @@
 #include "ocudu/phy/support/support_factories.h"
 #include "ocudu/phy/upper/signal_processors/nzp_csi_rs/factories.h"
 #include "ocudu/phy/upper/signal_processors/nzp_csi_rs/nzp_csi_rs_formatter.h"
-#include <fmt/ostream.h>
+#include "fmt/ostream.h"
 #include <gtest/gtest.h>
 
 using namespace ocudu;

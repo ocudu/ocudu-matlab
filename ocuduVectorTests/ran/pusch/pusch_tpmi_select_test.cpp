@@ -2,10 +2,11 @@
 // SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 #include "pusch_tpmi_select_test_data.h"
+#include "ocudu/adt/format.h"
 #include "ocudu/ran/pusch/pusch_tpmi_select.h"
 #include "ocudu/ran/srs/srs_channel_matrix_formatters.h"
+#include "fmt/ostream.h"
 #include <cstdlib>
-#include <fmt/ostream.h>
 #include <gtest/gtest.h>
 
 namespace fmt {

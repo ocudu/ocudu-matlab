@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 #include "dft_processor_test_data.h"
+#include "ocudu/adt/format.h"
 #include "ocudu/ocuduvec/copy.h"
 #include "ocudu/phy/generic_functions/generic_functions_factories.h"
 #include "fmt/ostream.h"

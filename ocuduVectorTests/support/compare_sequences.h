@@ -6,6 +6,7 @@
 #include "ocudu/adt/complex.h"
 #include "ocudu/adt/expected.h"
 #include "ocudu/adt/span.h"
+#include "fmt/format.h"
 #include <numeric>
 
 namespace ocudu {

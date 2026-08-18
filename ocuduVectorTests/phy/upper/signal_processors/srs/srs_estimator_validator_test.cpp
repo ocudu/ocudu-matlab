@@ -2,11 +2,12 @@
 // SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 #include "resource_grid_test_doubles.h"
+#include "ocudu/adt/format.h"
 #include "ocudu/phy/upper/signal_processors/srs/formatters.h"
 #include "ocudu/phy/upper/signal_processors/srs/srs_estimator_configuration.h"
 #include "ocudu/phy/upper/signal_processors/srs/srs_estimator_factory.h"
 #include "fmt/ostream.h"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 using namespace ocudu;
 

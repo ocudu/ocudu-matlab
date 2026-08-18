@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 #include "pdcch_candidates_ue_test_data.h"
+#include "ocudu/adt/format.h"
 #include "ocudu/adt/span.h"
-#include <fmt/ostream.h>
+#include "fmt/ostream.h"
 #include <gtest/gtest.h>
 
 namespace ocudu {

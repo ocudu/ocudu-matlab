@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 #include "prach_generator_test_data.h"
+#include "ocudu/adt/format.h"
 #include "ocudu/phy/upper/channel_processors/prach/factories.h"
 #include "fmt/ostream.h"
 #include <gtest/gtest.h>

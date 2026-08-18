@@ -2,9 +2,10 @@
 // SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 #include "low_papr_sequence_generator_test_data.h"
+#include "ocudu/adt/format.h"
 #include "ocudu/phy/upper/sequence_generators/low_papr_sequence_collection.h"
 #include "ocudu/phy/upper/sequence_generators/sequence_generator_factories.h"
-#include <fmt/ostream.h>
+#include "fmt/ostream.h"
 #include <gtest/gtest.h>
 
 using namespace ocudu;

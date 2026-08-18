@@ -10,6 +10,7 @@
 /// configuration parameters.
 
 #include "ldpc_rate_matcher_test_data.h"
+#include "ocudu/adt/format.h"
 #include "ocudu/ocuduvec/bit.h"
 #include "ocudu/ocuduvec/copy.h"
 #include "ocudu/phy/upper/channel_coding/channel_coding_factories.h"

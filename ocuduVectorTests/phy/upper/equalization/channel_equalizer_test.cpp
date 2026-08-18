@@ -4,6 +4,7 @@
 #include "channel_equalizer_test_data.h"
 #include "compare_sequences.h"
 #include "ocudu/adt/expected.h"
+#include "ocudu/adt/format.h"
 #include "ocudu/ocuduvec/copy.h"
 #include "ocudu/ocuduvec/zero.h"
 #include "ocudu/phy/support/re_buffer.h"

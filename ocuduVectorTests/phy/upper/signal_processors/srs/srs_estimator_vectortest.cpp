@@ -3,6 +3,7 @@
 
 #include "resource_grid_test_doubles.h"
 #include "srs_estimator_test_data.h"
+#include "ocudu/adt/format.h"
 #include "ocudu/phy/generic_functions/generic_functions_factories.h"
 #include "ocudu/phy/upper/signal_processors/srs/formatters.h"
 #include "ocudu/phy/upper/signal_processors/srs/srs_estimator.h"
@@ -11,7 +12,7 @@
 #include "ocudu/phy/upper/signal_processors/srs/srs_estimator_result.h"
 #include "ocudu/ran/phy_time_unit.h"
 #include "ocudu/ran/srs/srs_channel_matrix_formatters.h"
-#include <fmt/ostream.h>
+#include "fmt/ostream.h"
 #include <gtest/gtest.h>
 #include <memory>
 

@@ -8,7 +8,7 @@
 #include "ocudu/phy/upper/signal_processors/prs/factories.h"
 #include "ocudu/phy/upper/signal_processors/prs/formatters.h"
 #include "ocudu/phy/upper/signal_processors/prs/prs_generator.h"
-#include <fmt/ostream.h>
+#include "fmt/ostream.h"
 #include <gtest/gtest.h>
 
 using namespace ocudu;

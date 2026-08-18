@@ -2,10 +2,12 @@
 // SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 #include "transform_precoder_test_data.h"
+#include "ocudu/adt/format.h"
 #include "ocudu/phy/generic_functions/generic_functions_factories.h"
 #include "ocudu/phy/generic_functions/transform_precoding/transform_precoder.h"
 #include "ocudu/phy/generic_functions/transform_precoding/transform_precoding_factories.h"
 #include "ocudu/ran/resource_block.h"
+#include "fmt/format.h"
 #include <gtest/gtest.h>
 
 using namespace ocudu;

@@ -7,7 +7,7 @@
 #include "ocudu/phy/upper/signal_processors/ptrs/ptrs_pdsch_generator.h"
 #include "ocudu/phy/upper/signal_processors/ptrs/ptrs_pdsch_generator_factory.h"
 #include "ocudu/ran/precoding/precoding_codebooks.h"
-#include <fmt/ostream.h>
+#include "fmt/ostream.h"
 #include <gtest/gtest.h>
 
 using namespace ocudu;
