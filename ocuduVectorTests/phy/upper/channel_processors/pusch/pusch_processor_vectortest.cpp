@@ -423,7 +423,7 @@ TEST_P(PuschProcessorFixture, PuschProcessorVectortest)
   rx_buffer_spy rm_buffer_spy(
       ldpc::MAX_CODEBLOCK_SIZE,
       compute_nof_codeblocks(units::bytes(expected_data.size()).to_bits(), config.codeword.value().ldpc_base_graph));
-  unique_rx_buffer rm_buffer(rm_buffer_spy);
+  unique_rx_buffer rm_buffer(rm_buffer_spy, 0);
 
   // Make sure the configuration is valid.
   ASSERT_TRUE(pdu_validator->is_valid(config));
@@ -519,7 +519,7 @@ TEST_P(PuschProcessorFixture, PuschProcessorVectortestZero)
   rx_buffer_spy rm_buffer_spy(
       ldpc::MAX_CODEBLOCK_SIZE,
       compute_nof_codeblocks(units::bytes(data.size()).to_bits(), config.codeword.value().ldpc_base_graph));
-  unique_rx_buffer rm_buffer(rm_buffer_spy);
+  unique_rx_buffer rm_buffer(rm_buffer_spy, 0);
 
   // Make sure the configuration is valid.
   ASSERT_TRUE(pdu_validator->is_valid(config));

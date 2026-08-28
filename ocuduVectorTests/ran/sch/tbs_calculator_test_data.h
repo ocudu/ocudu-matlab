@@ -3,7 +3,7 @@
 
 #pragma once
 
-// This file was generated using the following MATLAB class on 11-12-2025 (seed 0):
+// This file was generated using the following MATLAB class on 28-08-2026 (seed 0):
 //   + "ocuduTBSCalculatorUnittest.m"
 
 #include "ocudu/ran/sch/tbs_calculator.h"

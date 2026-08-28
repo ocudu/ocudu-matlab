@@ -3,13 +3,14 @@
 
 #pragma once
 
-// This file was generated using the following MATLAB class on 14-07-2026 (seed 0):
+// This file was generated using the following MATLAB class on 28-08-2026 (seed 0):
 //   + "ocuduPUSCHProcessorUnittest.m"
 
 #include "resource_grid_test_doubles.h"
 #include "ocudu/phy/upper/channel_estimation.h"
 #include "ocudu/phy/upper/channel_processors/pusch/pusch_processor.h"
 #include "ocudu/support/file_vector.h"
+#include <vector>
 
 namespace ocudu {
 

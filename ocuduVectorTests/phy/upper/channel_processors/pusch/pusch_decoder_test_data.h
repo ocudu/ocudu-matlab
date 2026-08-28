@@ -3,11 +3,12 @@
 
 #pragma once
 
-// This file was generated using the following MATLAB class on 05-06-2026 (seed 0):
+// This file was generated using the following MATLAB class on 28-08-2026 (seed 0):
 //   + "ocuduPUSCHDecoderUnittest.m"
 
 #include "ocudu/phy/upper/codeblock_metadata.h"
 #include "ocudu/support/file_vector.h"
+#include <vector>
 
 namespace ocudu {
 

@@ -309,14 +309,18 @@ classdef ocuduBlockUnittest < matlab.unittest.TestCase
         function fileID = createHeaderFile(obj)
         %createHeaderFile Creates the header file describing the test vectors.
 
-            % create a new header file
+            % Create a new header file.
             headerFilename = sprintf('%s/%s_test_data.h', obj.tmpOutputPath, obj.ocuduBlock);
             fileID = fopen(headerFilename, 'w');
 
-            % add unit test definition
+            % Add unit test definition.
             addOpeningToHeaderFile(obj, fileID);
 
+            % Add specific vector test headers.
             addTestIncludesToHeaderFile(obj, fileID);
+
+            % Add common vector test headers.
+            fprintf(fileID, '#include <vector>\n');
 
             fprintf(fileID, '\n');
             fprintf(fileID, 'namespace ocudu {\n');
@@ -334,7 +338,7 @@ classdef ocuduBlockUnittest < matlab.unittest.TestCase
         %closeHeaderFile(OBJ, FILEID) Adds the closing content to the
         %   test header file with MATLAB identifier FILEID before closing it.
 
-            % write the closing header file contents
+            % Write the closing header file contents.
             fprintf(fileID, '    // clang-format on\n');
             fprintf(fileID, '};\n');
             fprintf(fileID, '\n');
@@ -377,22 +381,22 @@ classdef ocuduBlockUnittest < matlab.unittest.TestCase
 
                 % If any data file is found...
                 if ~isempty(tmp_dat)
-                    % Compress test vectors
+                    % Compress test vectors.
                     obj.packResults;
 
-                    % Command for copying header file and compressed test vector files
+                    % Command for copying header file and compressed test vector files.
                     cmd = sprintf('cp %s/%s_test_data.{h,tar.gz} %s', obj.tmpOutputPath, ...
                         obj.ocuduBlock, outputPath);
                 else
-                    % Command for copying header file only
+                    % Command for copying header file only.
                     cmd = sprintf('cp %s/%s_test_data.h %s', obj.tmpOutputPath, ...
                         obj.ocuduBlock, outputPath);
                 end
 
-                % Copy files
+                % Copy files.
                 system(cmd);
 
-                % apply clang-format to header file
+                % Apply clang-format to header file.
                 currentPath = fileparts(mfilename("fullpath"));
                 formatCmd = sprintf(['LD_LIBRARY_PATH=/usr/lib clang-format -i', ...
                     ' -style=file:"%s/../+ocuduMEX/source/.clang-format" %s/%s_test_data.h'], currentPath, outputPath, obj.ocuduBlock);
@@ -403,7 +407,7 @@ classdef ocuduBlockUnittest < matlab.unittest.TestCase
         function packResults(obj)
         %packResults(OBJ) packs all generated test vectors in a single '.tar.gz' file.
 
-            % gzip generated testvectors
+            % Compress generated testvectors in gzip.
             current_pwd = pwd();
             system(sprintf('cd %s && find . -regex ".*.dat" | grep "%s" | xargs tar -czf %s_test_data.tar.gz && cd %s', ...
                 obj.tmpOutputPath, obj.ocuduBlock, obj.ocuduBlock, current_pwd));
@@ -415,7 +419,7 @@ classdef ocuduBlockUnittest < matlab.unittest.TestCase
         %   OUTPUTPATH, where the test vectors will be stored (deleting the previous
         %   test vectors, if any).
 
-            % delete previous testvectors (if any)
+            % Delete previous testvectors (if any).
             if isfolder(outputPath)
                 filenameTemplate = sprintf('%s/%s*.dat', outputPath, obj.ocuduBlock);
                 file = dir(filenameTemplate);
@@ -423,7 +427,7 @@ classdef ocuduBlockUnittest < matlab.unittest.TestCase
                 if ~isempty(filenames)
                     system(sprintf('rm -rf %s/%s*.dat', outputPath, obj.ocuduBlock));
                 end
-                % create the output directory
+                % Create the output directory.
             else
                 mkdir(outputPath)
             end

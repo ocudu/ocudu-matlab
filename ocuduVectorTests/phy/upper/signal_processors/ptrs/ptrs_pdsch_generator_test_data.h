@@ -3,7 +3,7 @@
 
 #pragma once
 
-// This file was generated using the following MATLAB class on 29-05-2026 (seed 0):
+// This file was generated using the following MATLAB class on 28-08-2026 (seed 0):
 //   + "ocuduPDSCHPTRSGeneratorUnittest.m"
 
 #include "resource_grid_test_doubles.h"
@@ -15,6 +15,7 @@
 #include "ocudu/ran/rnti.h"
 #include "ocudu/ran/slot_point.h"
 #include "ocudu/support/file_vector.h"
+#include <vector>
 
 namespace ocudu {
 

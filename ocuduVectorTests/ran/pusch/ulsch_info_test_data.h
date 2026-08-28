@@ -3,10 +3,11 @@
 
 #pragma once
 
-// This file was generated using the following MATLAB class on 11-12-2025 (seed 0):
+// This file was generated using the following MATLAB class on 28-08-2026 (seed 0):
 //   + "ocuduULSCHInfoUnittest.m"
 
 #include "ocudu/ran/pusch/ulsch_info.h"
+#include <vector>
 
 namespace ocudu {
 

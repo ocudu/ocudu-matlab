@@ -3,7 +3,7 @@
 
 #pragma once
 
-// This file was generated using the following MATLAB class on 05-06-2026 (seed 0):
+// This file was generated using the following MATLAB class on 28-08-2026 (seed 0):
 //   + "ocuduChEstimatorUnittest.m"
 
 #include "resource_grid_test_doubles.h"
@@ -11,6 +11,7 @@
 #include "ocudu/phy/upper/signal_processors/channel_estimator/port_channel_estimator_parameters.h"
 #include "ocudu/support/file_vector.h"
 #include <optional>
+#include <vector>
 
 namespace ocudu {
 

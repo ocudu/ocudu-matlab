@@ -3,11 +3,12 @@
 
 #pragma once
 
-// This file was generated using the following MATLAB class on 11-12-2025 (seed 0):
+// This file was generated using the following MATLAB class on 28-08-2026 (seed 0):
 //   + "ocuduLowPAPRSequenceUnittest.m"
 
 #include "ocudu/phy/upper/sequence_generators/low_papr_sequence_generator.h"
 #include "ocudu/support/file_vector.h"
+#include <vector>
 
 namespace ocudu {
 

@@ -3,11 +3,12 @@
 
 #pragma once
 
-// This file was generated using the following MATLAB class on 11-12-2025 (seed 0):
+// This file was generated using the following MATLAB class on 28-08-2026 (seed 0):
 //   + "ocuduPBCHEncoderUnittest.m"
 
 #include "ocudu/phy/upper/channel_processors/ssb/pbch_encoder.h"
 #include "ocudu/support/file_vector.h"
+#include <vector>
 
 namespace ocudu {
 

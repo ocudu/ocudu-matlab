@@ -3,7 +3,7 @@
 
 #pragma once
 
-// This file was generated using the following MATLAB class on 30-07-2026 (seed 0):
+// This file was generated using the following MATLAB class on 28-08-2026 (seed 0):
 //   + "ocuduPRACHSchedulerUnittest.m"
 
 #include "ocudu/ran/duplex_mode.h"

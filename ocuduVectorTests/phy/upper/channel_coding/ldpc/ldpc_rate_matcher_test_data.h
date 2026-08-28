@@ -3,11 +3,12 @@
 
 #pragma once
 
-// This file was generated using the following MATLAB class on 15-07-2026 (seed 0):
+// This file was generated using the following MATLAB class on 28-08-2026 (seed 0):
 //   + "ocuduLDPCRateMatcherUnittest.m"
 
 #include "ocudu/ran/sch/modulation_scheme.h"
 #include "ocudu/support/file_vector.h"
+#include <vector>
 
 namespace ocudu {
 

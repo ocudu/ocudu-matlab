@@ -145,6 +145,7 @@ void MexFunction::method_step(ArgumentList outputs, ArgumentList inputs)
   cfg.new_data                                 = static_cast<TypedArray<bool>>(inputs[3])[0];
   cfg.use_early_stop                           = true;
   cfg.nof_ldpc_iterations                      = in_seg_cfg["MaximumLDPCIterationCount"][0];
+  cfg.last_repetition                          = false;
 
   units::bits tbs(static_cast<unsigned>(in_seg_cfg["TransportBlockLength"][0]));
   if (!tbs.is_byte_exact()) {

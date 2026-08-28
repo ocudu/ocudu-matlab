@@ -3,12 +3,13 @@
 
 #pragma once
 
-// This file was generated using the following MATLAB class on 08-05-2026 (seed 0):
+// This file was generated using the following MATLAB class on 28-08-2026 (seed 0):
 //   + "ocuduSSBProcessorUnittest.m"
 
 #include "resource_grid_test_doubles.h"
 #include "ocudu/phy/upper/channel_processors/ssb/ssb_processor.h"
 #include "ocudu/support/file_vector.h"
+#include <vector>
 
 namespace ocudu {
 

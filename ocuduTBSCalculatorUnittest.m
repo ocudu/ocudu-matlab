@@ -107,7 +107,6 @@ classdef ocuduTBSCalculatorUnittest < ocuduTest.ocuduBlockUnittest
         %addTestIncludesToHeaderFile Adds include directives to the test header file.
 
             fprintf(fileID, '#include "ocudu/ran/sch/tbs_calculator.h"\n');
-            fprintf(fileID, '#include <vector>\n');
         end
 
         function addTestDefinitionToHeaderFile(~, fileID)

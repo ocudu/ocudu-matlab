@@ -109,7 +109,7 @@ TEST_P(PdschModulatorFixture, VectorTest)
 
   // Populate the list of resource grid ports for this transmission. Since the logical ports map physical ports, the
   // list is trivial.
-  static_vector<uint8_t, precoding_constants::MAX_NOF_PORTS> ports(precoding.get_nof_ports());
+  static_vector<unsigned, precoding_constants::MAX_NOF_PORTS> ports(precoding.get_nof_ports());
   std::iota(ports.begin(), ports.end(), 0);
   config.ports = ports;
 

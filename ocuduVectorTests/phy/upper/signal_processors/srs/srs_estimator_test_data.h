@@ -3,13 +3,14 @@
 
 #pragma once
 
-// This file was generated using the following MATLAB class on 27-02-2026 (seed 0):
+// This file was generated using the following MATLAB class on 28-08-2026 (seed 0):
 //   + "ocuduSRSEstimatorUnittest.m"
 
 #include "resource_grid_test_doubles.h"
 #include "ocudu/phy/upper/signal_processors/srs/srs_estimator_configuration.h"
 #include "ocudu/phy/upper/signal_processors/srs/srs_estimator_result.h"
 #include "ocudu/support/file_vector.h"
+#include <vector>
 
 namespace ocudu {
 

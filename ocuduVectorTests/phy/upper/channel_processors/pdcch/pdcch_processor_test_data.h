@@ -3,13 +3,14 @@
 
 #pragma once
 
-// This file was generated using the following MATLAB class on 05-06-2026 (seed 0):
+// This file was generated using the following MATLAB class on 28-08-2026 (seed 0):
 //   + "ocuduPDCCHProcessorUnittest.m"
 
 #include "resource_grid_test_doubles.h"
 #include "ocudu/phy/upper/channel_processors/pdcch/pdcch_processor.h"
 #include "ocudu/ran/precoding/precoding_codebooks.h"
 #include "ocudu/support/file_vector.h"
+#include <vector>
 
 namespace ocudu {
 

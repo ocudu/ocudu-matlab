@@ -3,12 +3,13 @@
 
 #pragma once
 
-// This file was generated using the following MATLAB class on 15-07-2026 (seed 0):
+// This file was generated using the following MATLAB class on 28-08-2026 (seed 0):
 //   + "ocuduModulationMapperUnittest.m"
 
 #include "resource_grid_test_doubles.h"
 #include "ocudu/phy/upper/channel_modulation/modulation_mapper.h"
 #include "ocudu/support/file_vector.h"
+#include <vector>
 
 namespace ocudu {
 

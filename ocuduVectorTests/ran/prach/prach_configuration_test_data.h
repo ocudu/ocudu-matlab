@@ -3,7 +3,7 @@
 
 #pragma once
 
-// This file was generated using the following MATLAB class on 18-03-2026 (seed 0):
+// This file was generated using the following MATLAB class on 28-08-2026 (seed 0):
 //   + "ocuduPRACHConfigurationUnittest.m"
 
 #include "ocudu/ran/prach/prach_configuration.h"

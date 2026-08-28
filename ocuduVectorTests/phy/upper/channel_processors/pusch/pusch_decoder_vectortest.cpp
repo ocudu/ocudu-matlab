@@ -307,22 +307,24 @@ int main(int argc, char** argv)
     dec_cfg.new_data            = true;
     dec_cfg.nof_ldpc_iterations = nof_ldpc_iterations;
     dec_cfg.use_early_stop      = use_early_stop;
+    dec_cfg.last_repetition     = false;
 
     // List of bit indexes within the codeword at which point the PUSCH decoder will be informed of the total number of
     // UL-SCH CW bits. This enables the PUSCH decoder to start decoding codeblocks.
     std::vector<units::bits> i_cw_decoding_start_list = {0_bits, units::bits((cws / 2) + 1), units::bits(cws - 1)};
     unsigned                 cw_dec_start_idx         = 0;
 
-    for (auto rv : rv_sequence) {
-      cfg.rv = rv;
+    for (unsigned i_rv = 0, nof_rv = rv_sequence.size(); i_rv != nof_rv; ++i_rv) {
+      cfg.rv = rv_sequence[i_rv];
       std::vector<uint8_t> rx_tb(tbs.truncate_to_bytes().value());
 
       // Prepare decoder configuration.
-      dec_cfg.base_graph = cfg.base_graph;
-      dec_cfg.rv         = cfg.rv;
-      dec_cfg.mod        = cfg.mod;
-      dec_cfg.Nref       = cfg.Nref;
-      dec_cfg.nof_layers = cfg.nof_layers;
+      dec_cfg.base_graph      = cfg.base_graph;
+      dec_cfg.rv              = cfg.rv;
+      dec_cfg.mod             = cfg.mod;
+      dec_cfg.Nref            = cfg.Nref;
+      dec_cfg.nof_layers      = cfg.nof_layers;
+      dec_cfg.last_repetition = (i_rv != (nof_rv - 1));
 
       // Reserve buffer.
       unique_rx_buffer buffer =
@@ -365,13 +367,13 @@ int main(int argc, char** argv)
       cw_offset += cws;
       dec_cfg.new_data = false;
 
-      TESTASSERT(dec_stats.tb_crc_ok, "TB CRC checksum failed for rv={}.", rv);
+      TESTASSERT(dec_stats.tb_crc_ok, "TB CRC checksum failed for rv={}.", rv_sequence[i_rv]);
       TESTASSERT_EQ(span<uint8_t>(rx_tb), span<uint8_t>(ref_tb), "TB not decoded correctly.");
       TESTASSERT_EQ(dec_stats.ldpc_decoder_stats.get_nof_observations(),
                     dec_stats.nof_codeblocks_total,
                     "Error reporting decoded codeblocks (use_early_stop={} rv={}).",
                     use_early_stop,
-                    rv);
+                    rv_sequence[i_rv]);
       if (use_early_stop) {
         TESTASSERT(dec_stats.ldpc_decoder_stats.get_max() <= 2, "Too many decoder iterations.");
       } else {

@@ -3,10 +3,11 @@
 
 #pragma once
 
-// This file was generated using the following MATLAB class on 11-12-2025 (seed 0):
+// This file was generated using the following MATLAB class on 28-08-2026 (seed 0):
 //   + "ocuduPDCCHCandidatesUeUnittest.m"
 
 #include "ocudu/ran/pdcch/pdcch_candidates.h"
+#include <vector>
 
 namespace ocudu {
 

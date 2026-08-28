@@ -3,7 +3,7 @@
 
 #pragma once
 
-// This file was generated using the following MATLAB class on 11-12-2025 (seed 0):
+// This file was generated using the following MATLAB class on 28-08-2026 (seed 0):
 //   + "ocuduPRSGeneratorUnittest.m"
 
 #include "resource_grid_test_doubles.h"
@@ -11,6 +11,7 @@
 #include "ocudu/phy/upper/signal_processors/prs/prs_generator_configuration.h"
 #include "ocudu/ran/precoding/precoding_codebooks.h"
 #include "ocudu/support/file_vector.h"
+#include <vector>
 
 namespace ocudu {
 

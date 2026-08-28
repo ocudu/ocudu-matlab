@@ -3,12 +3,13 @@
 
 #pragma once
 
-// This file was generated using the following MATLAB class on 25-06-2026 (seed 0):
+// This file was generated using the following MATLAB class on 28-08-2026 (seed 0):
 //   + "ocuduDFTProcessorUnittest.m"
 
 #include "resource_grid_test_doubles.h"
 #include "ocudu/phy/generic_functions/dft_processor.h"
 #include "ocudu/support/file_vector.h"
+#include <vector>
 
 namespace ocudu {
 

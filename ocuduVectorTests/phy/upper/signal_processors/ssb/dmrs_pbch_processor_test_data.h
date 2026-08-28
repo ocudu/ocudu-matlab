@@ -3,12 +3,13 @@
 
 #pragma once
 
-// This file was generated using the following MATLAB class on 11-12-2025 (seed 0):
+// This file was generated using the following MATLAB class on 28-08-2026 (seed 0):
 //   + "ocuduPBCHDMRSUnittest.m"
 
 #include "resource_grid_test_doubles.h"
 #include "ocudu/phy/upper/signal_processors/ssb/dmrs_pbch_processor.h"
 #include "ocudu/support/file_vector.h"
+#include <vector>
 
 namespace ocudu {
 
