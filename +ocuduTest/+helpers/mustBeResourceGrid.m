@@ -26,7 +26,7 @@ function mustBeResourceGrid(a, options)
     % Check that the data type is correct.
     if ~isnumeric(a) || isreal(a)
         eidType = 'mustBeResourceGrid:wrongDataType';
-        msgType = sprintf('The resuorce grid should be filled with complex-valued values.');
+        msgType = sprintf('The resource grid should be filled with complex-valued values.');
         throwAsCaller(MException(eidType, msgType));
     end
 
