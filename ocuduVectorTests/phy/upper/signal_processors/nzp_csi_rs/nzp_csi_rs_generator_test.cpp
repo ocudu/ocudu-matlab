@@ -82,7 +82,8 @@ TEST_P(NzpCsiRsGeneratorFixture, Vector)
   // Load output golden data.
   const std::vector<resource_grid_writer_spy::expected_entry_t> testvector_symbols = test_case.symbols.read();
 
-  grid.assert_entries(testvector_symbols, std::sqrt(max_ports));
+  error_type<std::string> grid_ok = grid.assert_entries(testvector_symbols, std::sqrt(max_ports));
+  ASSERT_TRUE(grid_ok.has_value()) << grid_ok.error();
 }
 
 // Creates test suite with all the test cases.

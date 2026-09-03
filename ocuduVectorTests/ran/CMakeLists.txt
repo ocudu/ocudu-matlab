@@ -10,7 +10,7 @@ target_link_libraries(ulsch_info_test ocudu_ran ocudulog gtest gtest_main)
 add_test_vector(ulsch_info_test none "")
 
 add_executable(tbs_calculator_test sch/tbs_calculator_test.cpp)
-target_link_libraries(tbs_calculator_test ocudu_sched ocudulog)
+target_link_libraries(tbs_calculator_test ocudu_sched ocudulog gtest gtest_main)
 add_test_vector(tbs_calculator_test none "")
 
 add_executable(pdcch_candidates_common pdcch/pdcch_candidates_common_test.cpp)

@@ -17,7 +17,6 @@
 #include "ocudu/phy/upper/rx_buffer_pool.h"
 #include "ocudu/phy/upper/unique_rx_buffer.h"
 #include "ocudu/ran/sch/sch_segmentation.h"
-#include "ocudu/support/ocudu_test.h"
 #ifdef HWACC_PUSCH_ENABLED
 #include "ocudu/hal/dpdk/bbdev/bbdev_acc.h"
 #include "ocudu/hal/dpdk/bbdev/bbdev_acc_factory.h"
@@ -138,18 +137,18 @@ static void parse_args(int argc, char** argv)
 static std::shared_ptr<pusch_decoder_factory> create_generic_pusch_decoder_factory()
 {
   std::shared_ptr<crc_calculator_factory> crc_calculator_factory = create_crc_calculator_factory_sw("auto");
-  TESTASSERT(crc_calculator_factory);
+  report_fatal_error_if_not(crc_calculator_factory, "Could not create CRC calculator factory.");
 
   std::shared_ptr<ldpc_decoder_factory> ldpc_decoder_factory =
       create_ldpc_decoder_factory_sw("auto", {.force_decoding = false});
-  TESTASSERT(ldpc_decoder_factory);
+  report_fatal_error_if_not(ldpc_decoder_factory, "Could not create LDPC decoder factory.");
 
   std::shared_ptr<ldpc_rate_dematcher_factory> ldpc_rate_dematcher_factory =
       create_ldpc_rate_dematcher_factory_sw("auto");
-  TESTASSERT(ldpc_rate_dematcher_factory);
+  report_fatal_error_if_not(ldpc_rate_dematcher_factory, "Could not create LDPC rate-dematcher factory.");
 
   std::shared_ptr<ldpc_segmenter_rx_factory> segmenter_rx_factory = create_ldpc_segmenter_rx_factory_sw();
-  TESTASSERT(segmenter_rx_factory);
+  report_fatal_error_if_not(segmenter_rx_factory, "Could not create LDPC segmenter factory.");
 
   pusch_decoder_factory_sw_configuration pusch_decoder_factory_sw_config;
   pusch_decoder_factory_sw_config.crc_factory       = crc_calculator_factory;
@@ -175,7 +174,7 @@ static std::shared_ptr<hal::hw_accelerator_pusch_dec_factory> create_hw_accelera
   static std::unique_ptr<dpdk::dpdk_eal> dpdk_interface = nullptr;
   if (!dpdk_interface) {
     dpdk_interface = dpdk::create_dpdk_eal(eal_arguments, logger);
-    TESTASSERT(dpdk_interface, "Failed to open DPDK EAL with arguments.");
+    report_fatal_error_if_not(dpdk_interface, "Failed to open DPDK EAL with arguments.");
   }
 
   // Interfacing to the bbdev-based hardware-accelerator.
@@ -186,7 +185,7 @@ static std::shared_ptr<hal::hw_accelerator_pusch_dec_factory> create_hw_accelera
   bbdev_config.nof_fft_lcores                        = 0;
   bbdev_config.nof_mbuf                              = static_cast<unsigned>(pow2(log2_ceil(MAX_NOF_SEGMENTS)));
   std::shared_ptr<dpdk::bbdev_acc> bbdev_accelerator = create_bbdev_acc(bbdev_config, logger);
-  TESTASSERT(bbdev_accelerator);
+  report_fatal_error_if_not(bbdev_accelerator, "Could not create BBDEV accelerator.");
 
   // Interfacing to a shared external HARQ buffer context repository.
   unsigned nof_cbs                   = MAX_NOF_SEGMENTS;
@@ -196,7 +195,7 @@ static std::shared_ptr<hal::hw_accelerator_pusch_dec_factory> create_hw_accelera
   }
   std::shared_ptr<hal::ext_harq_buffer_context_repository> harq_buffer_context =
       hal::create_ext_harq_buffer_context_repository(nof_cbs, acc100_ext_harq_buff_size, test_harq);
-  TESTASSERT(harq_buffer_context);
+  report_fatal_error_if_not(harq_buffer_context, "Could not create HARQ buffer context.");
 
   // Set the PUSCH decoder hardware-accelerator factory configuration for the ACC100.
   hal::bbdev_hwacc_pusch_dec_factory_configuration hw_decoder_config;
@@ -216,13 +215,13 @@ static std::shared_ptr<hal::hw_accelerator_pusch_dec_factory> create_hw_accelera
 static std::shared_ptr<pusch_decoder_factory> create_acc100_pusch_decoder_factory()
 {
   std::shared_ptr<crc_calculator_factory> crc_calculator_factory = create_crc_calculator_factory_sw("auto");
-  TESTASSERT(crc_calculator_factory);
+  report_fatal_error_if_not(crc_calculator_factory, "Could not create CRC calculator factory.");
 
   std::shared_ptr<ldpc_segmenter_rx_factory> segmenter_rx_factory = create_ldpc_segmenter_rx_factory_sw();
-  TESTASSERT(segmenter_rx_factory);
+  report_fatal_error_if_not(segmenter_rx_factory, "Could not create LDPC segmenter factory.");
 
   std::shared_ptr<hal::hw_accelerator_pusch_dec_factory> hw_decoder_factory = create_hw_accelerator_pusch_dec_factory();
-  TESTASSERT(hw_decoder_factory, "Failed to create a HW acceleration decoder factory.");
+  report_fatal_error_if_not(hw_decoder_factory, "Failed to create a HW acceleration decoder factory.");
 
   // Set the hardware-accelerated PUSCH decoder configuration.
   pusch_decoder_factory_hw_configuration decoder_hw_factory_config;
@@ -258,10 +257,10 @@ int main(int argc, char** argv)
   parse_args(argc, argv);
 
   std::shared_ptr<pusch_decoder_factory> pusch_dec_factory = create_pusch_decoder_factory();
-  TESTASSERT(pusch_dec_factory, "Failed to create PUSCH decoder factory of type {}.", decoder_type);
+  report_fatal_error_if_not(pusch_dec_factory, "Failed to create PUSCH decoder factory of type {}.", decoder_type);
 
   std::unique_ptr<pusch_decoder> decoder = pusch_dec_factory->create();
-  TESTASSERT(decoder);
+  report_fatal_error_if_not(decoder, "Failed to create PUSCH decoder.");
 
   rx_buffer_pool_config pool_config = {};
 
@@ -269,13 +268,14 @@ int main(int argc, char** argv)
     segmenter_config                  cfg         = test_data.config;
     std::vector<unsigned>             rv_sequence = test_data.rv_sequence;
     std::vector<log_likelihood_ratio> llrs_all    = test_data.llrs.read();
-    TESTASSERT(!llrs_all.empty());
+    report_fatal_error_if_not(!llrs_all.empty(), "Could not read LLRs.");
     std::vector<uint8_t> ref_tb = test_data.transport_block.read();
-    TESTASSERT(!ref_tb.empty());
+    report_fatal_error_if_not(!ref_tb.empty(), "Could not read reference transport block.");
 
     unsigned bits_per_symbol = get_bits_per_symbol(cfg.mod);
     unsigned nof_retx        = rv_sequence.size();
-    TESTASSERT_EQ(cfg.nof_ch_symbols * bits_per_symbol * nof_retx, llrs_all.size(), "Wrong number of LLRs.");
+    report_fatal_error_if_not(cfg.nof_ch_symbols * bits_per_symbol * nof_retx == llrs_all.size(),
+                              "Wrong number of LLRs.");
 
     units::bits tbs = units::bytes(ref_tb.size()).to_bits();
 
@@ -299,7 +299,7 @@ int main(int argc, char** argv)
 
     // Create Rx buffer pool.
     std::unique_ptr<rx_buffer_pool_controller> pool = create_rx_buffer_pool(pool_config);
-    TESTASSERT(pool);
+    report_fatal_error_if_not(pool, "Could not create Rx buffer pool.");
 
     pusch_decoder::configuration dec_cfg = {};
 
@@ -329,7 +329,7 @@ int main(int argc, char** argv)
       // Reserve buffer.
       unique_rx_buffer buffer =
           pool->get_pool().reserve({}, trx_buffer_identifier(to_rnti(0), 0), nof_codeblocks, true);
-      TESTASSERT(buffer);
+      report_fatal_error_if_not(buffer, "Could not create Rx buffer.");
 
       // Reset code blocks CRCs.
       buffer.get().reset_codeblocks_crc();
@@ -361,25 +361,23 @@ int main(int argc, char** argv)
       decoder_buffer.on_end_softbits();
 
       // Extract decoding results.
-      TESTASSERT(!decoder_notifier_spy.get_entries().empty());
+      report_fatal_error_if_not(!decoder_notifier_spy.get_entries().empty(), "Decoder results are empty.");
       const pusch_decoder_result& dec_stats = decoder_notifier_spy.get_entries().back();
 
       cw_offset += cws;
       dec_cfg.new_data = false;
 
-      TESTASSERT(dec_stats.tb_crc_ok, "TB CRC checksum failed for rv={}.", rv_sequence[i_rv]);
-      TESTASSERT_EQ(span<uint8_t>(rx_tb), span<uint8_t>(ref_tb), "TB not decoded correctly.");
-      TESTASSERT_EQ(dec_stats.ldpc_decoder_stats.get_nof_observations(),
-                    dec_stats.nof_codeblocks_total,
-                    "Error reporting decoded codeblocks (use_early_stop={} rv={}).",
-                    use_early_stop,
-                    rv_sequence[i_rv]);
+      report_fatal_error_if_not(dec_stats.tb_crc_ok, "TB CRC checksum failed for rv={}.", rv_sequence[i_rv]);
+      report_fatal_error_if_not(span<uint8_t>(rx_tb) == span<uint8_t>(ref_tb), "TB not decoded correctly.");
+      report_fatal_error_if_not(dec_stats.ldpc_decoder_stats.get_nof_observations() == dec_stats.nof_codeblocks_total,
+                                "Error reporting decoded codeblocks (use_early_stop={} rv={}).",
+                                use_early_stop,
+                                rv_sequence[i_rv]);
       if (use_early_stop) {
-        TESTASSERT(dec_stats.ldpc_decoder_stats.get_max() <= 2, "Too many decoder iterations.");
+        report_fatal_error_if_not(dec_stats.ldpc_decoder_stats.get_max() <= 2, "Too many decoder iterations.");
       } else {
-        TESTASSERT_EQ(dec_cfg.nof_ldpc_iterations,
-                      dec_stats.ldpc_decoder_stats.get_min(),
-                      "Something wrong with iteration counting (no early stop).");
+        report_fatal_error_if_not(dec_cfg.nof_ldpc_iterations == dec_stats.ldpc_decoder_stats.get_min(),
+                                  "Something wrong with iteration counting (no early stop).");
       }
 
       ++cw_dec_start_idx;

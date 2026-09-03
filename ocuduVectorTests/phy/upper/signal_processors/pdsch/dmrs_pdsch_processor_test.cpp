@@ -4,32 +4,33 @@
 #include "dmrs_pdsch_processor_test_data.h"
 #include "ocudu/phy/support/support_factories.h"
 #include "ocudu/phy/upper/signal_processors/pdsch/factories.h"
+#include <gtest/gtest.h>
 
 using namespace ocudu;
 
-int main()
+TEST(PDSCHVectorTests, PDSCHDMRSProcessor)
 {
   std::shared_ptr<pseudo_random_generator_factory> prg_factory = create_pseudo_random_generator_sw_factory();
-  TESTASSERT(prg_factory);
+  ASSERT_TRUE(prg_factory);
 
   std::shared_ptr<channel_precoder_factory> precoding_factory = create_channel_precoder_factory("auto");
-  TESTASSERT(precoding_factory);
+  ASSERT_TRUE(precoding_factory);
 
   std::shared_ptr<resource_grid_mapper_factory> rg_mapper_factory =
       create_resource_grid_mapper_factory(precoding_factory);
-  TESTASSERT(rg_mapper_factory);
+  ASSERT_TRUE(rg_mapper_factory);
 
   std::shared_ptr<dmrs_pdsch_processor_factory> dmrs_processor_factory =
       create_dmrs_pdsch_processor_factory_sw(prg_factory, rg_mapper_factory);
-  TESTASSERT(dmrs_processor_factory);
+  ASSERT_TRUE(dmrs_processor_factory);
 
   // Create DMRS-PDSCH processor.
   std::unique_ptr<dmrs_pdsch_processor> dmrs_pdsch = dmrs_processor_factory->create();
-  TESTASSERT(dmrs_pdsch);
+  ASSERT_TRUE(dmrs_pdsch);
 
   for (const test_case_t& test_case : dmrs_pdsch_processor_test_data) {
     int prb_idx_high = test_case.config.rb_mask.find_highest();
-    TESTASSERT(prb_idx_high > 1);
+    ASSERT_GT(prb_idx_high, 1);
     unsigned max_prb   = static_cast<unsigned>(prb_idx_high + 1);
     unsigned max_symb  = get_nsymb_per_slot(cyclic_prefix::NORMAL);
     unsigned max_ports = test_case.config.precoding.get_nof_ports();
@@ -44,8 +45,7 @@ int main()
     const std::vector<resource_grid_writer_spy::expected_entry_t> testvector_symbols = test_case.symbols.read();
 
     // Assert resource grid entries.
-    grid.assert_entries(testvector_symbols, std::sqrt(max_ports));
+    error_type<std::string> grid_ok = grid.assert_entries(testvector_symbols, std::sqrt(max_ports));
+    ASSERT_TRUE(grid_ok.has_value()) << grid_ok.error();
   }
-
-  return 0;
 }

@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 #include "tbs_calculator_test_data.h"
-#include "ocudu/support/ocudu_test.h"
 #include <array>
+#include <gtest/gtest.h>
 
 using namespace ocudu;
 
@@ -28,22 +28,20 @@ static unsigned expected_tbs_calculator_table_find_smallest_not_less_than(unsign
   return 0;
 }
 
-int main()
+TEST(SchedulerVectorTests, TBSCalculator)
 {
   // Tests the TBS calculator TS38.214 Table 5.1.3.2-1.
   for (unsigned nof_info_prime = 1; nof_info_prime != 3824; ++nof_info_prime) {
-    TESTASSERT_EQ(expected_tbs_calculator_table_find_smallest_not_less_than(nof_info_prime),
-                  tbs_calculator_table_find_smallest_not_less_than(nof_info_prime),
-                  "nof_info_prime={}",
-                  nof_info_prime);
+    std::string msg = fmt::format("Actual and expected TBS values do not match for nof_info_prime {}.", nof_info_prime);
+    ASSERT_EQ(expected_tbs_calculator_table_find_smallest_not_less_than(nof_info_prime),
+              tbs_calculator_table_find_smallest_not_less_than(nof_info_prime))
+        << msg;
   }
 
   // Tests the TBS calculation matches with the expected data.
   for (const test_case_t& test_case : tbs_calculator_test_data) {
     unsigned tbs = tbs_calculator_calculate(test_case.config).to_bits().value();
 
-    TESTASSERT_EQ(test_case.tbs, tbs);
+    ASSERT_EQ(test_case.tbs, tbs);
   }
-
-  return 0;
 }

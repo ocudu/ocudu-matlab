@@ -9,13 +9,13 @@ set_directory_properties(PROPERTIES LABELS "phy")
 include_directories(${CMAKE_SOURCE_DIR}/tests/unittests/phy/support)
 
 add_executable(pbch_encoder_test pbch_encoder_test.cpp)
-target_link_libraries(pbch_encoder_test ocudu_channel_processors ocudulog)
+target_link_libraries(pbch_encoder_test ocudu_channel_processors ocudulog gtest gtest_main)
 add_test_vector(pbch_encoder_test pbch_encoder_test_data.tar.gz "")
 
 add_executable(pbch_modulator_test pbch_modulator_test.cpp)
-target_link_libraries(pbch_modulator_test ocudu_channel_processors ocudulog)
+target_link_libraries(pbch_modulator_test ocudu_channel_processors ocudulog gtest gtest_main)
 add_test_vector(pbch_modulator_test pbch_modulator_test_data.tar.gz "")
 
 add_executable(ssb_processor_vectortest ssb_processor_vectortest.cpp)
-target_link_libraries(ssb_processor_vectortest ocudu_channel_processors ocudulog)
+target_link_libraries(ssb_processor_vectortest ocudu_channel_processors ocudulog gtest gtest_main)
 add_test_vector(ssb_processor_vectortest ssb_processor_test_data.tar.gz "")

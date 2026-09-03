@@ -84,14 +84,14 @@ private:
   create_generic_pdsch_encoder_factory(std::shared_ptr<crc_calculator_factory> crc_calculator_factory)
   {
     std::shared_ptr<ldpc_encoder_factory> ldpc_encoder_factory = create_ldpc_encoder_factory_sw("generic");
-    TESTASSERT(ldpc_encoder_factory);
+    report_fatal_error_if_not(ldpc_encoder_factory, "Could not create LDPC encoder factory.");
 
     std::shared_ptr<ldpc_rate_matcher_factory> ldpc_rate_matcher_factory = create_ldpc_rate_matcher_factory_sw();
-    TESTASSERT(ldpc_rate_matcher_factory);
+    report_fatal_error_if_not(ldpc_rate_matcher_factory, "Could not create LDPC rate-matcher factory.");
 
     std::shared_ptr<ldpc_segmenter_tx_factory> segmenter_factory =
         create_ldpc_segmenter_tx_factory_sw(crc_calculator_factory);
-    TESTASSERT(segmenter_factory);
+    report_fatal_error_if_not(segmenter_factory, "Could not create LDPC segmenter factory.");
 
     pdsch_encoder_factory_sw_configuration encoder_factory_config;
     encoder_factory_config.encoder_factory      = ldpc_encoder_factory;
@@ -427,7 +427,8 @@ TEST_P(PdschProcessorFixture, PdschProcessorVectortest)
   notifier_spy.wait_for_finished();
 
   // Assert results.
-  grid.assert_entries(test_case.grid_expected.read(), std::sqrt(max_ports));
+  error_type<std::string> grid_ok = grid.assert_entries(test_case.grid_expected.read(), std::sqrt(max_ports));
+  ASSERT_TRUE(grid_ok.has_value()) << grid_ok.error();
 }
 
 // Creates test suite that combines all possible parameters.

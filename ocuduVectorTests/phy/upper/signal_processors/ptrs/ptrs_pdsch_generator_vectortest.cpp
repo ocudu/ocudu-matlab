@@ -107,7 +107,9 @@ TEST_P(PtrsPdschGeneratorFixture, FromTestVector)
   const std::vector<resource_grid_writer_spy::expected_entry_t> testvector_symbols = test_case.symbols.read();
 
   // Assert resource grid entries.
-  grid.assert_entries(testvector_symbols, std::sqrt(config.precoding.get_nof_ports()));
+  error_type<std::string> grid_ok =
+      grid.assert_entries(testvector_symbols, std::sqrt(config.precoding.get_nof_ports()));
+  ASSERT_TRUE(grid_ok.has_value()) << grid_ok.error();
 }
 
 // Creates test suite that combines all possible parameters.

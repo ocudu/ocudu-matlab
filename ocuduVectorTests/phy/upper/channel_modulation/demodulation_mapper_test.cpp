@@ -11,7 +11,6 @@
 #include "demodulation_mapper_test_data.h"
 #include "ocudu/ocuduvec/zero.h"
 #include "ocudu/phy/upper/channel_modulation/channel_modulation_factories.h"
-#include "ocudu/support/ocudu_test.h"
 #include <gtest/gtest.h>
 #include <random>
 
@@ -79,11 +78,11 @@ protected:
   }
 
   static std::shared_ptr<demodulation_mapper_factory> factory;
-  std::unique_ptr<demodulation_mapper>                demodulator        = nullptr;
-  std::vector<cf_t>                                   symbols            = {};
-  std::vector<float>                                  noise_var          = {};
-  std::vector<log_likelihood_ratio>                   soft_bits_expected = {};
-  modulation_scheme                                   mod                = {};
+  std::unique_ptr<demodulation_mapper>                demodulator = nullptr;
+  std::vector<cf_t>                                   symbols;
+  std::vector<float>                                  noise_var;
+  std::vector<log_likelihood_ratio>                   soft_bits_expected;
+  modulation_scheme                                   mod = {};
 };
 
 std::shared_ptr<demodulation_mapper_factory> DemodulatorFixture::factory = nullptr;

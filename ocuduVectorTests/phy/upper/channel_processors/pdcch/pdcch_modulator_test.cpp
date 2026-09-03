@@ -4,33 +4,34 @@
 #include "pdcch_modulator_test_data.h"
 #include "ocudu/phy/support/support_factories.h"
 #include "ocudu/phy/upper/channel_processors/pdcch/factories.h"
+#include <gtest/gtest.h>
 
 using namespace ocudu;
 
-int main()
+TEST(PDCCHVectorTests, Modulator)
 {
   std::shared_ptr<modulation_mapper_factory> modulator_factory = create_modulation_mapper_factory();
-  TESTASSERT(modulator_factory);
+  ASSERT_TRUE(modulator_factory);
 
   std::shared_ptr<pseudo_random_generator_factory> prg_factory = create_pseudo_random_generator_sw_factory();
-  TESTASSERT(prg_factory);
+  ASSERT_TRUE(prg_factory);
 
   std::shared_ptr<channel_precoder_factory> precoding_factory = create_channel_precoder_factory("auto");
-  TESTASSERT(precoding_factory);
+  ASSERT_TRUE(precoding_factory);
 
   std::shared_ptr<resource_grid_mapper_factory> rg_mapper_factory =
       create_resource_grid_mapper_factory(precoding_factory);
-  TESTASSERT(rg_mapper_factory);
+  ASSERT_TRUE(rg_mapper_factory);
 
   std::shared_ptr<pdcch_modulator_factory> pdcch_factory =
       create_pdcch_modulator_factory_sw(modulator_factory, prg_factory, rg_mapper_factory);
-  TESTASSERT(modulator_factory);
+  ASSERT_TRUE(modulator_factory);
 
   std::unique_ptr<pdcch_modulator> pdcch = pdcch_factory->create();
-  TESTASSERT(pdcch);
+  ASSERT_TRUE(pdcch);
 
   for (const test_case_t& test_case : pdcch_modulator_test_data) {
-    TESTASSERT(test_case.config.rb_mask.count() > 1);
+    ASSERT_GT(test_case.config.rb_mask.count(), 1);
     int      prb_idx_high = test_case.config.rb_mask.find_highest();
     unsigned max_prb      = static_cast<unsigned>(prb_idx_high + 1);
     unsigned max_symb     = test_case.config.start_symbol_index + test_case.config.duration;
@@ -50,8 +51,7 @@ int main()
     const std::vector<resource_grid_writer_spy::expected_entry_t> testvector_symbols = test_case.symbols.read();
 
     // Assert resource grid entries.
-    grid.assert_entries(testvector_symbols);
+    error_type<std::string> grid_ok = grid.assert_entries(testvector_symbols);
+    ASSERT_TRUE(grid_ok.has_value()) << grid_ok.error();
   }
-
-  return 0;
 }

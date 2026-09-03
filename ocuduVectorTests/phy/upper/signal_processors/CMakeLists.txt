@@ -26,16 +26,34 @@ add_test_vector(srs_estimator_test srs/srs_estimator_test_data.tar.gz "")
 target_include_directories(srs_estimator_test PRIVATE ${CMAKE_SOURCE_DIR}/tests/unittests/phy/upper/signal_processors/srs)
 
 add_executable(dmrs_pbch_processor_test ssb/dmrs_pbch_processor_test.cpp)
-target_link_libraries(dmrs_pbch_processor_test ocudu_ssb_generators ocuduvec ocudu_sequence_generators ocudulog)
+target_link_libraries(dmrs_pbch_processor_test ocudu_ssb_generators ocuduvec ocudu_sequence_generators ocudulog gtest gtest_main)
 add_test_vector(dmrs_pbch_processor_test ssb/dmrs_pbch_processor_test_data.tar.gz "")
 
 add_executable(dmrs_pdcch_processor_test pdcch/dmrs_pdcch_processor_test.cpp)
-target_link_libraries(dmrs_pdcch_processor_test ocudu_dmrs_pdcch ocudu_ran ocudu_phy_support ocuduvec ocudu_sequence_generators ocudulog ocudu_channel_precoder)
+target_link_libraries(dmrs_pdcch_processor_test
+        ocudu_dmrs_pdcch
+        ocudu_ran
+        ocudu_phy_support
+        ocuduvec
+        ocudu_sequence_generators
+        ocudu_channel_precoder
+        ocudulog
+        gtest
+        gtest_main)
 add_test(dmrs_pdcch_processor_test dmrs_pdcch_processor_test)
 add_test_vector(dmrs_pdcch_processor_test pdcch/dmrs_pdcch_processor_test_data.tar.gz "")
 
 add_executable(dmrs_pdsch_processor_test pdsch/dmrs_pdsch_processor_test.cpp)
-target_link_libraries(dmrs_pdsch_processor_test ocudu_dmrs_pdsch ocudu_ran ocudu_phy_support ocuduvec ocudu_sequence_generators ocudulog ocudu_channel_precoder)
+target_link_libraries(dmrs_pdsch_processor_test
+        ocudu_dmrs_pdsch
+        ocudu_ran
+        ocudu_phy_support
+        ocuduvec
+        ocudu_sequence_generators
+        ocudu_channel_precoder
+        ocudulog
+        gtest
+        gtest_main)
 add_test_vector(dmrs_pdsch_processor_test pdsch/dmrs_pdsch_processor_test_data.tar.gz "")
 
 add_executable(dmrs_pucch_estimator_test pucch/dmrs_pucch_estimator_test.cpp)

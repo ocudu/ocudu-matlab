@@ -101,7 +101,8 @@ TEST_P(PdcchProcessorFixture, FromVector)
   const std::vector<resource_grid_writer_spy::expected_entry_t> expected = test_case.data.read();
 
   // Assert resource grid entries.
-  grid.assert_entries(expected);
+  error_type<std::string> grid_ok = grid.assert_entries(expected);
+  ASSERT_TRUE(grid_ok.has_value()) << grid_ok.error();
 }
 
 // Creates test suite that combines all possible parameters.

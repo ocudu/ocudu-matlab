@@ -146,7 +146,8 @@ TEST_P(PdschModulatorFixture, VectorTest)
   std::vector<resource_grid_writer_spy::expected_entry_t> rg_entries = test_case.symbols.read();
 
   // Assert resource grid entries.
-  grid.assert_entries(rg_entries, std::sqrt(static_cast<float>(nof_layers)));
+  error_type<std::string> grid_ok = grid.assert_entries(rg_entries, std::sqrt(static_cast<float>(nof_layers)));
+  ASSERT_TRUE(grid_ok.has_value()) << grid_ok.error();
 }
 
 INSTANTIATE_TEST_SUITE_P(PdschProcessorVectortest,

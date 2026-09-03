@@ -3,28 +3,28 @@
 
 #include "pdcch_encoder_test_data.h"
 #include "ocudu/phy/upper/channel_processors/pdcch/factories.h"
-#include "ocudu/support/ocudu_test.h"
+#include <gtest/gtest.h>
 
 using namespace ocudu;
 
-int main()
+TEST(PDCCHVectorTests, Encoder)
 {
   std::array<uint8_t, pdcch_constants::MAX_NOF_BITS> encoded_data = {};
 
   span<uint8_t> encoded_data_span{encoded_data};
 
   std::shared_ptr<crc_calculator_factory> crc_factory = create_crc_calculator_factory_sw("auto");
-  TESTASSERT(crc_factory);
+  ASSERT_TRUE(crc_factory);
 
   std::shared_ptr<polar_factory> encoder_factory = create_polar_factory_sw();
-  TESTASSERT(encoder_factory);
+  ASSERT_TRUE(encoder_factory);
 
   std::shared_ptr<pdcch_encoder_factory> pdcch_factory = create_pdcch_encoder_factory_sw(crc_factory, encoder_factory);
-  TESTASSERT(pdcch_factory);
+  ASSERT_TRUE(pdcch_factory);
 
   // Create PDCCH Encoder instance
   std::unique_ptr<pdcch_encoder> encoder = pdcch_factory->create();
-  TESTASSERT(encoder);
+  ASSERT_TRUE(encoder);
 
   for (const test_case_t& test_case : pdcch_encoder_test_data) {
     // Load input data
@@ -39,8 +39,7 @@ int main()
 
     // Assert encoded data.
     for (unsigned i = 0; i != test_case.config.E; ++i) {
-      TESTASSERT_EQ(encoded_msg[i], testvector_encoded[i], "Bit index {}.", i);
+      ASSERT_EQ(encoded_msg[i], testvector_encoded[i]) << fmt::format("Bit index {}.", i);
     }
   }
-  return 0;
 }

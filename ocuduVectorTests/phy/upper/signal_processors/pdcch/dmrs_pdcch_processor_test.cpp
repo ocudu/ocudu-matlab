@@ -4,31 +4,32 @@
 #include "dmrs_pdcch_processor_test_data.h"
 #include "ocudu/phy/support/support_factories.h"
 #include "ocudu/phy/upper/signal_processors/pdcch/factories.h"
+#include <gtest/gtest.h>
 
 using namespace ocudu;
 
-int main()
+TEST(PDCCHVectorTests, DMRSProcessor)
 {
   std::shared_ptr<pseudo_random_generator_factory> prg_factory = create_pseudo_random_generator_sw_factory();
-  TESTASSERT(prg_factory);
+  ASSERT_TRUE(prg_factory);
 
   std::shared_ptr<channel_precoder_factory> precoding_factory = create_channel_precoder_factory("auto");
-  TESTASSERT(precoding_factory);
+  ASSERT_TRUE(precoding_factory);
 
   std::shared_ptr<resource_grid_mapper_factory> rg_mapper_factory =
       create_resource_grid_mapper_factory(precoding_factory);
-  TESTASSERT(rg_mapper_factory);
+  ASSERT_TRUE(rg_mapper_factory);
 
   std::shared_ptr<dmrs_pdcch_processor_factory> dmrs_pdcch_factory =
       create_dmrs_pdcch_processor_factory_sw(prg_factory, rg_mapper_factory);
-  TESTASSERT(dmrs_pdcch_factory);
+  ASSERT_TRUE(dmrs_pdcch_factory);
 
   // Create DMRS-PDSCH processor.
   std::unique_ptr<dmrs_pdcch_processor> dmrs_pdcch = dmrs_pdcch_factory->create();
 
   for (const test_case_t& test_case : dmrs_pdcch_processor_test_data) {
     int prb_idx_high = test_case.config.rb_mask.find_highest();
-    TESTASSERT(prb_idx_high > 1);
+    ASSERT_GT(prb_idx_high, 1);
     unsigned max_prb   = static_cast<unsigned>(prb_idx_high + 1);
     unsigned max_symb  = test_case.config.start_symbol_index + test_case.config.duration;
     unsigned max_ports = test_case.config.precoding.get_nof_ports();
@@ -44,8 +45,7 @@ int main()
     const std::vector<resource_grid_writer_spy::expected_entry_t> testvector_symbols = test_case.symbols.read();
 
     // Assert resource grid entries.
-    grid.assert_entries(testvector_symbols);
+    error_type<std::string> grid_ok = grid.assert_entries(testvector_symbols);
+    ASSERT_TRUE(grid_ok.has_value()) << grid_ok.error();
   }
-
-  return 0;
 }

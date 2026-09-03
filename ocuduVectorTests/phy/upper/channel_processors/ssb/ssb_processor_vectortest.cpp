@@ -6,40 +6,41 @@
 #include "ocudu/phy/upper/channel_processors/ssb/formatters.h"
 #include "ocudu/phy/upper/signal_processors/ssb/factories.h"
 #include "ocudu/ran/cyclic_prefix.h"
+#include <gtest/gtest.h>
 
 using namespace ocudu;
 
-int main()
+TEST(SSBVectorTests, SSBProcessor)
 {
   std::shared_ptr<crc_calculator_factory> crc_calc_factory = create_crc_calculator_factory_sw("auto");
-  TESTASSERT(crc_calc_factory);
+  ASSERT_TRUE(crc_calc_factory);
 
   std::shared_ptr<modulation_mapper_factory> modulator_factory = create_modulation_mapper_factory();
-  TESTASSERT(modulator_factory);
+  ASSERT_TRUE(modulator_factory);
 
   std::shared_ptr<pseudo_random_generator_factory> prg_factory = create_pseudo_random_generator_sw_factory();
-  TESTASSERT(prg_factory);
+  ASSERT_TRUE(prg_factory);
 
   std::shared_ptr<polar_factory> polar_factory = create_polar_factory_sw();
-  TESTASSERT(polar_factory);
+  ASSERT_TRUE(polar_factory);
 
   std::shared_ptr<pbch_encoder_factory> pbch_enc_factory =
       create_pbch_encoder_factory_sw(crc_calc_factory, prg_factory, polar_factory);
-  TESTASSERT(polar_factory);
+  ASSERT_TRUE(polar_factory);
 
   std::shared_ptr<pbch_modulator_factory> pbch_mod_factory =
       create_pbch_modulator_factory_sw(modulator_factory, prg_factory);
-  TESTASSERT(pbch_mod_factory);
+  ASSERT_TRUE(pbch_mod_factory);
 
   std::shared_ptr<dmrs_pbch_processor_factory> dmrs_pbch_proc_factory =
       create_dmrs_pbch_processor_factory_sw(prg_factory);
-  TESTASSERT(dmrs_pbch_proc_factory, "Invalid DM-RS PBCH factory.");
+  ASSERT_TRUE(dmrs_pbch_proc_factory);
 
   std::shared_ptr<pss_processor_factory> pss_proc_factory = create_pss_processor_factory_sw();
-  TESTASSERT(pss_proc_factory, "Invalid PSS factory.");
+  ASSERT_TRUE(pss_proc_factory);
 
   std::shared_ptr<sss_processor_factory> sss_proc_factory = create_sss_processor_factory_sw();
-  TESTASSERT(sss_proc_factory, "Invalid SSS factory.");
+  ASSERT_TRUE(sss_proc_factory);
 
   // Create channel processors - SSB
   ssb_processor_factory_sw_configuration ssb_factory_config;
@@ -49,11 +50,11 @@ int main()
   ssb_factory_config.pss_factory                     = pss_proc_factory;
   ssb_factory_config.sss_factory                     = sss_proc_factory;
   std::shared_ptr<ssb_processor_factory> ssb_factory = create_ssb_processor_factory_sw(ssb_factory_config);
-  TESTASSERT(ssb_factory);
+  ASSERT_TRUE(ssb_factory);
 
   // Create SSB processor.
   std::unique_ptr<ssb_processor> ssb = ssb_factory->create();
-  TESTASSERT(ssb);
+  ASSERT_TRUE(ssb);
 
   for (const test_case_t& test_case : ssb_processor_test_data) {
     // The test data was generated with 64 ports, the symbol indexes are relative to half frame and the bandwidth is
@@ -67,8 +68,7 @@ int main()
     const std::vector<resource_grid_writer_spy::expected_entry_t> testvector_symbols = test_case.symbols.read();
 
     // Assert resource grid entries.
-    grid.assert_entries(testvector_symbols);
+    error_type<std::string> grid_ok = grid.assert_entries(testvector_symbols);
+    ASSERT_TRUE(grid_ok.has_value()) << grid_ok.error();
   }
-
-  return 0;
 }
