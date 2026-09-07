@@ -227,7 +227,7 @@ classdef ocuduNZPCSIRSGeneratorUnittest < ocuduTest.ocuduBlockUnittest
             SubcarrierRefStr = cellarray2str(subcarrierLocations, true);
 
             % Precoding configuration that maps layers to ports one to one.
-            precodingString = ['precoding_configuration::make_wideband(make_identity(' num2str(CSIRS.NumCSIRSPorts) '))'];
+            precodingString = ['precoding_beamforming_configuration::make_wideband(make_identity(' num2str(CSIRS.NumCSIRSPorts) '))'];
 
             configCell = {...
                 slotPointConfig, ...  % slot
