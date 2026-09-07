@@ -68,7 +68,7 @@ TEST_P(NzpCsiRsGeneratorFixture, Vector)
 
   unsigned max_symb  = MAX_NSYMB_PER_SLOT;
   unsigned max_prb   = test_case.config.start_rb + test_case.config.nof_rb;
-  unsigned max_ports = test_case.config.precoding.get_nof_ports();
+  unsigned max_ports = test_case.config.precoding_and_beamforming.get_nof_beams();
 
   // Prepare resource grid and resource grid mapper spies.
   resource_grid_writer_spy grid(max_ports, max_symb, max_prb);
