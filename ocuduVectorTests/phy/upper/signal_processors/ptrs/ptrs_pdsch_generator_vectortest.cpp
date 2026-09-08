@@ -20,7 +20,7 @@ std::ostream& operator<<(std::ostream& os, const test_case_t& test_case)
              "slot={} rnti={} dmrs={} k_rb={} id={} n_scid={} amplitude={} dmrs={} time_allocation={} freq_density={} "
              "time_density={} re_offset={} nof_layers={}",
              test_case.slot,
-             to_value(test_case.rnti),
+             to_underlying(test_case.rnti),
              test_case.dmrs_type,
              test_case.reference_point_k_rb,
              test_case.scrambling_id,
