@@ -61,8 +61,23 @@ TEST(SSBVectorTests, SSBProcessor)
     // limited to the SSB.
     resource_grid_writer_spy grid(64, MAX_NSYMB_PER_SLOT * 5, NOF_SSB_PRBS);
 
+    // Build the SS/PBCH block PDU. The beams that carry the transmission select the resource grid ports.
+    const ssb_pdu_context& context = test_case.context;
+    ssb_processor::pdu_t   pdu     = {.slot                      = context.slot,
+                                      .phys_cell_id              = context.phys_cell_id,
+                                      .beta_pss                  = context.beta_pss,
+                                      .ssb_idx                   = context.ssb_idx,
+                                      .L_max                     = context.L_max,
+                                      .common_scs                = context.common_scs,
+                                      .subcarrier_offset         = context.subcarrier_offset,
+                                      .offset_to_pointA          = context.offset_to_pointA,
+                                      .pattern_case              = context.pattern_case,
+                                      .mib_payload               = context.mib_payload,
+                                      .precoding_and_beamforming =
+                                          precoding_beamforming_configuration::make_wideband(context.beams)};
+
     // Process PDU
-    ssb->process(grid, test_case.config);
+    ssb->process(grid, pdu);
 
     // Load output golden data
     const std::vector<resource_grid_writer_spy::expected_entry_t> testvector_symbols = test_case.symbols.read();

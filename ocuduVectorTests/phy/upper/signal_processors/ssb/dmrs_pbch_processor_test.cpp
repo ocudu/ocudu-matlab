@@ -22,7 +22,8 @@ TEST(SSBVectorTests, PBCHDMRS)
 
   for (const test_case_t& test_case : dmrs_pbch_processor_test_data) {
     // Create resource grid
-    resource_grid_writer_spy grid(test_case.config.ports.size(), NOF_SSB_SYMB, NOF_SSB_PRBS);
+    resource_grid_writer_spy grid(
+        test_case.config.precoding_and_beamforming.get_nof_beams(), NOF_SSB_SYMB, NOF_SSB_PRBS);
 
     // Map DMRS-PBCH using the test case arguments
     dmrs_pbch->map(grid, test_case.config);

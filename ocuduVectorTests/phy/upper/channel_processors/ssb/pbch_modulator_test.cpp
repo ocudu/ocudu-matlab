@@ -22,7 +22,8 @@ TEST(SSBVectorTests, PBCHModulator)
   ASSERT_TRUE(modulator);
 
   for (const test_case_t& test_case : pbch_modulator_test_data) {
-    resource_grid_writer_spy grid(test_case.config.ports.size(), NOF_SSB_SYMB, NOF_SSB_PRBS);
+    resource_grid_writer_spy grid(
+        test_case.config.precoding_and_beamforming.get_nof_beams(), NOF_SSB_SYMB, NOF_SSB_PRBS);
 
     // Load input data
     const std::vector<uint8_t> testvector_data = test_case.data.read();
