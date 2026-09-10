@@ -91,7 +91,6 @@ classdef ocuduPBCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
         %testvectorGenerationCases Generates test vectors for the given SSBindex,
         %   Lmax and nHF, while using a random NCellID.
 
-            import ocuduTest.helpers.cellarray2str
             import ocuduLib.phy.upper.signal_processors.ocuduPBCHDMRS
             import ocuduTest.helpers.writeResourceGridEntryFile
 
@@ -103,12 +102,12 @@ classdef ocuduPBCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
             NCellIDLoc = testCase.NCellID{randomizedTestCase};
 
             % current fixed parameter values
-            numPorts = 1;
             SSBfirstSubcarrier = 0;
             SSBfirstSymbol = 0;
             SSBamplitude = 1;
-            SSBports = zeros(numPorts, 1);
-            SSBportsStr = cellarray2str({SSBports}, true);
+
+            % The SS/PBCH block is transmitted on the first antenna port, without beamforming.
+            SSBprecodingStr = 'precoding_beamforming_configuration::make_wideband(precoding_beam_list{to_beam_id(0)})';
 
             % check if the current SSBindex value is possible with the current Lmax
             if Lmax > SSBindex
@@ -122,7 +121,7 @@ classdef ocuduPBCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
                 % generate the test case entry
                 testCaseString = testCase.testCaseToString(testID, ...
                     {NCellIDLoc, SSBindex, Lmax, SSBfirstSubcarrier, SSBfirstSymbol, ...
-                        nHF, SSBamplitude, SSBportsStr}, true, '_test_output');
+                        nHF, SSBamplitude, SSBprecodingStr}, true, '_test_output');
 
                 % add the test to the file header
                 testCase.addTestToHeaderFile(testCase.headerFileID, testCaseString);

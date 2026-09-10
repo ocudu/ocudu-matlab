@@ -95,7 +95,6 @@ classdef ocuduPBCHModulatorUnittest < ocuduTest.ocuduBlockUnittest
         %   test vector for the given SSB index SSBINDEX and the given LMAX,
         %   using a random NCellID and a random codeword.
 
-            import ocuduTest.helpers.cellarray2str
             import ocuduTest.helpers.writeUint8File
             import ocuduLib.phy.upper.channel_processors.ssb.ocuduPBCHmodulator
             import ocuduTest.helpers.writeResourceGridEntryFile
@@ -109,12 +108,12 @@ classdef ocuduPBCHModulatorUnittest < ocuduTest.ocuduBlockUnittest
             cw = randi([0 1], 864, 1);
 
             % current fixed parameter values as required by the C code
-            numPorts = 1;
             SSBfirstSubcarrier = 0;
             SSBfirstSymbol = 0;
             SSBamplitude = 1;
-            SSBports = zeros(numPorts, 1);
-            SSBportsStr = cellarray2str({SSBports}, true);
+
+            % The SS/PBCH block is transmitted on the first antenna port, without beamforming.
+            SSBprecodingStr = 'precoding_beamforming_configuration::make_wideband(precoding_beam_list{to_beam_id(0)})';
 
             % write the BCH cw to a binary file
             testCase.saveDataFile('_test_input', testID, @writeUint8File, cw);
@@ -129,7 +128,7 @@ classdef ocuduPBCHModulatorUnittest < ocuduTest.ocuduBlockUnittest
             % generate the test case entry
             testCaseString = testCase.testCaseToString(testID, ...
                 {NCellIDLoc, SSBindex, SSBfirstSubcarrier, SSBfirstSymbol, ...
-                    SSBamplitude, SSBportsStr}, true, '_test_input', '_test_output');
+                    SSBamplitude, SSBprecodingStr}, true, '_test_input', '_test_output');
 
             % add the test to the file header
             testCase.addTestToHeaderFile(testCase.headerFileID, testCaseString);

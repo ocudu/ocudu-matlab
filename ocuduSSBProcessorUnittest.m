@@ -95,8 +95,21 @@ classdef ocuduSSBProcessorUnittest < ocuduTest.ocuduBlockUnittest
 
         function addTestDefinitionToHeaderFile(~, fileID)
         %addTestDefinitionToHeaderFile Adds details (e.g., type/variable declarations) to the test header file.
+            fprintf(fileID, 'struct ssb_pdu_context {\n');
+            fprintf(fileID, '  slot_point                                           slot;\n');
+            fprintf(fileID, '  pci_t                                                phys_cell_id;\n');
+            fprintf(fileID, '  ssb_pss_to_sss_epre                                  beta_pss;\n');
+            fprintf(fileID, '  ssb_id_t                                             ssb_idx;\n');
+            fprintf(fileID, '  unsigned                                             L_max;\n');
+            fprintf(fileID, '  subcarrier_spacing                                   common_scs;\n');
+            fprintf(fileID, '  ssb_subcarrier_offset                                subcarrier_offset;\n');
+            fprintf(fileID, '  ssb_offset_to_pointA                                 offset_to_pointA;\n');
+            fprintf(fileID, '  ssb_pattern_case                                     pattern_case;\n');
+            fprintf(fileID, '  std::array<uint8_t, ssb_processor::MIB_PAYLOAD_SIZE> mib_payload;\n');
+            fprintf(fileID, '  precoding_beam_list                                  beams;\n');
+            fprintf(fileID, '};\n\n');
             fprintf(fileID, 'struct test_case_t {\n');
-            fprintf(fileID, '  ssb_processor::pdu_t                                    config;\n');
+            fprintf(fileID, '  ssb_pdu_context                                         context;\n');
             fprintf(fileID, '  file_vector<resource_grid_writer_spy::expected_entry_t> symbols;\n');
             fprintf(fileID, '};\n');
         end
@@ -115,7 +128,6 @@ classdef ocuduSSBProcessorUnittest < ocuduTest.ocuduBlockUnittest
         %   SSBs within a set LMAX, SSB index SSBINDEX and half-frame SUBFRAMEINDEX, while using a
         %   random NCellID and a random codeword.
 
-            import ocuduTest.helpers.cellarray2str
             import ocuduLib.phy.helpers.ocuduSSBgetNumerology
             import ocuduLib.phy.helpers.ocuduSSBgetFirstSymbolIndex
             import ocuduLib.phy.helpers.ocuduSSBgetFirstSubcarrierIndex
@@ -141,7 +153,7 @@ classdef ocuduSSBProcessorUnittest < ocuduTest.ocuduBlockUnittest
             pointAoffset = 0;
             SSBoffset = 0;
             cyclicPrefix = 'normal';
-            SSBportsStr = cellarray2str({portIdx}, true);
+            SSBbeamsStr = ['{to_beam_id(' num2str(portIdx) ')}'];
 
             % Skip those invalid configuration cases.
             isPatternOK = ((Lmax < 64) || (strcmp(SSBpattern, 'D') && strcmp(SSBpattern, 'E')));
@@ -211,7 +223,7 @@ classdef ocuduSSBProcessorUnittest < ocuduTest.ocuduBlockUnittest
                     {{numerology, SFNLoc, subframeIndexLoc, slotInSubframe}, NCellIDLoc, ...
                         PSSscaleStr, SSBindex, Lmax, commonSCSStr, SSBoffset, pointAoffset, ...
                         ['ssb_pattern_case::', upper(SSBpattern)], randomMIB, ...
-                        SSBportsStr}, true, '_test_output');
+                        SSBbeamsStr}, true, '_test_output');
 
                 % Add the test to the file header.
                 testCase.addTestToHeaderFile(testCase.headerFileID, testCaseString);
