@@ -173,7 +173,7 @@ classdef ocuduPRSGeneratorUnittest < ocuduTest.ocuduBlockUnittest
         rbStart = carrier.NStartGrid + PRS.RBOffset;
         freqAllocConfig = cellarray2str({PRS.RBOffset, PRS.RBOffset + PRS.NumRB}, true);
         powerOffsetdB = 20 * log10(amplitude);
-        precodingStr = 'precoding_configuration::make_wideband(make_identity(1))';
+        precodingStr = 'precoding_beamforming_configuration::make_wideband(make_identity(1))';
 
         configCell = {...
             slotPointStr, ...              % slot
@@ -186,7 +186,7 @@ classdef ocuduPRSGeneratorUnittest < ocuduTest.ocuduBlockUnittest
             rbStart, ...                   % prb_start
             freqAllocConfig, ...           % freq_alloc
             powerOffsetdB, ...             % power_offset_dB
-            precodingStr ...               % precoding
+            precodingStr ...               % precoding_and_beamforming
             };
 
         % Generate the test case entry.
