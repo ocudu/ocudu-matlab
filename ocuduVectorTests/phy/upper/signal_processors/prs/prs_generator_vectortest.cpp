@@ -3,7 +3,6 @@
 
 #include "prs_generator_test_data.h"
 #include "resource_grid_test_doubles.h"
-#include "ocudu/phy/support/precoding_formatters.h"
 #include "ocudu/phy/support/support_factories.h"
 #include "ocudu/phy/upper/signal_processors/prs/factories.h"
 #include "ocudu/phy/upper/signal_processors/prs/formatters.h"
@@ -79,7 +78,7 @@ TEST_P(prsGeneratorFixture, FromTestVector)
   const std::vector<resource_grid_writer_spy::expected_entry_t> testvector_symbols = test_case.symbols.read();
 
   // Assert resource grid entries.
-  grid.assert_entries(testvector_symbols, std::sqrt(config.precoding.get_nof_ports()));
+  grid.assert_entries(testvector_symbols, std::sqrt(config.precoding_and_beamforming.get_nof_beams()));
 }
 
 // Creates test suite that combines all possible parameters.
