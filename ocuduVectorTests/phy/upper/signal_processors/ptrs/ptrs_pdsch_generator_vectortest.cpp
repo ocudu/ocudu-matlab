@@ -98,7 +98,8 @@ TEST_P(PtrsPdschGeneratorFixture, FromTestVector)
   config.freq_density         = test_case.freq_density;
   config.time_density         = test_case.time_density;
   config.re_offset            = test_case.re_offset;
-  config.precoding            = precoding_configuration::make_wideband(make_identity(test_case.nof_layers));
+  config.precoding_and_beamforming =
+      precoding_beamforming_configuration::make_wideband(make_identity(test_case.nof_layers));
 
   // Generate signal.
   ptrs_pdsch_gen->generate(grid, config);
@@ -108,7 +109,7 @@ TEST_P(PtrsPdschGeneratorFixture, FromTestVector)
 
   // Assert resource grid entries.
   error_type<std::string> grid_ok =
-      grid.assert_entries(testvector_symbols, std::sqrt(config.precoding.get_nof_ports()));
+      grid.assert_entries(testvector_symbols, std::sqrt(config.precoding_and_beamforming.get_nof_beams()));
   ASSERT_TRUE(grid_ok.has_value()) << grid_ok.error();
 }
 

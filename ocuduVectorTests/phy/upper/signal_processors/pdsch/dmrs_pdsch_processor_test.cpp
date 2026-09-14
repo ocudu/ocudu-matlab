@@ -33,7 +33,7 @@ TEST(PDSCHVectorTests, PDSCHDMRSProcessor)
     ASSERT_GT(prb_idx_high, 1);
     unsigned max_prb   = static_cast<unsigned>(prb_idx_high + 1);
     unsigned max_symb  = get_nsymb_per_slot(cyclic_prefix::NORMAL);
-    unsigned max_ports = test_case.config.precoding.get_nof_ports();
+    unsigned max_ports = test_case.config.precoding_and_beamforming.get_nof_beams();
 
     // Prepare resource grid and resource grid mapper spies.
     resource_grid_writer_spy grid(max_ports, max_symb, max_prb);

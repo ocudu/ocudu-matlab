@@ -392,8 +392,8 @@ TEST_P(PdschProcessorFixture, PdschProcessorVectortest)
 
   unsigned max_symb   = context.rg_nof_symb;
   unsigned max_prb    = context.rg_nof_rb;
-  unsigned max_ports  = config.precoding.get_nof_ports();
-  unsigned nof_layers = config.precoding.get_nof_layers();
+  unsigned max_ports  = config.precoding_and_beamforming.get_nof_beams();
+  unsigned nof_layers = config.precoding_and_beamforming.get_nof_layers();
 
   // Number of codewords processed.
   unsigned nof_codewords = (nof_layers > 4) ? 2 : 1;

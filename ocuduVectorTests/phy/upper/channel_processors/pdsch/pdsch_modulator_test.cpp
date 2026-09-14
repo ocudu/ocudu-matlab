@@ -3,7 +3,6 @@
 
 #include "pdsch_modulator_test_data.h"
 #include "ocudu/ocuduvec/bit.h"
-#include "ocudu/phy/support/precoding_formatters.h"
 #include "ocudu/phy/support/re_pattern_formatters.h"
 #include "ocudu/phy/support/support_factories.h"
 #include "ocudu/phy/upper/channel_processors/pdsch/factories.h"
@@ -90,7 +89,8 @@ TEST_P(PdschModulatorFixture, VectorTest)
   unsigned max_symb = get_nsymb_per_slot(cyclic_prefix::NORMAL);
 
   // Build the precoding configuration for both codewords.
-  precoding_configuration precoding = precoding_configuration::make_wideband(make_identity(nof_layers));
+  precoding_beamforming_configuration precoding =
+      precoding_beamforming_configuration::make_wideband(make_identity(nof_layers));
 
   // Build the modulator config from the test parameters.
   pdsch_modulator::config_t config = {.rnti                        = context.rnti,
@@ -105,13 +105,7 @@ TEST_P(PdschModulatorFixture, VectorTest)
                                       .n_id                        = context.n_id,
                                       .scaling                     = context.scaling,
                                       .reserved                    = context.reserved,
-                                      .precoding                   = precoding};
-
-  // Populate the list of resource grid ports for this transmission. Since the logical ports map physical ports, the
-  // list is trivial.
-  static_vector<unsigned, precoding_constants::MAX_NOF_PORTS> ports(precoding.get_nof_ports());
-  std::iota(ports.begin(), ports.end(), 0);
-  config.ports = ports;
+                                      .precoding_and_beamforming   = precoding};
 
   // Prepare resource grid spy.
   resource_grid_writer_spy grid((nof_layers > 4) ? 8 : 4, max_symb, max_prb);

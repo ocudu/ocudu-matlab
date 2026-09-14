@@ -85,7 +85,7 @@ TEST_P(PdcchProcessorFixture, FromVector)
 
   unsigned max_prb   = MAX_NOF_PRBS;
   unsigned max_symb  = test_case.config.coreset.start_symbol_index + test_case.config.coreset.duration;
-  unsigned max_ports = test_case.config.dci.precoding.get_nof_ports();
+  unsigned max_ports = test_case.config.dci.precoding_and_beamforming.get_nof_beams();
 
   // Verify the PDCCH parameters are valid.
   error_type<std::string> validator_out = validator->is_valid(test_case.config);

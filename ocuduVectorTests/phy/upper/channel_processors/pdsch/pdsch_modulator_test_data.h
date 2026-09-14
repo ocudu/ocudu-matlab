@@ -3,7 +3,7 @@
 
 #pragma once
 
-// This file was generated using the following MATLAB class on 28-08-2026 (seed 0):
+// This file was generated using the following MATLAB class on 14-09-2026 (seed 0):
 //   + "ocuduPDSCHModulatorUnittest.m"
 
 #include "resource_grid_test_doubles.h"

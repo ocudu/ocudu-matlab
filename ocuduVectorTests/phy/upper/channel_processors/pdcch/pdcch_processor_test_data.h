@@ -3,7 +3,7 @@
 
 #pragma once
 
-// This file was generated using the following MATLAB class on 28-08-2026 (seed 0):
+// This file was generated using the following MATLAB class on 14-09-2026 (seed 0):
 //   + "ocuduPDCCHProcessorUnittest.m"
 
 #include "resource_grid_test_doubles.h"
@@ -14,7 +14,8 @@
 
 namespace ocudu {
 
-static const precoding_configuration default_precoding = precoding_configuration::make_wideband(make_single_port());
+static const precoding_beamforming_configuration default_precoding =
+    precoding_beamforming_configuration::make_wideband(make_single_port());
 
 struct test_case_t {
   pdcch_processor::pdu_t                                  config;
