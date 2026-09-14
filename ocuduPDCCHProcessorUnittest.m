@@ -87,7 +87,7 @@ classdef ocuduPDCCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
 
         function addTestDefinitionToHeaderFile(~, fileID)
         %addTestDetailsToHeaderFile Adds details (e.g., type/variable declarations) to the test header file.
-            fprintf(fileID, 'static const precoding_configuration default_precoding = precoding_configuration::make_wideband(make_single_port());\n');
+            fprintf(fileID, 'static const precoding_beamforming_configuration default_precoding = precoding_beamforming_configuration::make_wideband(make_single_port());\n');
             fprintf(fileID, '\n');
             fprintf(fileID, 'struct test_case_t {\n');
             fprintf(fileID, 'pdcch_processor::pdu_t config;\n');

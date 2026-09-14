@@ -364,7 +364,7 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             % Convert modulation type to string.
             modString1 = ocuduModulationFromMatlab(pdsch.Modulation, 'full');
 
-            precodingString = ['precoding_configuration::make_wideband(make_identity(' num2str(NumLayers) '))'];
+            precodingString = ['precoding_beamforming_configuration::make_wideband(make_identity(' num2str(NumLayers) '))'];
 
             % Build the per-codeword description. When two codewords are used,
             % both share the same modulation, redundancy version and base graph.

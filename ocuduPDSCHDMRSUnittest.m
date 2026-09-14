@@ -202,7 +202,7 @@ classdef ocuduPDSCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
                 % Generate a RB allocation mask string.
                 rbAllocationMask = RBallocationMask2string(PRBstart, PRBend);
 
-                precodingString = ['precoding_configuration::make_wideband(make_identity(' num2str(NumLayers) '))'];
+                precodingString = ['precoding_beamforming_configuration::make_wideband(make_identity(' num2str(NumLayers) '))'];
                 dmrsTypeString = ['dmrs_config_type::type', num2str(DMRSConfigurationType)];
 
                 configCell = {...
