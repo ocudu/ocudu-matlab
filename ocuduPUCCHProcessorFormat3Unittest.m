@@ -62,6 +62,8 @@ classdef ocuduPUCCHProcessorFormat3Unittest < ocuduTest.ocuduBlockUnittest
     end
 
     properties (Hidden)
+        %Uplink slot offset, i.e. the NTN K_mac.
+        SlotOffset
         %Carrier configuration object.
         Carrier
         %PUCCH Format 3 configuration object.
@@ -119,6 +121,10 @@ classdef ocuduPUCCHProcessorFormat3Unittest < ocuduTest.ocuduBlockUnittest
 
             % Generate random cell ID.
             nCellID = randi([0, 1007]);
+
+            % Uplink slot offset, i.e. the NTN K_mac. Derived from an already randomized parameter rather than
+            % drawn, so that the random stream, and with it the noise realizations, stay unchanged.
+            testCase.SlotOffset = mod(nCellID, 13);
 
             % Generate a random NID.
             NID = randi([0, 1023]);
@@ -344,7 +350,7 @@ classdef ocuduPUCCHProcessorFormat3Unittest < ocuduTest.ocuduBlockUnittest
             portsString = ['{' num2str(0:(numRxPorts-1), "%d,") '}'];
 
             % Slot configuration.
-            slotConfig = {log2(carrier.SubcarrierSpacing/15), carrier.NSlot};
+            slotConfig = {log2(carrier.SubcarrierSpacing/15), carrier.NSlot + testCase.SlotOffset};
 
             % Convert cyclic prefix to string.
             cyclicPrefixStr = matlab2ocuduCyclicPrefix(carrier.CyclicPrefix);
@@ -362,6 +368,7 @@ classdef ocuduPUCCHProcessorFormat3Unittest < ocuduTest.ocuduBlockUnittest
             pucchF3Config = {...
                 'std::nullopt', ...                         % context
                 slotConfig, ...                             % slot
+                testCase.SlotOffset, ...                    % slot_offset
                 cyclicPrefixStr, ...                        % cp
                 portsString, ...                            % ports
                 pucch.NSizeBWP, ...                         % bwp_size_rb

@@ -198,6 +198,9 @@ classdef ocuduPUSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
 
             % Random parameters.
             nSlot = randi([0, carrier.SlotsPerFrame]);
+            % Uplink slot offset, i.e. the NTN K_mac. Derived from an already randomized parameter rather than
+            % drawn, so that the random stream, and with it the noise realizations, stay unchanged.
+            slotOffset = mod(nSlot, 13);
             nID = randi([0, 1023]);
             DMRSAdditionalPosition = randi([0, 3]);
             NIDNSCID = randi([0, 65535]);
@@ -363,7 +366,7 @@ classdef ocuduPUSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             cyclicPrefixStr = ['cyclic_prefix::', upper(carrier.CyclicPrefix)];
 
             % Slot configuration.
-            slotConfig = {log2(carrier.SubcarrierSpacing/15), carrier.NSlot};
+            slotConfig = {log2(carrier.SubcarrierSpacing/15), carrier.NSlot + slotOffset};
 
             % Generate DM-RS symbol mask.
             dmrsSymbolMask = symbolAllocationMask2string(...
@@ -428,6 +431,7 @@ classdef ocuduPUSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             pduDescription = {...
                 'INVALID_HARQ_ID', ...                        % harq_id
                 slotConfig, ...                               % slot
+                slotOffset, ...                               % slot_offset
                 rntiString, ...                               % rnti
                 pusch.NSizeBWP, ...                           % bwp_size_rb
                 pusch.NStartBWP, ...                          % bwp_start_rb

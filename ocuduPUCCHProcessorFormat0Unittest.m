@@ -120,7 +120,7 @@ classdef ocuduPUCCHProcessorFormat0Unittest < ocuduTest.ocuduBlockUnittest
             % generated so far.
             testID = testCase.generateTestID;
 
-            [rxGrid, pucchDataIndices, payloadData, pucch, carrier] = generateSimData(numerology, allocation, payload, NumRxPorts);
+            [rxGrid, pucchDataIndices, payloadData, pucch, carrier, slotOffset] = generateSimData(numerology, allocation, payload, NumRxPorts);
 
             % Extract the elements of interest from the grid.
             nofRePort = length(pucchDataIndices);
@@ -144,8 +144,8 @@ classdef ocuduPUCCHProcessorFormat0Unittest < ocuduTest.ocuduBlockUnittest
 
             % Generate a 'slot_point' configuration.
             slotPointConfig = {...
-                numerology, ...                                             % numerology
-                carrier.NFrame * carrier.SlotsPerFrame + carrier.NSlot, ... % system slot number
+                numerology, ...                                                          % numerology
+                carrier.NFrame * carrier.SlotsPerFrame + carrier.NSlot + slotOffset, ... % system slot number
                 };
 
             secondHopConfig = {};
@@ -162,6 +162,7 @@ classdef ocuduPUCCHProcessorFormat0Unittest < ocuduTest.ocuduBlockUnittest
             pucchConfig = {...
                 'std::nullopt', ...             % context
                 slotPointConfig, ...            % slot
+                slotOffset, ...                 % slot_offset
                 cyclicPrefixString, ...         % cp
                 pucch.NSizeBWP, ...             % bwp_size_rb
                 pucch.NStartBWP, ...            % bwp_start_rb
@@ -238,12 +239,16 @@ end % of classdef ocuduPUCCHProcessorFormat0Unittest
 % For the given simulation set-up, generates the received resource grid. It also
 % returns the indices of the REs carrying PUCCH data, the value of payload bits,
 % the PUCCH Format0 configuration and the carrier configuration.
-function [rxGrid, pucchDataIndices, payloadData, pucch, carrier] = generateSimData(numerology, allocation, payload, NumRxPorts)
+function [rxGrid, pucchDataIndices, payloadData, pucch, carrier, slotOffset] = generateSimData(numerology, allocation, payload, NumRxPorts)
     % Use a unique NCellIDLoc, NSlotLoc for each test.
     NCellIDLoc = randi([0, 1007]);
 
     % Use a random slot number from the allowed range.
     NSlotLoc = randi([0, 10 * pow2(numerology) - 1]);
+
+    % Uplink slot offset, i.e. the NTN K_mac. Derived from an already randomized parameter rather than
+    % drawn, so that the random stream, and with it the noise realizations, stay unchanged.
+    slotOffsetLoc = mod(NSlotLoc, 13);
 
     % Fixed parameter values.
     NStartBWP = 1;
@@ -366,4 +371,6 @@ function [rxGrid, pucchDataIndices, payloadData, pucch, carrier] = generateSimDa
     end
 
     payloadData = struct('ACK', ack, 'SR', sr);
+
+    slotOffset = slotOffsetLoc;
 end

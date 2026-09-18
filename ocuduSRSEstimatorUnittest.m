@@ -123,6 +123,10 @@ classdef ocuduSRSEstimatorUnittest < ocuduTest.ocuduBlockUnittest
                     return;
             end
 
+            % Uplink slot offset, i.e. the NTN K_mac. Derived from an already randomized parameter rather than
+            % drawn, so that the random stream, and with it the noise realizations, stay unchanged.
+            slotOffset = mod(nSlot, 13);
+
             subcarrierSpacing = 15 * (2 .^ Numerology);
 
             % Use a random NCellID, NFrame.
@@ -291,10 +295,11 @@ classdef ocuduSRSEstimatorUnittest < ocuduTest.ocuduBlockUnittest
                 };
 
             configCell = {...
-                'std::nullopt', ... % context
-                slotPointConfig,... % slot
-                srsResourceCell,... % resource
-                portsConfig,...     % ports
+                'std::nullopt', ...   % context
+                slotPointConfig, ...  % slot
+                slotOffset, ...       % slot_offset
+                srsResourceCell, ...  % resource
+                portsConfig, ...      % ports
                 };
 
             resultCell = { ...

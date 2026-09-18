@@ -16,6 +16,7 @@ namespace {
 // Valid SRS configuration used as a base for the test case.
 const srs_estimator_configuration base_config = {std::nullopt,
                                                  {0, 130, 8, 0},
+                                                 0,
                                                  {srs_resource_configuration::one_two_four_enum(2),
                                                   srs_nof_symbols(1),
                                                   12,

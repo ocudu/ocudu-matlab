@@ -216,9 +216,10 @@ classdef ocuduPUCCHProcessorFormat1Unittest < ocuduTest.ocuduBlockUnittest
                 @writeResourceGridEntryFile, rxGridSymbols, rxGridIndices);
 
             % Generate a 'slot_point' configuration.
+            slotNumber = carrier.NFrame * carrier.SlotsPerFrame + carrier.NSlot + configuration.SlotOffset;
             slotPointConfig = {...
-                Numerology, ...                                             % numerology
-                carrier.NFrame * carrier.SlotsPerFrame + carrier.NSlot, ... % system slot number
+                Numerology, ...     % numerology
+                slotNumber, ...     % system slot number
                 };
 
             % Generate a 'cyclic_prefix' configuration.
@@ -236,6 +237,7 @@ classdef ocuduPUCCHProcessorFormat1Unittest < ocuduTest.ocuduBlockUnittest
             pucchConfigCommon = {...
                 'std::nullopt', ...                  % context
                 slotPointConfig, ...                 % slot
+                configuration.SlotOffset, ...        % slot_offset
                 nSizeBWP, ...                        % bwp_size_rb
                 nStartBWP, ...                       % bwp_start_rb
                 cyclicPrefixConfig, ...              % cp
@@ -352,6 +354,10 @@ function [rxGrid, pucchListIn, pucchListOut, configuration] = generateSimData(Nu
 
     % Use a random slot number from the allowed range.
     nSlot = randi([0, 10 * pow2(Numerology) - 1]);
+
+    % Uplink slot offset, i.e. the NTN K_mac. Derived from an already randomized parameter rather than
+    % drawn, so that the random stream, and with it the noise realizations, stay unchanged.
+    slotOffset = mod(nSlot, 13);
 
     % Fixed parameter values.
     nStartBWP = 1;
@@ -519,6 +525,7 @@ function [rxGrid, pucchListIn, pucchListOut, configuration] = generateSimData(Nu
         'PUCCH', pucchCommon, ...
         'PUCCHDataIndices', pucchDataIndices, ...
         'PUCCHDMRSIndices', pucchDmrsIndices, ...
+        'SlotOffset', slotOffset, ...
         'Carrier', carrier);
 end
 
