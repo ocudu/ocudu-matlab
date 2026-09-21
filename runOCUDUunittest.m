@@ -89,6 +89,8 @@ function unittestClass = name2Class(name)
             unittestClass = ?ocuduPUCCHDMRSUnittest;
         case 'dmrs_pusch_estimator'
             unittestClass = ?ocuduPUSCHDMRSUnittest;
+        case 'doa_estimator'
+            unittestClass = ?ocuduSRSDOAEstimatorUnittest;
         case 'ldpc_encoder'
             unittestClass = ?ocuduLDPCEncoderUnittest;
         case 'ldpc_rate_matcher'
