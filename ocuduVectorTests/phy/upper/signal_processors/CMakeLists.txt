@@ -40,7 +40,6 @@ target_link_libraries(dmrs_pdcch_processor_test
         ocudulog
         gtest
         gtest_main)
-add_test(dmrs_pdcch_processor_test dmrs_pdcch_processor_test)
 add_test_vector(dmrs_pdcch_processor_test pdcch/dmrs_pdcch_processor_test_data.tar.gz "")
 
 add_executable(dmrs_pdsch_processor_test pdsch/dmrs_pdsch_processor_test.cpp)
@@ -78,9 +77,15 @@ add_test_vector(dmrs_pusch_estimator_test pusch/dmrs_pusch_estimator_test_data.t
 add_executable(nzp_csi_rs_generator_test nzp_csi_rs/nzp_csi_rs_generator_test.cpp)
 target_link_libraries(nzp_csi_rs_generator_test ocudu_nzp_csi_rs_generator ocuduvec ocudu_sequence_generators ocudulog
         ocudu_upper_phy_support ocudu_phy_support gtest gtest_main ocudu_channel_precoder)
-add_test(nzp_csi_rs_generator_test nzp_csi_rs_generator_test)
 add_test_vector(nzp_csi_rs_generator_test nzp_csi_rs/nzp_csi_rs_generator_test_data.tar.gz "")
 
 add_executable(port_channel_estimator_test channel_estimator/port_channel_estimator_test.cpp)
 target_link_libraries(port_channel_estimator_test ocudu_channel_estimator ocudu_dft ocudulog gtest gtest_main)
 add_test_vector(port_channel_estimator_test channel_estimator/port_channel_estimator_test_data.tar.gz "")
+
+if (TARGET Eigen3::Eigen)
+    add_executable(doa_estimator_vectortest srs/doa_estimator_vectortest.cpp)
+    target_include_directories(doa_estimator_vectortest PRIVATE ${CMAKE_SOURCE_DIR}/lib/phy/upper/signal_processors/srs)
+    target_link_libraries(doa_estimator_vectortest ocudu_doa_estimator ocudulog gtest gtest_main)
+    add_test_vector(doa_estimator_vectortest srs/doa_estimator_test_data.tar.gz "" "MVP-FUNC-POS-16-3-c")
+endif (TARGET Eigen3::Eigen)
