@@ -21,7 +21,7 @@ add_test_vector(pdsch_encoder_test pdsch_encoder_test_data.tar.gz "")
 
 add_executable(pdsch_modulator_test pdsch_modulator_test.cpp)
 target_link_libraries(pdsch_modulator_test ocudu_channel_processors ocudu_channel_precoder ocudulog gtest gtest_main)
-add_test_vector(pdsch_modulator_test pdsch_modulator_test_data.tar.gz "")
+add_test_vector(pdsch_modulator_test pdsch_modulator_test_data.tar.gz "" "MVP-FUNC-PHY-16-15")
 
 add_executable(pdsch_processor_vectortest pdsch_processor_vectortest.cpp)
 set(PDSCH_PROCESSOR_LIBRARIES ocudu_channel_processors ocudu_channel_precoder ocudulog gtest gtest_main)
@@ -33,4 +33,4 @@ if (ENABLE_PDSCH_HWACC)
 endif (ENABLE_PDSCH_HWACC)
 
 target_link_libraries(pdsch_processor_vectortest ${PDSCH_PROCESSOR_LIBRARIES})
-add_test_vector(pdsch_processor_vectortest pdsch_processor_test_data.tar.gz "")
+add_test_vector(pdsch_processor_vectortest pdsch_processor_test_data.tar.gz "" "MVP-FUNC-MIMO-16-4;MVP-FUNC-MIMO-16-5")

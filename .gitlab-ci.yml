@@ -420,7 +420,7 @@ build mex conformance even:
   parallel:
     matrix:
       - TEST: "@CheckPUSCHConformance/CheckPUSCHConformance.m"
-        TESTMARKER: "PLACEHOLDEREXAMPLE"
+        TESTMARKER: "MVP-FUNC-MIMO-16-4;MVP-FUNC-MIMO-16-5;DU-PHY-7"
         SUBSET:
           - ".+Table8_2_1_2_1.+"       # Table TS38.104 V15.19.0 Table 8.2.1.2-1 (Type A,   5 MHz, 15 kHz)
           - ".+Table8_2_1_2_2.+"       # Table TS38.104 V15.19.0 Table 8.2.1.2-2 (Type A,  10 MHz, 15 kHz)
@@ -517,6 +517,7 @@ build mex conformance odd:
           - ".+struct_(1[8-9]|2[0-5])\\)" # TS38.104 V15.19.0 Tables 8.3.6.2-2 (30 kHz, 2 antennas)
           - ".+struct_(2[6-9]|3[0-3])\\)" # TS38.104 V15.19.0 Tables 8.3.6.2-2 (30 kHz, 4 antennas)
       - TEST: "CheckPRACHConformance.m"
+        TESTMARKER: "MVP-FUNC-PHY-16-2;MVP-PERF-ACC-1"
         SUBSET:
           - ".detection.+struct(|_[1-3])\\)"         # TS38.104 V15.19.0 Table 8.4.2.2-1 (long)
           - ".detection.+struct_([4-9]|1[0-5])\\)"   # TS38.104 V15.19.0 Table 8.4.2.2-2 (short 15 kHz)

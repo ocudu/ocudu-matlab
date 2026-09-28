@@ -36,7 +36,7 @@ target_link_libraries(pusch_demodulator_vectortest
         ocudu_transform_precoding
         gtest
         gtest_main)
-add_test_vector(pusch_demodulator_vectortest pusch_demodulator_test_data.tar.gz "")
+add_test_vector(pusch_demodulator_vectortest pusch_demodulator_test_data.tar.gz "" "MVP-FUNC-PHY-16-15")
 
 add_executable(pusch_processor_vectortest pusch_processor_vectortest.cpp)
 set(PUSCH_PROCESSOR_LIBRARIES ocudu_channel_equalizer
@@ -54,7 +54,7 @@ if (ENABLE_PUSCH_HWACC)
 endif (ENABLE_PUSCH_HWACC)
 
 target_link_libraries(pusch_processor_vectortest ${PUSCH_PROCESSOR_LIBRARIES})
-add_test_vector(pusch_processor_vectortest pusch_processor_test_data.tar.gz "")
+add_test_vector(pusch_processor_vectortest pusch_processor_test_data.tar.gz "" "MVP-FUNC-MIMO-16-4;MVP-FUNC-MIMO-16-5")
 
 add_executable(ulsch_demultiplex_test ulsch_demultiplex_test.cpp)
 target_link_libraries(ulsch_demultiplex_test ocudu_channel_processors ocudu_channel_coding gtest gtest_main)

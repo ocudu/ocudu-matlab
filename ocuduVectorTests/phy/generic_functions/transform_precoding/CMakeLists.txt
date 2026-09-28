@@ -14,4 +14,4 @@ target_link_libraries(
         gtest
         gtest_main)
 
-add_test_vector(transform_precoder_vectortest transform_precoder_test_data.tar.gz "")
+add_test_vector(transform_precoder_vectortest transform_precoder_test_data.tar.gz "" "DU-PHY-7")

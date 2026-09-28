@@ -59,7 +59,7 @@ target_link_libraries(pucch_processor_format0_vectortest
         ocudulog
         gtest
         gtest_main)
-add_test_vector(pucch_processor_format0_vectortest pucch_processor_format0_test_data.tar.gz "")
+add_test_vector(pucch_processor_format0_vectortest pucch_processor_format0_test_data.tar.gz "" "DU-GEN-3;DU-PHY-1")
 
 add_executable(pucch_processor_format1_vectortest pucch_processor_format1_vectortest.cpp)
 target_link_libraries(pucch_processor_format1_vectortest
@@ -71,7 +71,7 @@ target_link_libraries(pucch_processor_format1_vectortest
         ocudulog
         gtest
         gtest_main)
-add_test_vector(pucch_processor_format1_vectortest pucch_processor_format1_test_data.tar.gz "")
+add_test_vector(pucch_processor_format1_vectortest pucch_processor_format1_test_data.tar.gz "" "DU-GEN-3;DU-PHY-1")
 
 add_executable(pucch_processor_format2_vectortest pucch_processor_format2_vectortest.cpp)
 target_link_libraries(pucch_processor_format2_vectortest
@@ -83,7 +83,7 @@ target_link_libraries(pucch_processor_format2_vectortest
         gtest
         gtest_main)
 add_test(pucch_processor_format2_vectortest pucch_processor_format2_vectortest)
-add_test_vector(pucch_processor_format2_vectortest pucch_processor_format2_test_data.tar.gz "")
+add_test_vector(pucch_processor_format2_vectortest pucch_processor_format2_test_data.tar.gz "" "DU-GEN-3;DU-PHY-1")
 
 add_executable(pucch_processor_format3_vectortest pucch_processor_format3_vectortest.cpp)
 target_include_directories(pucch_processor_format3_vectortest PRIVATE ${OCUDU_VECTORTESTS_DIR}/support)
@@ -96,7 +96,7 @@ target_link_libraries(pucch_processor_format3_vectortest
         gtest
         gtest_main)
 add_test(pucch_processor_format3_vectortest pucch_processor_format3_vectortest)
-add_test_vector(pucch_processor_format3_vectortest pucch_processor_format3_test_data.tar.gz "")
+add_test_vector(pucch_processor_format3_vectortest pucch_processor_format3_test_data.tar.gz "" "DU-GEN-3;DU-PHY-1;DU-PHY-3")
 
 add_executable(pucch_processor_format4_vectortest pucch_processor_format4_vectortest.cpp)
 target_link_libraries(pucch_processor_format4_vectortest
@@ -108,4 +108,4 @@ target_link_libraries(pucch_processor_format4_vectortest
         gtest
         gtest_main)
 add_test(pucch_processor_format4_vectortest pucch_processor_format4_vectortest)
-add_test_vector(pucch_processor_format4_vectortest pucch_processor_format4_test_data.tar.gz "")
+add_test_vector(pucch_processor_format4_vectortest pucch_processor_format4_test_data.tar.gz "" "DU-GEN-3;DU-PHY-1;DU-PHY-4")

@@ -34,7 +34,8 @@ add_custom_target(all_vector_tests)
 # appropriate format, which will be extracted in the proper build directory). Set VECTOR_FILE to none if no external
 # test vector files are required.
 #
-# Other arguments to the underlying add_test command can be provided through TEST_ARGS.
+# Other arguments to the underlying add_test command can be provided through TEST_ARGS. Optionally, extra test labels
+# can be passed as additional arguments (empty or none means no extra labels).
 macro(ADD_TEST_VECTOR TARGET VECTOR_FILE TEST_ARGS)
     if (NOT (${VECTOR_FILE} STREQUAL none))
         if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${VECTOR_FILE})
@@ -51,6 +52,9 @@ macro(ADD_TEST_VECTOR TARGET VECTOR_FILE TEST_ARGS)
     endif (NOT (${VECTOR_FILE} STREQUAL none))
     add_test(${TARGET} ${TARGET} ${TEST_ARGS})
     set_property(TEST ${TARGET} APPEND PROPERTY LABELS vectortest)
+    if (NOT ("${ARGN}" STREQUAL ""))
+        set_property(TEST ${TARGET} APPEND PROPERTY LABELS "${ARGN}")
+    endif (NOT ("${ARGN}" STREQUAL ""))
     # Add the target to the "all_vector_tests" target.
     add_dependencies(all_vector_tests ${TARGET})
 endmacro(ADD_TEST_VECTOR TARGET VECTOR_FILE ...)
