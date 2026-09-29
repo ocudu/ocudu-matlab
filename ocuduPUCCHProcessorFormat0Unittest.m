@@ -143,9 +143,11 @@ classdef ocuduPUCCHProcessorFormat0Unittest < ocuduTest.ocuduBlockUnittest
                 @writeResourceGridEntryFile, rxGridSymbols, rxGridIndices);
 
             % Generate a 'slot_point' configuration.
+            slotsPerHyperframe = carrier.SlotsPerFrame * 1024;
+            slotNumber = mod(carrier.NFrame * carrier.SlotsPerFrame + carrier.NSlot + slotOffset, slotsPerHyperframe);
             slotPointConfig = {...
-                numerology, ...                                                          % numerology
-                carrier.NFrame * carrier.SlotsPerFrame + carrier.NSlot + slotOffset, ... % system slot number
+                numerology, ... % numerology
+                slotNumber, ... % system slot number
                 };
 
             secondHopConfig = {};

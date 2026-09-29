@@ -216,7 +216,8 @@ classdef ocuduPUCCHProcessorFormat1Unittest < ocuduTest.ocuduBlockUnittest
                 @writeResourceGridEntryFile, rxGridSymbols, rxGridIndices);
 
             % Generate a 'slot_point' configuration.
-            slotNumber = carrier.NFrame * carrier.SlotsPerFrame + carrier.NSlot + configuration.SlotOffset;
+            slotsPerHyperframe = carrier.SlotsPerFrame * 1024;
+            slotNumber = mod(carrier.NFrame * carrier.SlotsPerFrame + carrier.NSlot + configuration.SlotOffset, slotsPerHyperframe);
             slotPointConfig = {...
                 Numerology, ...     % numerology
                 slotNumber, ...     % system slot number
