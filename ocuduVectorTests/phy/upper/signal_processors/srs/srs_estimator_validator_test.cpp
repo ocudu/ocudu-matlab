@@ -98,7 +98,7 @@ protected:
     report_fatal_error_if_not(ta_est_factory, "Invalid TA estimator factory.");
 
     std::shared_ptr<srs_estimator_factory> srs_est_factory =
-        create_srs_estimator_generic_factory(sequence_generator_factory, ta_est_factory, 25);
+        create_srs_estimator_generic_factory(sequence_generator_factory, ta_est_factory, nullptr, 25);
     ASSERT_NE(srs_est_factory, nullptr);
 
     estimator = srs_est_factory->create();

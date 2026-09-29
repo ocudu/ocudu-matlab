@@ -23,7 +23,7 @@ add_executable(srs_estimator_test
         srs/srs_estimator_vectortest.cpp)
 target_link_libraries(srs_estimator_test ocudu_srs_estimator ocudu_dft ocudu_phy_support ocuduvec ocudu_sequence_generators ocudulog gtest gtest_main)
 add_test_vector(srs_estimator_test srs/srs_estimator_test_data.tar.gz "" "MVP-FUNC-PHY-16-3;MVP-FUNC-PHY-16-4;MVP-FUNC-PHY-16-5")
-target_include_directories(srs_estimator_test PRIVATE ${CMAKE_SOURCE_DIR}/tests/unittests/phy/upper/signal_processors/srs)
+target_include_directories(srs_estimator_test PRIVATE ${CMAKE_SOURCE_DIR}/tests/unittests/phy/upper/signal_processors/srs ${OCUDU_VECTORTESTS_DIR}/support)
 
 add_executable(dmrs_pbch_processor_test ssb/dmrs_pbch_processor_test.cpp)
 target_link_libraries(dmrs_pbch_processor_test ocudu_ssb_generators ocuduvec ocudu_sequence_generators ocudulog gtest gtest_main)
