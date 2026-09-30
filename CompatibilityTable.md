@@ -4,5 +4,6 @@ The following compatibility table provides a list of reference commits on both t
 
 | *OCUDU MATLAB*  |      OCUDU     |  Test date   |
 |      ------     |     ------     |    ------    |
+|     290889d     |     6188a2b    |  2026-09-30  |
 |     0824c9c     |     4c821ac    |  2026-09-22  |
 |     90962a      |     4c5a208    |  2026-03-27  |
