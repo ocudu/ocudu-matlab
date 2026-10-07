@@ -15,6 +15,7 @@ target_link_libraries(ofdm_modulator_vectortest ocudulog
         gtest
         gtest_main)
 add_test_vector(ofdm_modulator_vectortest ofdm_modulator_test_data.tar.gz "")
+target_include_directories(ofdm_modulator_vectortest PRIVATE ${OCUDU_VECTORTESTS_DIR}/support)
 
 add_executable(ofdm_demodulator_vectortest ofdm_demodulator_vectortest.cpp)
 target_link_libraries(ofdm_demodulator_vectortest ocudulog

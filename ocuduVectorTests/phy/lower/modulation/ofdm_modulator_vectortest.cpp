@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 // SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
+#include "compare_sequences.h"
 #include "ofdm_modulator_test_data.h"
 #include "resource_grid_test_doubles.h"
 #include "ocudu/phy/antenna_ports.h"
@@ -28,6 +29,8 @@ static std::ostream& operator<<(std::ostream& os, const test_case_t& test_case)
 
 using namespace ocudu;
 
+static constexpr int max_abs_error = 1;
+
 class ofdm_modulator_tester : public ::testing::TestWithParam<test_case_t>
 {
 protected:
@@ -51,8 +54,6 @@ protected:
     modulator = ofdm_factory->create_ofdm_slot_modulator(test_case.test_config.config);
     ASSERT_TRUE(modulator);
   }
-
-  static float get_max_abs_error(cf_t expected) { return std::max(std::abs(expected) / 128, 0.001F); }
 };
 
 TEST_P(ofdm_modulator_tester, vector)
@@ -64,7 +65,7 @@ TEST_P(ofdm_modulator_tester, vector)
   const std::vector<resource_grid_writer_spy::expected_entry_t> data = test_case.data.read();
 
   // Load the golden data.
-  const std::vector<cf_t> expected = test_case.modulated.read();
+  const std::vector<ci16_t> expected = test_case.modulated.read();
 
   // One slot per subframe will be tested.
   unsigned input_offset = 0;
@@ -88,20 +89,19 @@ TEST_P(ofdm_modulator_tester, vector)
   port_weights[test_case.test_config.port_idx] = cf_t{1, 0};
 
   // Modulate signal.
-  std::vector<cf_t> output(modulator->get_slot_size(test_case.test_config.slot_idx));
+  std::vector<ci16_t> output(modulator->get_slot_size(test_case.test_config.slot_idx));
   modulator->modulate(output, rg, port_weights, test_case.test_config.slot_idx);
 
-  for (unsigned i = 0; i != expected.size(); ++i) {
-    float max_error = get_max_abs_error(expected[i]);
-    float error     = std::abs(output[i] - expected[i]);
-    ASSERT_LT(error, max_error) << fmt::format("Sample index {} error {} exceeds maximum allowed ({}). "
-                                               "Expected symbol {} but got {}.",
-                                               i,
-                                               error,
-                                               max_error,
-                                               expected[i],
-                                               output[i]);
-  }
+  // Allow a difference of one least significant bit per component due to the rounding.
+  error_type<std::string> modulated_ok = compare_sequences(
+      span<const ci16_t>(output),
+      span<const ci16_t>(expected),
+      [](ci16_t actual, ci16_t value) {
+        return std::max(std::abs(static_cast<int>(actual.real()) - static_cast<int>(value.real())),
+                        std::abs(static_cast<int>(actual.imag()) - static_cast<int>(value.imag())));
+      },
+      max_abs_error);
+  ASSERT_TRUE(modulated_ok.has_value()) << modulated_ok.error();
 }
 
 INSTANTIATE_TEST_SUITE_P(ofdm_modulator_vectortest,

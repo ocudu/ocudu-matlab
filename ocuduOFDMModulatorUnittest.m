@@ -81,7 +81,7 @@ classdef ocuduOFDMModulatorUnittest < ocuduTest.ocuduBlockUnittest
             fprintf(fileID, 'ofdm_modulator_test_configuration test_config;\n');
             fprintf(fileID, ...
                 'file_vector<resource_grid_writer_spy::expected_entry_t> data;\n');
-            fprintf(fileID, 'file_vector<cf_t> modulated;\n');
+            fprintf(fileID, 'file_vector<ci16_t> modulated;\n');
             fprintf(fileID, '};\n');
         end
     end % of methods (Access = protected)
@@ -95,14 +95,16 @@ classdef ocuduOFDMModulatorUnittest < ocuduTest.ocuduBlockUnittest
             import ocuduLib.phy.helpers.ocuduRandomGridEntry
             import ocuduTest.helpers.approxbf16
             import ocuduTest.helpers.writeResourceGridEntryFile
-            import ocuduTest.helpers.writeComplexFloatFile
+            import ocuduTest.helpers.writeComplexInt16File
 
             % Generate a unique test ID.
             testID = testCase.generateTestID;
 
-            % Use a unique port index and scale for each test.
+            % Use a unique port index and scale for each test. The ocudu OFDM modulator DFT is not normalized, so the
+            % scale includes the DFT size normalization to keep the modulated signal within the 16-bit integer full
+            % scale. The scale is rounded to the precision written in the header file.
             portIdx = randi([0, 15]);
-            scale = 2 * rand - 1;
+            scale = round((2 * rand - 1) / DFTsize, 5, 'significant');
             nSlot = randi([0 pow2(numerology)-1]);
 
             % Select a random carrier frequency from 0 to 3 GHz to avoid
@@ -143,13 +145,16 @@ classdef ocuduOFDMModulatorUnittest < ocuduTest.ocuduBlockUnittest
                 timeDomainData = nrOFDMModulate(carrier, reshape(approxbf16(inputData), [nSizeGrid * 12, carrier.SymbolsPerSlot]), ...
                     'Windowing', 0, 'CarrierFrequency', CarrierFrequency);
 
-                % Apply the requested scale and homogenize the output values with those of ocudu.
-                OCUDUscaleFactor = DFTsize;
-                timeDomainData = timeDomainData * scale * OCUDUscaleFactor;
+                % Apply the requested scale, compensating the DFT size normalization of the MATLAB OFDM modulator.
+                timeDomainData = timeDomainData * scale * DFTsize;
+
+                % Convert to 16-bit integer with rounding and saturation. The full scale matches
+                % ocuduvec::scaling_factor_cf_to_ci16.
+                timeDomainDataInt = int16(timeDomainData * double(intmax('int16')));
 
                 % Write the time-domain data into a binary file.
                 testCase.saveDataFile('_test_output', testID, ...
-                    @writeComplexFloatFile, timeDomainData);
+                    @writeComplexInt16File, timeDomainDataInt);
 
                 % Generate the test case entry.
                 testCaseString = testCase.testCaseToString(testID, {{numerology, nSizeGrid, ...
