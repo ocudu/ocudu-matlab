@@ -159,11 +159,6 @@ TEST_P(LDPCRateMatchingFixture, LDPCRateMatchingTest)
   ASSERT_EQ(expected_matched.size(), rm_length);
   EXPECT_EQ(span<const uint8_t>(matched), span<const uint8_t>(expected_matched)) << "Wrong rate matching.";
 
-  // 1024-QAM is currently validated on TX only.
-  if (mod == modulation_scheme::QAM1024) {
-    GTEST_SKIP() << "1024-QAM is currently validated on TX only.";
-  }
-
   // Get the rate dematcher implementation type.
   std::string rate_dematcher_type = std::get<0>(params);
 

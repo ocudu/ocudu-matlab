@@ -3,7 +3,7 @@
 
 #pragma once
 
-// This file was generated using the following MATLAB class on 28-08-2026 (seed 0):
+// This file was generated using the following MATLAB class on 09-10-2026 (seed 0):
 //   + "ocuduDemodulationMapperUnittest.m"
 
 #include "resource_grid_test_doubles.h"
@@ -31,12 +31,14 @@ static const std::vector<test_case_t> demodulation_mapper_test_data = {
   {257, modulation_scheme::QAM16, {"test_data/demodulation_mapper_test_input3.dat"}, {"test_data/demodulation_mapper_test_noisevar3.dat"}, {"test_data/demodulation_mapper_test_soft_bits3.dat"}, {"test_data/demodulation_mapper_test_hard_bits3.dat"}},
   {257, modulation_scheme::QAM64, {"test_data/demodulation_mapper_test_input4.dat"}, {"test_data/demodulation_mapper_test_noisevar4.dat"}, {"test_data/demodulation_mapper_test_soft_bits4.dat"}, {"test_data/demodulation_mapper_test_hard_bits4.dat"}},
   {257, modulation_scheme::QAM256, {"test_data/demodulation_mapper_test_input5.dat"}, {"test_data/demodulation_mapper_test_noisevar5.dat"}, {"test_data/demodulation_mapper_test_soft_bits5.dat"}, {"test_data/demodulation_mapper_test_hard_bits5.dat"}},
-  {997, modulation_scheme::BPSK, {"test_data/demodulation_mapper_test_input6.dat"}, {"test_data/demodulation_mapper_test_noisevar6.dat"}, {"test_data/demodulation_mapper_test_soft_bits6.dat"}, {"test_data/demodulation_mapper_test_hard_bits6.dat"}},
-  {997, modulation_scheme::PI_2_BPSK, {"test_data/demodulation_mapper_test_input7.dat"}, {"test_data/demodulation_mapper_test_noisevar7.dat"}, {"test_data/demodulation_mapper_test_soft_bits7.dat"}, {"test_data/demodulation_mapper_test_hard_bits7.dat"}},
-  {997, modulation_scheme::QPSK, {"test_data/demodulation_mapper_test_input8.dat"}, {"test_data/demodulation_mapper_test_noisevar8.dat"}, {"test_data/demodulation_mapper_test_soft_bits8.dat"}, {"test_data/demodulation_mapper_test_hard_bits8.dat"}},
-  {997, modulation_scheme::QAM16, {"test_data/demodulation_mapper_test_input9.dat"}, {"test_data/demodulation_mapper_test_noisevar9.dat"}, {"test_data/demodulation_mapper_test_soft_bits9.dat"}, {"test_data/demodulation_mapper_test_hard_bits9.dat"}},
-  {997, modulation_scheme::QAM64, {"test_data/demodulation_mapper_test_input10.dat"}, {"test_data/demodulation_mapper_test_noisevar10.dat"}, {"test_data/demodulation_mapper_test_soft_bits10.dat"}, {"test_data/demodulation_mapper_test_hard_bits10.dat"}},
-  {997, modulation_scheme::QAM256, {"test_data/demodulation_mapper_test_input11.dat"}, {"test_data/demodulation_mapper_test_noisevar11.dat"}, {"test_data/demodulation_mapper_test_soft_bits11.dat"}, {"test_data/demodulation_mapper_test_hard_bits11.dat"}},
+  {257, modulation_scheme::QAM1024, {"test_data/demodulation_mapper_test_input6.dat"}, {"test_data/demodulation_mapper_test_noisevar6.dat"}, {"test_data/demodulation_mapper_test_soft_bits6.dat"}, {"test_data/demodulation_mapper_test_hard_bits6.dat"}},
+  {997, modulation_scheme::BPSK, {"test_data/demodulation_mapper_test_input7.dat"}, {"test_data/demodulation_mapper_test_noisevar7.dat"}, {"test_data/demodulation_mapper_test_soft_bits7.dat"}, {"test_data/demodulation_mapper_test_hard_bits7.dat"}},
+  {997, modulation_scheme::PI_2_BPSK, {"test_data/demodulation_mapper_test_input8.dat"}, {"test_data/demodulation_mapper_test_noisevar8.dat"}, {"test_data/demodulation_mapper_test_soft_bits8.dat"}, {"test_data/demodulation_mapper_test_hard_bits8.dat"}},
+  {997, modulation_scheme::QPSK, {"test_data/demodulation_mapper_test_input9.dat"}, {"test_data/demodulation_mapper_test_noisevar9.dat"}, {"test_data/demodulation_mapper_test_soft_bits9.dat"}, {"test_data/demodulation_mapper_test_hard_bits9.dat"}},
+  {997, modulation_scheme::QAM16, {"test_data/demodulation_mapper_test_input10.dat"}, {"test_data/demodulation_mapper_test_noisevar10.dat"}, {"test_data/demodulation_mapper_test_soft_bits10.dat"}, {"test_data/demodulation_mapper_test_hard_bits10.dat"}},
+  {997, modulation_scheme::QAM64, {"test_data/demodulation_mapper_test_input11.dat"}, {"test_data/demodulation_mapper_test_noisevar11.dat"}, {"test_data/demodulation_mapper_test_soft_bits11.dat"}, {"test_data/demodulation_mapper_test_hard_bits11.dat"}},
+  {997, modulation_scheme::QAM256, {"test_data/demodulation_mapper_test_input12.dat"}, {"test_data/demodulation_mapper_test_noisevar12.dat"}, {"test_data/demodulation_mapper_test_soft_bits12.dat"}, {"test_data/demodulation_mapper_test_hard_bits12.dat"}},
+  {997, modulation_scheme::QAM1024, {"test_data/demodulation_mapper_test_input13.dat"}, {"test_data/demodulation_mapper_test_noisevar13.dat"}, {"test_data/demodulation_mapper_test_soft_bits13.dat"}, {"test_data/demodulation_mapper_test_hard_bits13.dat"}},
     // clang-format on
 };
 
