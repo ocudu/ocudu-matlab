@@ -24,6 +24,9 @@ function x = randmod(mod, dims)
         case '256QAM'
             n = 16;
             s = sqrt(170);
+        case '1024QAM'
+            n = 32;
+            s = sqrt(682);
         otherwise
             error('Unknown modulation %s.', mod);
     end

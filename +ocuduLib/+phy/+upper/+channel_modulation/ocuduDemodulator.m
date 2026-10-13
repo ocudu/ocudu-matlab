@@ -3,7 +3,7 @@
 %   corresponding to the (noisy) modulated symbols SYMBOLS, and the modulation
 %   scheme SCHEME. SYMBOLS is an array of complex values. SCHEME is a character
 %   array denoting one of the possible NR constellations, namely 'BPSK', 'pi/2-BPSK',
-%   'QPSK', '16QAM', '64QAM', or '256QAM'. The LLRSQ are quantized and take integer
+%   'QPSK', '16QAM', '64QAM', '256QAM', or '1024QAM'. The LLRSQ are quantized and take integer
 %   values in the range -128 to 127 (mimicking a int8_t variable).
 %
 %   LLRSQ = ocuduDemodulator(..., NOISEVAR) specifies the noise variance for the input
@@ -22,7 +22,7 @@
 function llrsq = ocuduDemodulator(symbols, scheme, noiseVar)
     arguments
         symbols (:, 1) double
-        scheme  (1, :) char {mustBeMember(scheme, {'BPSK', 'pi/2-BPSK', 'QPSK', '16QAM', '64QAM', '256QAM'})}
+        scheme  (1, :) char {mustBeMember(scheme, {'BPSK', 'pi/2-BPSK', 'QPSK', '16QAM', '64QAM', '256QAM', '1024QAM'})}
         noiseVar (:, 1) double {mustBeReal, mustBePositive, mustBeFinite} = 1e-10
     end
 
@@ -42,6 +42,8 @@ function llrsq = ocuduDemodulator(symbols, scheme, noiseVar)
             nBits = 6;
         case '256QAM'
             nBits = 8;
+        case '1024QAM'
+            nBits = 10;
     end
 
     if (strcmp(scheme, 'BPSK') || strcmp(scheme, 'pi/2-BPSK'))
@@ -94,6 +96,8 @@ function softBitsQuant = quantize(softBits, mod)
         case '64QAM'
             rangeLimitFloat = 20;
         case '256QAM'
+            rangeLimitFloat = 20;
+        case '1024QAM'
             rangeLimitFloat = 20;
         otherwise
             error('ocuduDemodulator:Unknown constellation.');

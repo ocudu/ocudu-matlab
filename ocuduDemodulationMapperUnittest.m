@@ -55,7 +55,7 @@ classdef ocuduDemodulationMapperUnittest < ocuduTest.ocuduBlockUnittest
         nSymbols = {257, 997}
 
         %Modulation scheme.
-        Modulation = {'BPSK', 'pi/2-BPSK', 'QPSK', '16QAM', '64QAM', '256QAM'}
+        Modulation = {'BPSK', 'pi/2-BPSK', 'QPSK', '16QAM', '64QAM', '256QAM', '1024QAM'}
     end % of properties (TestParameter)
 
     methods (Access = protected)
