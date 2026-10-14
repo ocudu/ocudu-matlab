@@ -60,9 +60,9 @@ protected:
     params.type           = test_case.type;
     params.data_width     = test_case.cIQ_width;
 
-    compressor = create_iq_compressor(params.type, logger, test_case.iq_scaling, std::get<0>(GetParam()));
+    compressor = create_iq_compressor(params.type, logger, test_case.iq_scaling, std::nullopt, std::get<0>(GetParam()));
     ASSERT_NE(compressor, nullptr);
-    decompressor = create_iq_decompressor(params.type, logger, std::get<0>(GetParam()));
+    decompressor = create_iq_decompressor(params.type, logger, std::nullopt, std::get<0>(GetParam()));
     ASSERT_NE(decompressor, nullptr);
   }
 
@@ -80,7 +80,7 @@ protected:
     params.type       = compression_type::BFP;
     params.data_width = 9;
 
-    compressor = create_iq_compressor(params.type, logger, 1.0, GetParam());
+    compressor = create_iq_compressor(params.type, logger, 1.0, std::nullopt, GetParam());
     ASSERT_NE(compressor, nullptr);
   }
 
@@ -195,15 +195,18 @@ TEST_P(OFHCompressionBfp9TestFixture, bpsk_input_compression_is_correct)
   // Instantiate quantizer object.
   quantizer q(9);
 
-  std::vector<cf_t> test_data = {0, 0, 0, 0,  0, 0, 0,  0, 0, 1,  1,  1, -1, -1, 1, 1,  -1, 1,  1,  1, -1, 1,  1,  1,
-                                 1, 1, 1, -1, 1, 1, -1, 1, 1, -1, -1, 1, -1, 1,  1, -1, -1, -1, -1, 1, -1, -1, -1, 1};
+  std::vector<cf_t> test_data = {
+      0, 0, 0, 0,  0, 0, 0,  0, 0, 1,  1,  1, -1, -1, 1, 1,  -1, 1,  1,  1, -1, 1,  1,  1,
+      1, 1, 1, -1, 1, 1, -1, 1, 1, -1, -1, 1, -1, 1,  1, -1, -1, -1, -1, 1, -1, -1, -1, 1,
+  };
   // Reference compressed data taken from Matlab.
   std::vector<unsigned>          test_compr_param     = {7, 7, 7, 7};
   std::vector<std::vector<cf_t>> test_compressed_prbs = {
       {0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255},
       {-255, -255, 255, 255, -255, 255, 255, 255, -255, 255, 255, 255},
       {255, 255, 255, -255, 255, 255, -255, 255, 255, -255, -255, 255},
-      {-255, 255, 255, -255, -255, -255, -255, 255, -255, -255, -255, 255}};
+      {-255, 255, 255, -255, -255, -255, -255, 255, -255, -255, -255, 255},
+  };
 
   unsigned             prb_size = get_compressed_prb_size(params).value();
   std::vector<uint8_t> compressed_data(4 * prb_size);
