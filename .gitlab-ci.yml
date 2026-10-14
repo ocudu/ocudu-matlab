@@ -230,7 +230,7 @@ build test vectors:
       junit: build_test_vectors.xml
     expire_in: 10 days
 
-build and run vector unit tests:
+build and run vector unit tests [amd64-v3]:
   extends: .build_and_unit_template
   stage: test vectors
   variables:
@@ -275,6 +275,26 @@ build and run vector unit tests:
     reports:
       junit: vector_unit_tests.xml
     expire_in: 1 day
+
+build and run vector unit tests [arm64-neon]:
+  extends: build and run vector unit tests [amd64-v3]
+  rules:
+    - if: $ON_MR_FORK
+      when: manual
+      allow_failure: true
+      variables:
+        OCUDU_RUNNER_TAG: saas-linux-small # Free plan only has small arm64
+    - if: $ON_MR
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Nightly/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Weekly/
+  variables:
+    MARCH: ""
+    MCPU: neoverse-n1+crc+crypto+ssbs
+    COMPARE_HEADERS: "False" # Already checked on amd64
+  tags:
+    - ${OCUDU_RUNNER_TAG}-arm64
 
 ################################################################################
 # mex files
