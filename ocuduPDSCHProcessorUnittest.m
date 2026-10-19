@@ -10,7 +10,8 @@
 %
 %   ocuduBlock      - The tested block (i.e., 'pdsch_processor').
 %   ocuduBlockType  - The type of the tested block, including layer
-%                     (i.e., 'phy/upper').
+%                     (i.e., 'phy/upper/channel_processors/pdsch').
+%   SymbolAllocation - PDSCH start symbol index and number of symbols.
 %
 %   ocuduPDSCHProcessorUnittest Properties (ClassSetupParameter):
 %
@@ -20,9 +21,8 @@
 %
 %   BWPConfig          - BWP configuration.
 %   Modulation         - Modulation scheme.
-%   SymbolAllocation   - PDSCH start symbol index and number of symbols.
 %   DMRSReferencePoint - PDSCH DM-RS subcarrier reference point.
-%   MaxNumLayers       - Maximum number of transmission layers.
+%   NumLayers          - Number of transmission layers.
 %
 %   ocuduPDSCHProcessorUnittest Methods (TestTags = {'testvector'}):
 %
@@ -116,10 +116,11 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
         function testvectorGenerationCases(testCase, BWPConfig, Modulation, ...
                 DMRSReferencePoint, NumLayers)
         %testvectorGenerationCases Generates a test vector for the given
-        %   BWP, modulation scheme, and DM-RS reference point settings.
+        %   BWP, modulation scheme, DM-RS reference point and number of layers.
         %   Other parameters, such as subcarrier spacing, PDSCH frequency
-        %   allocation, slot number, RNTI, scrambling identifiers, target
-        %   code rate and DM-RS additional positions are randomly
+        %   allocation (contiguous or non-contiguous with probability 1/2), slot
+        %   number, RNTI, scrambling identifiers, target code rate, redundancy
+        %   version, power offsets and DM-RS additional positions are randomly
         %   generated.
 
             import ocuduLib.phy.helpers.ocuduCSIRSValidateConfig
@@ -130,6 +131,7 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             import ocuduTest.helpers.rbAllocationIndices2String
             import ocuduTest.helpers.symbolAllocationMask2string
             import ocuduTest.helpers.bitPack
+            import ocuduTest.helpers.randomNonContiguousPRBSet
 
             % Generate a unique test ID.
             testID = testCase.generateTestID;
@@ -170,14 +172,11 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
                 NStartGrid=nStartGrid ...
                 );
 
-            % Redundancy Version 0.
-            rv = 0;
+            % Random redundancy version.
+            rv = randi([0, 3]);
 
             % Target code rate, between 0.1 and 0.8;
             targetCodeRate = 0.1 + rand() * 0.7;
-
-            % Minimum number of PRB.
-            MinNumPrb = 1;
 
             % Random parameters.
             RNTI = randi([1, 65535]);
@@ -187,11 +186,7 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
 
             % 15 or 30 kHz subcarrier spacing.
             carrier.SubcarrierSpacing = 15 * randi([1, 2]);
-            NSlot = randi([0, carrier.SlotsPerFrame]);
-
-            % PDSCH frequency allocation within the BWP, referenced to PRB 0 of the BWP.
-            PdschStartRB = randi([0, nSizeBWP - MinNumPrb]);
-            PdschNumRB = randi([MinNumPrb, nSizeBWP - PdschStartRB]);
+            NSlot = randi([0, carrier.SlotsPerFrame - 1]);
 
             % Additional DM-RS positions.
             DMRSAdditionalPosition = randi([0, maxDMRSAdditionalPosition]);
@@ -210,13 +205,22 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             pdsch.SymbolAllocation = testCase.SymbolAllocation;
             pdsch.NStartBWP = nStartBWP;
             pdsch.NSizeBWP = nSizeBWP;
-            pdsch.PRBSet = PdschStartRB + (0:PdschNumRB - 1);
             pdsch.DMRS.DMRSAdditionalPosition = DMRSAdditionalPosition;
             pdsch.DMRS.NIDNSCID = NIDNSCID;
             pdsch.DMRS.NSCID = NSCID;
             pdsch.DMRS.DMRSReferencePoint = DMRSReferencePoint;
             pdsch.DMRS.DMRSLength = DMRSLength;
             pdsch.NumLayers = NumLayers;
+
+            % Pick contiguous or not contiguous RB allocation with probability 1/2.
+            if (rand < 0.5)
+                % PDSCH frequency allocation within the BWP, referenced to PRB 0 of the BWP.
+                PdschStartRB = randi([0, nSizeBWP - 1]);
+                PdschNumRB = randi([1, nSizeBWP - PdschStartRB]);
+                pdsch.PRBSet = PdschStartRB + (0:PdschNumRB - 1);
+            else
+                pdsch.PRBSet = randomNonContiguousPRBSet(nSizeBWP);
+            end
 
             % Create a ZP-CSI-RS resource, occupying the first symbol.
             csirs1 = nrCSIRSConfig;
@@ -313,12 +317,17 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             % The redundancy version must provide one entry per codeword.
             schCodeword = encDL(Modulation, pdsch.NumLayers, pdschInfo.G, rv * ones(1, numCWs));
 
+            % Random data power offset. The DM-RS power offset follows the ratio of
+            % PDSCH EPRE to DM-RS EPRE in TS38.214 Table 4.1-1, indexed by the number
+            % of DM-RS CDM groups without data.
+            betaDatadB = randi([-3, 3]);
+            DMRSPowerOffsetdB = [0, 3, 4.77];
+            betaDMRSdB = betaDatadB + DMRSPowerOffsetdB(pdsch.DMRS.NumCDMGroupsWithoutData);
+
             % Generate DL-SCH symbols.
-            betaDatadB = 0;
             schSymbols = nrPDSCH(carrier, pdsch, schCodeword) * 10 ^ (betaDatadB / 20);
 
             % Generate DM-RS symbols.
-            betaDMRSdB = 0;
             DMRSSymbols = nrPDSCHDMRS(carrier, pdsch) * 10 ^ (betaDMRSdB / 20);
 
             transportBlockFileName = '_test_input_transport_block';
@@ -392,8 +401,8 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
                 TBSLBRMStr, ...                          % tbs_lbrm
                 rvdREPatternList, ...                    % reserved
                 'std::nullopt', ...                      % ptrs
-                betaDMRSdB, ...                          % ratio_pdsch_dmrs_to_sss_dB
-                betaDatadB, ...                          % ratio_pdsch_data_to_sss_dB
+                -betaDMRSdB, ...                         % ratio_pdsch_dmrs_to_sss_dB
+                -betaDatadB, ...                         % ratio_pdsch_data_to_sss_dB
                 precodingString ...                      % precoding
                 };
 
