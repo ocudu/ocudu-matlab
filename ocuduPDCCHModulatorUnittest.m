@@ -115,6 +115,7 @@ classdef ocuduPDCCHModulatorUnittest < ocuduTest.ocuduBlockUnittest
             import ocuduLib.phy.upper.channel_processors.ocuduPDCCHmodulator
             import ocuduTest.helpers.writeUint8File
             import ocuduTest.helpers.RBallocationMask2string
+            import ocuduTest.helpers.indices2PRB
 
             % Generate a unique test ID.
             testID = testCase.generateTestID;
@@ -201,7 +202,7 @@ classdef ocuduPDCCHModulatorUnittest < ocuduTest.ocuduBlockUnittest
                     @writeResourceGridEntryFile, PDCCHsymbols, symbolIndices);
 
                 % Generate a RB allocation mask string.
-                rbAllocationMaskStr = RBallocationMask2string(symbolIndices);
+                rbAllocationMaskStr = RBallocationMask2string(indices2PRB(symbolIndices));
 
                 configCell = {...
                     rbAllocationMaskStr, ... rb_mask

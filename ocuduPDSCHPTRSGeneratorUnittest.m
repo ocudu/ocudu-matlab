@@ -258,7 +258,7 @@ classdef ocuduPDSCHPTRSGeneratorUnittest < ocuduTest.ocuduBlockUnittest
             pdsch.SymbolAllocation(1) + pdsch.SymbolAllocation(2)};
 
         % Generate a RB allocation mask string.
-        rbAllocationMask = RBallocationMask2string(PRBstart + nStartBWP, PRBend + nStartBWP);
+        rbAllocationMask = RBallocationMask2string(PRBSet + nStartBWP);
 
         words = {'one', 'two', 'three', 'four'};
         frequencyDensityStr = ['ptrs_frequency_density::' words{FrequencyDensity}];

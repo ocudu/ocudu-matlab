@@ -1,30 +1,16 @@
-%RBallocationMask2string Generates a new RB allocation bitmask string.
-%   OUTPUTSTRING = RBallocationMask2string(VARARGIN)
-%   generates an RB bitmask allocation string OUTPUTSTRING from either a vector
-%   of indices SYMBOLINDICESVECTOR or from a start index PRBSTART and an end
-%   index PRBEND.
+%RBallocationMask2string Generates an RB allocation bitmask string.
+%   OUTPUTSTRING = RBallocationMask2string(PRBINDICES)
+%   generates an RB bitmask allocation string OUTPUTSTRING from a vector of
+%   zero-based PRB indices PRBINDICES.
 
 % SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 % SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-function outputString = RBallocationMask2string(varargin)
+function outputString = RBallocationMask2string(prbIndices)
 
-    rbAllocation = zeros(52, 1); % maximum possible RB size
-    switch length(varargin)
-        case 1
-            symbolIndicesVector = varargin{1};
-            for index = 1:length(symbolIndicesVector)
-                REidx = symbolIndicesVector(index, 1);
-                rbIdx = fix(double(REidx) / 12);
-                rbAllocation(rbIdx + 1) = 1;
-            end
-        case 2
-            PRBstart = varargin{1};
-            PRBend = varargin{2};
-            for rbIdx = PRBstart:PRBend
-                rbAllocation(rbIdx + 1) = 1;
-            end
-    end
+    rbAllocation = zeros(max(prbIndices) + 1, 1);
+    rbAllocation(prbIndices + 1) = 1;
+
     import ocuduTest.helpers.cellarray2str
     outputString = cellarray2str({rbAllocation}, false);
 

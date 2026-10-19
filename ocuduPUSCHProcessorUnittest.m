@@ -123,7 +123,7 @@ classdef ocuduPUSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
         %   scrambling identifiers, frequency allocation and DM-RS additional
         %   positions are randomly selected. If the number of UCI bits is
         %   zero, a MsgA message is generated.
-            import ocuduTest.helpers.rbAllocationIndexes2String
+            import ocuduTest.helpers.rbAllocationIndices2String
             import ocuduTest.helpers.symbolAllocationMask2string
             import ocuduTest.helpers.bitPack
             import ocuduTest.helpers.mcsDescription2Cell
@@ -317,18 +317,18 @@ classdef ocuduPUSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             rxGrid(DCPosition + 1, :) = rxGrid(DCPosition + 1, :) + 1;
 
             % Grid indices for a single receive port in subscript form.
-            rxGridPortIndexes = [nrPUSCHIndices(carrier, pusch, 'IndexStyle','subscript', 'IndexBase','0based'); ...
+            rxGridPortIndices = [nrPUSCHIndices(carrier, pusch, 'IndexStyle','subscript', 'IndexBase','0based'); ...
                 nrPUSCHDMRSIndices(carrier, pusch, 'IndexStyle','subscript', 'IndexBase','0based')];
 
             % Number of PUSCH Resource Elements per port, including DM-RS.
-            nofREPort = size(rxGridPortIndexes, 1);
+            nofREPort = size(rxGridPortIndices, 1);
 
             % Generate the Rx resource grid indices for all receive ports.
             rxGridIndices = zeros(nofREPort * NumRxPorts, 3);
             for iPort = 0 : (NumRxPorts - 1)
                 % Copy the subcarrier and OFDM symbol index coordinates.
                 rxGridIndices(((nofREPort * iPort) + 1) : (nofREPort * (iPort + 1)), :) = ...
-                    rxGridPortIndexes;
+                    rxGridPortIndices;
 
                 % Generate the receive port index coordinates.
                 rxGridIndices(((nofREPort * iPort) + 1) : (nofREPort * (iPort + 1)), 3) = ...
@@ -377,7 +377,7 @@ classdef ocuduPUSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             portsString = cellarray2str(num2cell(0 : (NumRxPorts - 1)), true);
 
             % Generate Resource Block allocation string.
-            RBAllocationString = rbAllocationIndexes2String(pusch.PRBSet);
+            RBAllocationString = rbAllocationIndices2String(pusch.PRBSet);
 
             % Prepare codeblock for the limited buffer rate matcher.
             TBSLBRM = nrTBS('256QAM', 4, 273, 156, 948 / 1024) / 8;

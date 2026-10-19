@@ -246,7 +246,7 @@ classdef ocuduPUSCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
             symbolAllocationMask = symbolAllocationMask2string(symbolIndices);
 
             % generate a RB allocation mask string
-            rbAllocationMask = RBallocationMask2string(PRBstart, PRBend);
+            rbAllocationMask = RBallocationMask2string(PRBSet);
 
             if transformPrecoding == 0
                 SequenceConfig = {...

@@ -117,6 +117,7 @@ classdef ocuduPDCCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
             import ocuduTest.helpers.writeResourceGridEntryFile
             import ocuduTest.helpers.cellarray2str
             import ocuduTest.helpers.RBallocationMask2string
+            import ocuduTest.helpers.indices2PRB
 
             % generate a unique test ID by looking at the number of files generated so far
             testID = testCase.generateTestID;
@@ -210,8 +211,7 @@ classdef ocuduPDCCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
                     rem(nSlot, carrier.SlotsPerSubframe)};
 
                 % generate a RB allocation mask string
-                rbAllocationMask = RBallocationMask2string(symbolIndicesVector);
-
+                rbAllocationMask = RBallocationMask2string(indices2PRB(symbolIndicesVector));
 
                 % Convert cyclic prefix to string.
                 cpString = ['cyclic_prefix::', upper(cyclicPrefix)];

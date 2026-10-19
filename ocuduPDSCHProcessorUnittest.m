@@ -127,7 +127,7 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             import ocuduLib.phy.helpers.ocuduModulationFromMatlab
             import ocuduTest.helpers.writeUint8File
             import ocuduTest.helpers.writeResourceGridEntryFile
-            import ocuduTest.helpers.rbAllocationIndexes2String
+            import ocuduTest.helpers.rbAllocationIndices2String
             import ocuduTest.helpers.symbolAllocationMask2string
             import ocuduTest.helpers.bitPack
 
@@ -353,7 +353,7 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
 
             % Generate Resource Block allocation string, referenced to the
             % starting PRB of the BWP.
-            RBAllocationString = rbAllocationIndexes2String(pdsch.PRBSet);
+            RBAllocationString = rbAllocationIndices2String(pdsch.PRBSet);
 
             % Convert RNTI to string.
             rntiString = ['to_rnti(', num2str(pdsch.RNTI), ')'];
