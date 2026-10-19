@@ -7,9 +7,10 @@
 %
 %   ocuduPDSCHDMRSUnittest Properties (Constant):
 %
-%   ocuduBlock      - The tested block (i.e., 'dmrs_pdsch_processor').
-%   ocuduBlockType  - The type of the tested block, including layer
-%                     (i.e., 'phy/upper/signal_processors/pdsch').
+%   ocuduBlock              - The tested block (i.e., 'dmrs_pdsch_processor').
+%   ocuduBlockType          - The type of the tested block, including layer
+%                             (i.e., 'phy/upper/signal_processors/pdsch').
+%   ValidDMRSReferencePoint - DM-RS reference points.
 %
 %   ocuduPDSCHDMRSUnittest Properties (ClassSetupParameter):
 %
@@ -18,7 +19,7 @@
 %   ocuduPDSCHDMRSUnittest Properties (TestParameter):
 %
 %   numerology              - Defines the subcarrier spacing (0, 1).
-%   NumLayers               - Number of transmission layers (1, 2, 4, 8).
+%   NumLayers               - Number of transmission layers (1, 2, 3, 4).
 %   DMRSTypeAPosition       - Position of the first DM-RS OFDM symbol (2, 3).
 %   DMRSAdditionalPosition  - Maximum number of DM-RS additional positions (0, 1, 2, 3).
 %   DMRSLength              - Number of consecutive front-loaded DM-RS OFDM symbols (1, 2).
@@ -47,6 +48,9 @@ classdef ocuduPDSCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
 
         %Type of the tested block.
         ocuduBlockType = 'phy/upper/signal_processors/pdsch'
+
+        %List of valid DM-RS reference points.
+        ValidDMRSReferencePoint = {'CRB0', 'PRB0'}
     end
 
     properties (Hidden)
@@ -100,13 +104,17 @@ classdef ocuduPDSCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
                 DMRSTypeAPosition, DMRSAdditionalPosition, DMRSLength, DMRSConfigurationType)
         %testvectorGenerationCases Generates a test vector for the given numerology,
         %   NumLayers, DMRSTypeAPosition, DMRSAdditionalPosition, DMRSLength and
-        %   DMRSConfigurationType. NCellID, NSlot and PRB are randomly generated.
+        %   DMRSConfigurationType. NCellID, NSlot, scrambling ID, BWP start, DM-RS
+        %   reference point, symbol allocation and PRB allocation are randomly
+        %   generated. The PRB allocation is either contiguous or non-contiguous with
+        %   probability 1/2.
 
             import ocuduTest.helpers.cellarray2str
             import ocuduLib.phy.upper.signal_processors.ocuduPDSCHDMRS
             import ocuduTest.helpers.writeResourceGridEntryFile
             import ocuduTest.helpers.symbolAllocationMask2string
             import ocuduTest.helpers.RBallocationMask2string
+            import ocuduTest.helpers.randomNonContiguousPRBSet
 
             % Generate a unique test ID.
             testID = testCase.generateTestID;
@@ -120,8 +128,7 @@ classdef ocuduPDSCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
                 nSlot = randi([0, 19]);
             end
             NSCID = randi([0, 1]);
-            PRBstart = randi([0, 136]);
-            PRBend = randi([136, 271]);
+            NIDNSCID = randi([0, 65535]);
 
             % Current fixed parameter values (e.g., number of CDM groups
             % without data).
@@ -130,21 +137,48 @@ classdef ocuduPDSCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
             nFrame = 0;
             cyclicPrefix = 'normal';
             RNTI = 0;
-            nStartBWP = 0;
-            nSizeBWP = nSizeGrid;
-            referencePointKrb = 0;
-            NIDNSCID = nCellID;
             nID = nCellID;
             reservedRE = [];
             modulation = '16QAM';
             mappingType = 'A';
-            symbolAllocation = [1 13];
-            PRBSet = PRBstart:PRBend;
             amplitude = 0.5;
+
+            % BWP allocation, referenced to CRB0.
+            nStartBWP = randi([0, 10]);
+            nSizeBWP = nSizeGrid - nStartBWP;
+
+            % DM-RS subcarrier reference point.
+            DMRSReferencePoint = testCase.ValidDMRSReferencePoint{randi([1, numel(testCase.ValidDMRSReferencePoint)])};
+            referencePointKrb = 0;
+            if strcmp(DMRSReferencePoint, 'PRB0')
+                referencePointKrb = nStartBWP;
+            end
 
             % Skip those invalid configuration cases.
             isDMRSLengthOK = (DMRSLength == 1 || DMRSAdditionalPosition < 2);
             if isDMRSLengthOK
+                % Mapping type A: the allocation must contain the first DM-RS (both
+                % symbols for double-symbol DM-RS) plus at least one more symbol, and
+                % last at least three symbols.
+                symbolStart = randi([0, DMRSTypeAPosition]);
+                minLength = max(3, DMRSTypeAPosition + DMRSLength + 1 - symbolStart);
+                symbolAllocation = [symbolStart, randi([minLength, 14 - symbolStart])];
+
+                % Pick contiguous and non-contiguous allocations with probability 0.5.
+                if (rand < 0.5)
+                    % Keep the highest CRB at least 2, as required by the C++ test.
+                    PRBstart = randi([max(0, 2 - nStartBWP), nSizeBWP - 1]);
+                    maxPRB = nSizeBWP - PRBstart;
+                    if (rand < 0.25)
+                        % Small allocation.
+                        maxPRB = min(4, maxPRB);
+                    end
+
+                    PRBSet = PRBstart + (0:randi([1, maxPRB]) - 1);
+                else
+                    PRBSet = randomNonContiguousPRBSet(nSizeBWP);
+                end
+
                 % Configure the carrier according to the test parameters.
                 subcarrierSpacing = 15 * (2 .^ numerology);
                 carrier = nrCarrierConfig( ...
@@ -165,7 +199,8 @@ classdef ocuduPDSCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
                     DMRSAdditionalPosition=DMRSAdditionalPosition, ...
                     DMRSLength=DMRSLength, ...
                     NIDNSCID=NIDNSCID, ...
-                    NSCID=NSCID ...
+                    NSCID=NSCID, ...
+                    DMRSReferencePoint=DMRSReferencePoint ...
                     );
 
                 % Configure the PDSCH according to the test parameters.
@@ -200,7 +235,7 @@ classdef ocuduPDSCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
                 symbolAllocationMask = symbolAllocationMask2string(symbolIndices);
 
                 % Generate a RB allocation mask string.
-                rbAllocationMask = RBallocationMask2string(PRBSet);
+                rbAllocationMask = RBallocationMask2string(PRBSet + nStartBWP);
 
                 precodingString = ['precoding_beamforming_configuration::make_wideband(make_identity(' num2str(NumLayers) '))'];
                 dmrsTypeString = ['dmrs_config_type::type', num2str(DMRSConfigurationType)];
