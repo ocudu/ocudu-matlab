@@ -130,13 +130,15 @@ classdef ocuduPDSCHPTRSGeneratorUnittest < ocuduTest.ocuduBlockUnittest
         function testvectorGenerationCases(testCase, Numerology, NumLayers, ...
                 FrequencyDensity, TimeDensity, REOffset)
         %testvectorGenerationCases Generates a test vector for the given Numerology,
-        %   NumLayers, FrequencyDensity, TimeDensity, and
-        %   REOffset. Other parameters are selected randomly.
+        %   NumLayers, FrequencyDensity, TimeDensity, and REOffset. The RB allocation
+        %   is either contiguous or non-contiguous with probability 1/2. Other parameters
+        %   are selected randomly.
 
         import ocuduTest.helpers.cellarray2str
         import ocuduTest.helpers.writeResourceGridEntryFile
         import ocuduTest.helpers.symbolAllocationMask2string
         import ocuduTest.helpers.RBallocationMask2string
+        import ocuduTest.helpers.randomNonContiguousPRBSet
 
         % Generate a unique test ID.
         testID = testCase.generateTestID;
@@ -151,10 +153,16 @@ classdef ocuduPDSCHPTRSGeneratorUnittest < ocuduTest.ocuduBlockUnittest
         NSCID = randi([0, 1]);
         nStartBWP = randi([0 10]);
         nSizeBWP = nSizeGrid - nStartBWP;
-        PRBstart = randi([0, nSizeBWP - 2]);
-        PRBend = randi([PRBstart + 1, nSizeBWP - 1]);
         DMRSTypeAPosition = randi([2 3]);
-        DMRSAdditionalPosition = randi([0 3]);
+        DMRSLength = randi([1 2]);
+        % Double-symbol DM-RS only allows up to one additional position (TS38.211 Table 7.4.1.1.2-4).
+        DMRSAdditionalPosition = randi([0, 3 - 2 * (DMRSLength - 1)]);
+        % Mapping type A: the allocation must contain the first DM-RS (both symbols
+        % for double-symbol DM-RS) plus at least one more symbol, and last at least
+        % three symbols.
+        symbolStart = randi([0, DMRSTypeAPosition]);
+        minLength = max(3, DMRSTypeAPosition + DMRSLength + 1 - symbolStart);
+        symbolAllocation = [symbolStart, randi([minLength, 14 - symbolStart])];
         RNTI = randi([1, 65535]);
         DMRSReferencePoint = testCase.ValidDMRSReferencePoint{randi([1 numel(testCase.ValidDMRSReferencePoint)])};
 
@@ -167,11 +175,23 @@ classdef ocuduPDSCHPTRSGeneratorUnittest < ocuduTest.ocuduBlockUnittest
         reservedRE = [];
         modulation = '16QAM';
         mappingType = 'A';
-        symbolAllocation = [1 13];
-        PRBSet = PRBstart:PRBend;
         amplitude = 10 .^ (testCase.PowerLevelNumLayer(NumLayers) / 20);
         DMRSConfigurationType = 1;
-        DMRSLength = 1;
+
+        % Pick contiguous and non-contiguous allocations with probability 0.5.
+        isContiguous = (rand < 0.5);
+        if isContiguous
+            PRBstart = randi([0, nSizeBWP - 1]);
+            maxPRB = nSizeBWP - PRBstart;
+            if (rand < 0.25)
+                % Small allocation, possibly smaller than the PT-RS frequency density.
+                maxPRB = min(2 * FrequencyDensity, maxPRB);
+            end
+
+            PRBSet = PRBstart + (0:randi([1, maxPRB]) - 1);
+        else
+            PRBSet = randomNonContiguousPRBSet(nSizeBWP);
+        end
 
         % Configure the carrier according to the test parameters.
         subcarrierSpacing = 15 * (2 .^ Numerology);
