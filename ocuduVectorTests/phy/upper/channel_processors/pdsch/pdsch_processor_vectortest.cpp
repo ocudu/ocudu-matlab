@@ -269,23 +269,22 @@ private:
 
       return create_pdsch_processor_factory_sw(
           pdsch_encoder_factory, pdsch_modulator_factory, dmrs_pdsch_factory, ptrs_pdsch_factory);
+    }
+    if (encoder_type != "acc100") {
+      block_processor_factory = create_pdsch_block_processor_factory_sw(
+          ldpc_encoder_factory, ldpc_rate_matcher_factory, prg_factory, modulator_factory);
     } else {
-      if (encoder_type != "acc100") {
-        block_processor_factory = create_pdsch_block_processor_factory_sw(
-            ldpc_encoder_factory, ldpc_rate_matcher_factory, prg_factory, modulator_factory);
-      } else {
-        std::shared_ptr<hal::hw_accelerator_pdsch_enc_factory> hw_encoder_factory =
-            create_hw_accelerator_pdsch_enc_factory(eal_arguments);
-        if (!hw_encoder_factory) {
-          return nullptr;
-        }
-
-        block_processor_factory =
-            create_pdsch_block_processor_factory_hw(hw_encoder_factory, prg_factory, modulator_factory);
-      }
-      if (!block_processor_factory) {
+      std::shared_ptr<hal::hw_accelerator_pdsch_enc_factory> hw_encoder_factory =
+          create_hw_accelerator_pdsch_enc_factory(eal_arguments);
+      if (!hw_encoder_factory) {
         return nullptr;
       }
+
+      block_processor_factory =
+          create_pdsch_block_processor_factory_hw(hw_encoder_factory, prg_factory, modulator_factory);
+    }
+    if (!block_processor_factory) {
+      return nullptr;
     }
 
     if (factory_type.find("flexible") != std::string::npos) {
