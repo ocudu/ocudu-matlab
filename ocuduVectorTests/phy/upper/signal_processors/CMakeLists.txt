@@ -17,20 +17,19 @@ target_link_libraries(ptrs_pdsch_generator_vectortest ocudu_ptrs_generator ocudu
         ocuduvec ocudu_sequence_generators ocudu_channel_precoder ocudulog gtest gtest_main)
 add_test_vector(ptrs_pdsch_generator_vectortest ptrs/ptrs_pdsch_generator_test_data.tar.gz "")
 
-add_executable(srs_estimator_test
+add_executable(srs_estimator_vectortest
         srs/srs_estimator_logger_test.cpp
-        srs/srs_estimator_validator_test.cpp
         srs/srs_estimator_vectortest.cpp)
-target_link_libraries(srs_estimator_test ocudu_srs_estimator ocudu_dft ocudu_phy_support ocuduvec ocudu_sequence_generators ocudulog gtest gtest_main)
-add_test_vector(srs_estimator_test srs/srs_estimator_test_data.tar.gz "" "MVP-FUNC-PHY-16-3;MVP-FUNC-PHY-16-4;MVP-FUNC-PHY-16-5")
-target_include_directories(srs_estimator_test PRIVATE ${CMAKE_SOURCE_DIR}/tests/unittests/phy/upper/signal_processors/srs ${OCUDU_VECTORTESTS_DIR}/support)
+target_link_libraries(srs_estimator_vectortest ocudu_srs_estimator ocudu_dft ocudu_phy_support ocuduvec ocudu_sequence_generators ocudulog gtest gtest_main)
+add_test_vector(srs_estimator_vectortest srs/srs_estimator_test_data.tar.gz "" "MVP-FUNC-PHY-16-3;MVP-FUNC-PHY-16-4;MVP-FUNC-PHY-16-5")
+target_include_directories(srs_estimator_vectortest PRIVATE ${CMAKE_SOURCE_DIR}/tests/unittests/phy/upper/signal_processors/srs ${OCUDU_VECTORTESTS_DIR}/support)
 
-add_executable(dmrs_pbch_processor_test ssb/dmrs_pbch_processor_test.cpp)
-target_link_libraries(dmrs_pbch_processor_test ocudu_ssb_generators ocuduvec ocudu_sequence_generators ocudulog gtest gtest_main)
-add_test_vector(dmrs_pbch_processor_test ssb/dmrs_pbch_processor_test_data.tar.gz "")
+add_executable(dmrs_pbch_processor_vectortest ssb/dmrs_pbch_processor_vectortest.cpp)
+target_link_libraries(dmrs_pbch_processor_vectortest ocudu_ssb_generators ocuduvec ocudu_sequence_generators ocudulog gtest gtest_main)
+add_test_vector(dmrs_pbch_processor_vectortest ssb/dmrs_pbch_processor_test_data.tar.gz "")
 
-add_executable(dmrs_pdcch_processor_test pdcch/dmrs_pdcch_processor_test.cpp)
-target_link_libraries(dmrs_pdcch_processor_test
+add_executable(dmrs_pdcch_processor_vectortest pdcch/dmrs_pdcch_processor_vectortest.cpp)
+target_link_libraries(dmrs_pdcch_processor_vectortest
         ocudu_dmrs_pdcch
         ocudu_ran
         ocudu_phy_support
@@ -40,10 +39,10 @@ target_link_libraries(dmrs_pdcch_processor_test
         ocudulog
         gtest
         gtest_main)
-add_test_vector(dmrs_pdcch_processor_test pdcch/dmrs_pdcch_processor_test_data.tar.gz "")
+add_test_vector(dmrs_pdcch_processor_vectortest pdcch/dmrs_pdcch_processor_test_data.tar.gz "")
 
-add_executable(dmrs_pdsch_processor_test pdsch/dmrs_pdsch_processor_test.cpp)
-target_link_libraries(dmrs_pdsch_processor_test
+add_executable(dmrs_pdsch_processor_vectortest pdsch/dmrs_pdsch_processor_vectortest.cpp)
+target_link_libraries(dmrs_pdsch_processor_vectortest
         ocudu_dmrs_pdsch
         ocudu_ran
         ocudu_phy_support
@@ -53,15 +52,15 @@ target_link_libraries(dmrs_pdsch_processor_test
         ocudulog
         gtest
         gtest_main)
-add_test_vector(dmrs_pdsch_processor_test pdsch/dmrs_pdsch_processor_test_data.tar.gz "" "DU-PHY-5")
+add_test_vector(dmrs_pdsch_processor_vectortest pdsch/dmrs_pdsch_processor_test_data.tar.gz "" "DU-PHY-5")
 
-add_executable(dmrs_pucch_estimator_test pucch/dmrs_pucch_estimator_test.cpp)
-target_link_libraries(dmrs_pucch_estimator_test ocudu_dmrs_pucch ocudu_channel_estimator ocudu_dft ocuduvec
+add_executable(dmrs_pucch_estimator_vectortest pucch/dmrs_pucch_estimator_vectortest.cpp)
+target_link_libraries(dmrs_pucch_estimator_vectortest ocudu_dmrs_pucch ocudu_channel_estimator ocudu_dft ocuduvec
     ocudu_sequence_generators ocudulog ocudu_support gtest gtest_main)
-add_test_vector(dmrs_pucch_estimator_test pucch/dmrs_pucch_estimator_test_data.tar.gz "" "DU-PHY-3")
+add_test_vector(dmrs_pucch_estimator_vectortest pucch/dmrs_pucch_estimator_test_data.tar.gz "" "DU-PHY-3")
 
-add_executable(dmrs_pusch_estimator_test pusch/dmrs_pusch_estimator_test.cpp)
-target_link_libraries(dmrs_pusch_estimator_test
+add_executable(dmrs_pusch_estimator_vectortest pusch/dmrs_pusch_estimator_vectortest.cpp)
+target_link_libraries(dmrs_pusch_estimator_vectortest
     ocudu_dmrs_pusch
     ocudu_channel_estimator
     ocudu_dft
@@ -72,16 +71,16 @@ target_link_libraries(dmrs_pusch_estimator_test
     gtest
     gtest_main
 )
-add_test_vector(dmrs_pusch_estimator_test pusch/dmrs_pusch_estimator_test_data.tar.gz "" "DU-PHY-6")
+add_test_vector(dmrs_pusch_estimator_vectortest pusch/dmrs_pusch_estimator_test_data.tar.gz "" "DU-PHY-6")
 
-add_executable(nzp_csi_rs_generator_test nzp_csi_rs/nzp_csi_rs_generator_test.cpp)
-target_link_libraries(nzp_csi_rs_generator_test ocudu_nzp_csi_rs_generator ocuduvec ocudu_sequence_generators ocudulog
+add_executable(nzp_csi_rs_generator_vectortest nzp_csi_rs/nzp_csi_rs_generator_vectortest.cpp)
+target_link_libraries(nzp_csi_rs_generator_vectortest ocudu_nzp_csi_rs_generator ocuduvec ocudu_sequence_generators ocudulog
         ocudu_upper_phy_support ocudu_phy_support gtest gtest_main ocudu_channel_precoder)
-add_test_vector(nzp_csi_rs_generator_test nzp_csi_rs/nzp_csi_rs_generator_test_data.tar.gz "")
+add_test_vector(nzp_csi_rs_generator_vectortest nzp_csi_rs/nzp_csi_rs_generator_test_data.tar.gz "")
 
-add_executable(port_channel_estimator_test channel_estimator/port_channel_estimator_test.cpp)
-target_link_libraries(port_channel_estimator_test ocudu_channel_estimator ocudu_dft ocudulog gtest gtest_main)
-add_test_vector(port_channel_estimator_test channel_estimator/port_channel_estimator_test_data.tar.gz "")
+add_executable(port_channel_estimator_vectortest channel_estimator/port_channel_estimator_vectortest.cpp)
+target_link_libraries(port_channel_estimator_vectortest ocudu_channel_estimator ocudu_dft ocudulog gtest gtest_main)
+add_test_vector(port_channel_estimator_vectortest channel_estimator/port_channel_estimator_test_data.tar.gz "")
 
 if (TARGET Eigen3::Eigen)
     add_executable(doa_estimator_vectortest srs/doa_estimator_vectortest.cpp)

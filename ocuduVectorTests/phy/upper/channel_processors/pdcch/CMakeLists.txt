@@ -8,12 +8,12 @@ set_directory_properties(PROPERTIES LABELS "phy")
 
 include_directories(${CMAKE_SOURCE_DIR}/tests/unittests/phy/support)
 
-add_executable(pdcch_encoder_test pdcch_encoder_test.cpp)
-target_link_libraries(pdcch_encoder_test ocudu_channel_processors ocudulog gtest gtest_main)
-add_test_vector(pdcch_encoder_test pdcch_encoder_test_data.tar.gz "")
+add_executable(pdcch_encoder_vectortest pdcch_encoder_vectortest.cpp)
+target_link_libraries(pdcch_encoder_vectortest ocudu_channel_processors ocudulog gtest gtest_main)
+add_test_vector(pdcch_encoder_vectortest pdcch_encoder_test_data.tar.gz "")
 
-add_executable(pdcch_modulator_test pdcch_modulator_test.cpp)
-target_link_libraries(pdcch_modulator_test
+add_executable(pdcch_modulator_vectortest pdcch_modulator_vectortest.cpp)
+target_link_libraries(pdcch_modulator_vectortest
         ocudu_channel_coding
         ocudu_channel_modulation
         ocudu_channel_precoder
@@ -23,7 +23,7 @@ target_link_libraries(pdcch_modulator_test
         ocudulog
         gtest
         gtest_main)
-add_test_vector(pdcch_modulator_test pdcch_modulator_test_data.tar.gz "")
+add_test_vector(pdcch_modulator_vectortest pdcch_modulator_test_data.tar.gz "")
 
 add_executable(pdcch_processor_vectortest pdcch_processor_vectortest.cpp)
 target_link_libraries(pdcch_processor_vectortest ocudu_channel_processors ocudu_channel_precoder ocudulog gtest gtest_main)

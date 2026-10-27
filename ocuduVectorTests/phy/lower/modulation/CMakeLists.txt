@@ -26,12 +26,12 @@ target_link_libraries(ofdm_demodulator_vectortest ocudulog
 add_test_vector(ofdm_demodulator_vectortest ofdm_demodulator_test_data.tar.gz "")
 target_include_directories(ofdm_demodulator_vectortest PRIVATE ${OCUDU_VECTORTESTS_DIR}/support)
 
-add_executable(ofdm_prach_demodulator_test ofdm_prach_demodulator_test.cpp)
-target_link_libraries(ofdm_prach_demodulator_test ocudulog
+add_executable(ofdm_prach_demodulator_vectortest ofdm_prach_demodulator_vectortest.cpp)
+target_link_libraries(ofdm_prach_demodulator_vectortest ocudulog
         ocudu_lower_phy_modulation
         ocudu_dft
         ocudu_phy_support
         gtest
         gtest_main)
-add_test_vector(ofdm_prach_demodulator_test ofdm_prach_demodulator_test_data.tar.gz "" "MVP-FUNC-PHY-16-2")
-target_include_directories(ofdm_prach_demodulator_test PRIVATE ${OCUDU_VECTORTESTS_DIR}/support)
+add_test_vector(ofdm_prach_demodulator_vectortest ofdm_prach_demodulator_test_data.tar.gz "" "MVP-FUNC-PHY-16-2")
+target_include_directories(ofdm_prach_demodulator_vectortest PRIVATE ${OCUDU_VECTORTESTS_DIR}/support)

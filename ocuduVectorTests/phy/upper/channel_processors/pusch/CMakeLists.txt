@@ -10,7 +10,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/tests/unittests/phy/upper/channel_processors/pusch
     ${CMAKE_SOURCE_DIR}/tests/unittests/phy/support)
 
-add_executable(pusch_decoder_test pusch_decoder_vectortest.cpp)
+add_executable(pusch_decoder_vectortest pusch_decoder_vectortest.cpp)
 set(PUSCH_DECODER_LIBRARIES ocudu_channel_processors ocudulog ocudu_upper_phy_support)
 
 if (ENABLE_PUSCH_HWACC)
@@ -18,9 +18,9 @@ if (ENABLE_PUSCH_HWACC)
     list(APPEND PUSCH_DECODER_LIBRARIES ocudu_hal_pusch)
 endif (ENABLE_PUSCH_HWACC)
 
-target_link_libraries(pusch_decoder_test ${PUSCH_DECODER_LIBRARIES})
-add_test_vector(pusch_decoder_test pusch_decoder_test_data.tar.gz "-e0 -i2")
-add_test(pusch_decoder_early_stop_test pusch_decoder_test -e1 -i6)
+target_link_libraries(pusch_decoder_vectortest ${PUSCH_DECODER_LIBRARIES})
+add_test_vector(pusch_decoder_vectortest pusch_decoder_test_data.tar.gz "-e0 -i2")
+add_test(pusch_decoder_early_stop_vectortest pusch_decoder_vectortest -e1 -i6)
 
 add_executable(pusch_demodulator_vectortest pusch_demodulator_vectortest.cpp)
 target_include_directories(pusch_demodulator_vectortest PRIVATE ${OCUDU_VECTORTESTS_DIR}/support)
@@ -56,6 +56,6 @@ endif (ENABLE_PUSCH_HWACC)
 target_link_libraries(pusch_processor_vectortest ${PUSCH_PROCESSOR_LIBRARIES})
 add_test_vector(pusch_processor_vectortest pusch_processor_test_data.tar.gz "" "MVP-FUNC-MIMO-16-4;MVP-FUNC-MIMO-16-5")
 
-add_executable(ulsch_demultiplex_test ulsch_demultiplex_test.cpp)
-target_link_libraries(ulsch_demultiplex_test ocudu_channel_processors ocudu_channel_coding gtest gtest_main)
-add_test_vector(ulsch_demultiplex_test ulsch_demultiplex_test_data.tar.gz "")
+add_executable(ulsch_demultiplex_vectortest ulsch_demultiplex_vectortest.cpp)
+target_link_libraries(ulsch_demultiplex_vectortest ocudu_channel_processors ocudu_channel_coding gtest gtest_main)
+add_test_vector(ulsch_demultiplex_vectortest ulsch_demultiplex_test_data.tar.gz "")

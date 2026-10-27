@@ -6,12 +6,12 @@ set(TEST_DATA_DIR ${CMAKE_CURRENT_BINARY_DIR}/test_data)
 
 set_directory_properties(PROPERTIES LABELS "phy")
 
-add_executable(channel_equalizer_test channel_equalizer_test.cpp)
+add_executable(channel_equalizer_vectortest channel_equalizer_vectortest.cpp)
 target_link_libraries(
-        channel_equalizer_test
+        channel_equalizer_vectortest
         ocudu_channel_equalizer
         ocudulog
         gtest
         gtest_main)
-target_include_directories(channel_equalizer_test PRIVATE ${OCUDU_VECTORTESTS_DIR}/support)
-add_test_vector(channel_equalizer_test channel_equalizer_test_data.tar.gz "")
+target_include_directories(channel_equalizer_vectortest PRIVATE ${OCUDU_VECTORTESTS_DIR}/support)
+add_test_vector(channel_equalizer_vectortest channel_equalizer_test_data.tar.gz "")

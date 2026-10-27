@@ -10,8 +10,8 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/tests/unittests/phy/support
     ${CMAKE_SOURCE_DIR}/tests/unittests/phy/upper/channel_processors/pucch)
 
-add_executable(pucch_demodulator_format2_test pucch_demodulator_format2_test.cpp)
-target_link_libraries(pucch_demodulator_format2_test
+add_executable(pucch_demodulator_format2_vectortest pucch_demodulator_format2_vectortest.cpp)
+target_link_libraries(pucch_demodulator_format2_vectortest
         ocudu_channel_equalizer
         ocudu_channel_processors
         ocudu_dft
@@ -21,10 +21,10 @@ target_link_libraries(pucch_demodulator_format2_test
         ocudulog
         gtest
         gtest_main)
-add_test_vector(pucch_demodulator_format2_test pucch_demodulator_format2_test_data.tar.gz "")
+add_test_vector(pucch_demodulator_format2_vectortest pucch_demodulator_format2_test_data.tar.gz "")
 
-add_executable(pucch_demodulator_format3_test pucch_demodulator_format3_test.cpp)
-target_link_libraries(pucch_demodulator_format3_test
+add_executable(pucch_demodulator_format3_vectortest pucch_demodulator_format3_vectortest.cpp)
+target_link_libraries(pucch_demodulator_format3_vectortest
         ocudu_channel_equalizer
         ocudu_channel_processors
         ocudu_dft
@@ -34,10 +34,10 @@ target_link_libraries(pucch_demodulator_format3_test
         ocudulog
         gtest
         gtest_main)
-add_test_vector(pucch_demodulator_format3_test pucch_demodulator_format3_test_data.tar.gz "")
+add_test_vector(pucch_demodulator_format3_vectortest pucch_demodulator_format3_test_data.tar.gz "")
 
-add_executable(pucch_demodulator_format4_test pucch_demodulator_format4_test.cpp)
-target_link_libraries(pucch_demodulator_format4_test
+add_executable(pucch_demodulator_format4_vectortest pucch_demodulator_format4_vectortest.cpp)
+target_link_libraries(pucch_demodulator_format4_vectortest
         ocudu_channel_equalizer
         ocudu_channel_processors
         ocudu_dft
@@ -47,7 +47,7 @@ target_link_libraries(pucch_demodulator_format4_test
         ocudulog
         gtest
         gtest_main)
-add_test_vector(pucch_demodulator_format4_test pucch_demodulator_format4_test_data.tar.gz "")
+add_test_vector(pucch_demodulator_format4_vectortest pucch_demodulator_format4_test_data.tar.gz "")
 
 add_executable(pucch_processor_format0_vectortest pucch_processor_format0_vectortest.cpp)
 target_link_libraries(pucch_processor_format0_vectortest
