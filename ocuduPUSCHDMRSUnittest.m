@@ -162,7 +162,7 @@ classdef ocuduPUSCHDMRSUnittest < ocuduTest.ocuduBlockUnittest
             NRSID = nCellID;
             modulation = '16QAM';
             mappingType = 'A';
-            symbolAllocation = [1 13];
+            symbolAllocation = [0 14];
             PRBSet = PRBstart:PRBend;
             amplitude = sqrt(2);
 

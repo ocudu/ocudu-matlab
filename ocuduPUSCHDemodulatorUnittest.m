@@ -193,6 +193,13 @@ classdef ocuduPUSCHDemodulatorUnittest < ocuduTest.ocuduBlockUnittest
             nofSymbols = randi([7 (14 - startSymbol)]);
             symbolAllocation = [startSymbol, nofSymbols];
 
+            % For PUSCH mapping type A, symbol allocation must start at 0.
+            if (startSymbol == 0)
+                mappingType = 'A';
+            else
+                mappingType = 'B';
+            end
+
             % Prepare PRB set.
             PRBSet = 0:(numPRB-1);
             nID = obj.carrier.NCellID;
@@ -200,6 +207,7 @@ classdef ocuduPUSCHDemodulatorUnittest < ocuduTest.ocuduBlockUnittest
             % Configure PUSCH.
             RNTI = randi([1, 65535]);
             obj.pusch = nrPUSCHConfig( ...
+                MappingType = mappingType, ...
                 NumLayers=NumLayers, ...
                 Modulation=Modulation, ...
                 PRBSet=PRBSet, ...
