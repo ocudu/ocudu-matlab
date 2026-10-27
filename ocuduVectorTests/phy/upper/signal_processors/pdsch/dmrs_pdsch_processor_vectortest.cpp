@@ -13,10 +13,11 @@ namespace ocudu {
 std::ostream& operator<<(std::ostream& os, const test_case_t& test_case)
 {
   fmt::print(os,
-             "DM-RS type {}, symbol mask {}, k_rb {}",
+             "DM-RS type {}, symbol mask {}, k_rb {}, ports {}",
              test_case.config.type,
              test_case.config.symbols_mask,
-             test_case.config.reference_point_k_rb);
+             test_case.config.reference_point_k_rb,
+             test_case.config.dmrs_ports);
   return os;
 }
 

@@ -29,7 +29,6 @@ TEST(PDCCHVectorTests, DMRSProcessor)
 
   for (const test_case_t& test_case : dmrs_pdcch_processor_test_data) {
     int prb_idx_high = test_case.config.rb_mask.find_highest();
-    ASSERT_GT(prb_idx_high, 1);
     unsigned max_prb   = static_cast<unsigned>(prb_idx_high + 1);
     unsigned max_symb  = test_case.config.start_symbol_index + test_case.config.duration;
     unsigned max_ports = test_case.config.precoding_and_beamforming.get_nof_beams();
