@@ -120,8 +120,10 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
         %   Other parameters, such as subcarrier spacing, PDSCH frequency
         %   allocation (contiguous or non-contiguous with probability 1/2), slot
         %   number, RNTI, scrambling identifiers, target code rate, redundancy
-        %   version, power offsets and DM-RS additional positions are randomly
-        %   generated.
+        %   version, power offsets, DM-RS additional positions and DM-RS ports are
+        %   randomly generated. The DM-RS ports and the number of CDM groups without
+        %   data are selected among the combinations that the DCI can signal, as per
+        %   TS38.212 Section 7.3.1.2.2.
 
             import ocuduLib.phy.helpers.ocuduCSIRSValidateConfig
             import ocuduLib.phy.helpers.ocuduCSIRS2ReservedCell
@@ -132,6 +134,8 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             import ocuduTest.helpers.symbolAllocationMask2string
             import ocuduTest.helpers.bitPack
             import ocuduTest.helpers.randomNonContiguousPRBSet
+            import ocuduTest.helpers.pdschDMRSPortTable
+            import ocuduTest.helpers.dmrsPortMask2string
 
             % Generate a unique test ID.
             testID = testCase.generateTestID;
@@ -191,6 +195,15 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             % Additional DM-RS positions.
             DMRSAdditionalPosition = randi([0, maxDMRSAdditionalPosition]);
 
+            % DM-RS ports and number of CDM groups without data for DM-RS Type 1,
+            % randomly selected among the combinations with NumLayers layers.
+            portTable = pdschDMRSPortTable(1, DMRSLength);
+            numPorts = arrayfun(@(entry) numel(entry.DMRSPorts), portTable);
+            portTable = portTable(numPorts == NumLayers);
+            portEntry = portTable(randi([1, numel(portTable)]));
+            DMRSPortSet = portEntry.DMRSPorts;
+            numCDMGroupsWithoutData = portEntry.NumCDMGroupsWithoutData;
+
             % Set carrier parameters.
             carrier.NStartGrid = nStartGrid;
             carrier.NSizeGrid = nSizeGrid;
@@ -210,6 +223,8 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             pdsch.DMRS.NSCID = NSCID;
             pdsch.DMRS.DMRSReferencePoint = DMRSReferencePoint;
             pdsch.DMRS.DMRSLength = DMRSLength;
+            pdsch.DMRS.DMRSPortSet = DMRSPortSet;
+            pdsch.DMRS.NumCDMGroupsWithoutData = numCDMGroupsWithoutData;
             pdsch.NumLayers = NumLayers;
 
             % Pick contiguous or not contiguous RB allocation with probability 1/2.
@@ -353,7 +368,7 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             slotConfig = {log2(carrier.SubcarrierSpacing/15), carrier.NSlot};
             dmrsTypeString = sprintf('dmrs_config_type::type%d', pdsch.DMRS.DMRSConfigurationType);
             refPointStr = ['pdsch_processor::pdu_t::', pdsch.DMRS.DMRSReferencePoint];
-            numCDMGroupsWithoutData = pdsch.DMRS.NumCDMGroupsWithoutData;
+            dmrsPortsString = dmrsPortMask2string(pdsch.DMRS.DMRSPortSet);
             baseGraphString = ['ldpc_base_graph_type::BG', num2str(dlschInfo.BGN)];
 
             % Transport block size for limited buffer rate match.
@@ -395,6 +410,7 @@ classdef ocuduPDSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
                 NIDNSCID, ...                            % scrambling_id
                 NSCID, ...                               % n_scid
                 numCDMGroupsWithoutData, ...             % nof_cdm_groups_without_data
+                dmrsPortsString, ...                     % dmrs_ports
                 RBAllocationString, ...                  % freq_alloc
                 pdsch.SymbolAllocation(1), ...           % start_symbol_index
                 pdsch.SymbolAllocation(2), ...           % nof_symbols
