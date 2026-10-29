@@ -139,8 +139,6 @@ function unittestClass = name2Class(name)
             unittestClass = ?ocuduPRACHDetectorUnittest;
         case 'prach_generator'
             unittestClass = ?ocuduPRACHGeneratorUnittest;
-        case 'prach_scheduler'
-            unittestClass = ?ocuduPRACHSchedulerUnittest;
         case 'prs_generator'
             unittestClass = ?ocuduPRSGeneratorUnittest;
         case 'ptrs_pdsch_generator'
