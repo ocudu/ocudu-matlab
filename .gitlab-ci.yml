@@ -304,7 +304,7 @@ build ocudu with export on:
   extends: .build_and_unit_template
   variables:
     OCUDU_DIR: *ocudu_dir
-    OS: ubuntu-22.04
+    OS: ubuntu-24.04
     COMPILER: gcc
     OCUDU_TARGET: ocudu_exported_libs
     ENABLE_EXPORT: "True"
