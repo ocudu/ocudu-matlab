@@ -97,9 +97,10 @@ classdef ocuduPUSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
         %addTestDetailsToHeaderFile Adds details (e.g., type/variable declarations) to the test header file.
 
             fprintf(fileID, 'struct test_case_context {\n');
-            fprintf(fileID, '  unsigned               rg_nof_rb;\n');
-            fprintf(fileID, '  unsigned               rg_nof_symb;\n');
-            fprintf(fileID, '  pusch_processor::pdu_t config;\n');
+            fprintf(fileID, '  unsigned                           rg_nof_rb;\n');
+            fprintf(fileID, '  unsigned                           rg_nof_symb;\n');
+            fprintf(fileID, '  pusch_processor::common_parameters config;\n');
+            fprintf(fileID, '  pusch_processor::ue_grant          ue;\n');
             fprintf(fileID, '};\n\n');
             fprintf(fileID, 'struct test_case_t {\n');
             fprintf(fileID, '  test_case_context                                       context;\n');
@@ -130,6 +131,7 @@ classdef ocuduPUSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
             import ocuduTest.helpers.writeUint8File
             import ocuduTest.helpers.writeResourceGridEntryFile
             import ocuduTest.helpers.cellarray2str
+            import ocuduTest.helpers.dmrsPortMask2string
 
             % Generate a unique test ID.
             testID = testCase.generateTestID;
@@ -428,34 +430,45 @@ classdef ocuduPUSCHProcessorUnittest < ocuduTest.ocuduBlockUnittest
 
             rntiString = ['to_rnti(', num2str(pusch.RNTI), ')'];
 
+            % DM-RS ports used by the UE, one per layer starting at port 0.
+            dmrsPortsString = dmrsPortMask2string(0 : (pusch.NumLayers - 1));
+
+            ueContext = {...
+                rntiString, ...        % rnti
+                'INVALID_HARQ_ID', ... % harq_id
+                NRAPIDStr, ...         % n_rapid
+                };
+
+            ueDescription = {...
+                ueContext, ...             % context
+                mcsDescr, ...              % mcs_descr
+                {codewordDescription}, ... % codeword
+                uciDescription, ...        % uci
+                pusch.NID, ...             % n_id
+                TBSLBRMStr, ...            % tbs_lbrm
+                dmrsPortsString, ...       % dmrs_ports
+                };
+
             pduDescription = {...
-                'INVALID_HARQ_ID', ...                        % harq_id
-                slotConfig, ...                               % slot
-                slotOffset, ...                               % slot_offset
-                rntiString, ...                               % rnti
-                pusch.NSizeBWP, ...                           % bwp_size_rb
-                pusch.NStartBWP, ...                          % bwp_start_rb
-                cyclicPrefixStr, ...                          % cp
-                mcsDescr, ...                                 % mcs_descr
-                {codewordDescription}, ...                    % codeword
-                uciDescription, ...                           % uci
-                pusch.NID, ...                                % n_id
-                pusch.NumAntennaPorts, ...                    % nof_tx_layers
-                portsString, ...                              % rx_ports
-                dmrsSymbolMask, ...                           % dmrs_symbol_mask
-                DMRSDescr, ...                                % dmrs
-                RBAllocationString, ...                       % freq_alloc
-                pusch.SymbolAllocation(1), ...                % start_symbol_index
-                pusch.SymbolAllocation(2), ...                % nof_symbols
-                TBSLBRMStr, ...                               % tbs_lbrm
-                DCPosition, ...                               % dc_position
-                NRAPIDStr, ...                                % n_rapid
+                slotConfig, ...                % slot
+                slotOffset, ...                % slot_offset
+                pusch.NSizeBWP, ...            % bwp_size_rb
+                pusch.NStartBWP, ...           % bwp_start_rb
+                cyclicPrefixStr, ...           % cp
+                portsString, ...               % rx_ports
+                dmrsSymbolMask, ...            % dmrs_symbol_mask
+                DMRSDescr, ...                 % dmrs
+                RBAllocationString, ...        % freq_alloc
+                pusch.SymbolAllocation(1), ... % start_symbol_index
+                pusch.SymbolAllocation(2), ... % nof_symbols
+                DCPosition, ...                % dc_position
                 };
 
             contextDescription = {...
                 carrier.NSizeGrid, ...      % rg_nof_rb
                 carrier.SymbolsPerSlot, ... % rg_nof_symbols
                 pduDescription, ...         % config
+                ueDescription, ...          % ue
                 };
 
             % Generate PUSCH transmission entry

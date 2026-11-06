@@ -66,7 +66,7 @@ namespace ocudu {
 
 std::ostream& operator<<(std::ostream& os, const test_case_t& test_case)
 {
-  fmt::print(os, "{}", test_case.context.config);
+  fmt::print(os, "{} {}", test_case.context.config, test_case.context.ue);
   return os;
 }
 
@@ -354,7 +354,7 @@ private:
     pusch_proc_factory_config.ch_estimate_dimensions.nof_prb       = context.rg_nof_rb;
     pusch_proc_factory_config.ch_estimate_dimensions.nof_symbols   = context.rg_nof_symb;
     pusch_proc_factory_config.ch_estimate_dimensions.nof_rx_ports  = context.config.rx_ports.size();
-    pusch_proc_factory_config.ch_estimate_dimensions.nof_tx_layers = context.config.nof_tx_layers;
+    pusch_proc_factory_config.ch_estimate_dimensions.nof_tx_layers = context.ue.get_nof_layers();
     pusch_proc_factory_config.csi_sinr_calc_method       = channel_state_information::sinr_type::post_equalization;
     pusch_proc_factory_config.max_nof_concurrent_threads = 1;
     return create_pusch_processor_factory_sw(pusch_proc_factory_config);
@@ -398,11 +398,12 @@ protected:
 
 TEST_P(PuschProcessorFixture, PuschProcessorVectortest)
 {
-  const PuschProcessorParams&   param        = GetParam();
-  const std::string&            decoder_type = std::get<0>(param);
-  const test_case_t&            test_case    = std::get<1>(param);
-  const test_case_context&      context      = test_case.context;
-  const pusch_processor::pdu_t& config       = context.config;
+  const PuschProcessorParams&               param        = GetParam();
+  const std::string&                        decoder_type = std::get<0>(param);
+  const test_case_t&                        test_case    = std::get<1>(param);
+  const test_case_context&                  context      = test_case.context;
+  const pusch_processor::common_parameters& config       = context.config;
+  const pusch_processor::ue_grant&          ue           = context.ue;
 
   // Calculate resource grid dimensions.
   unsigned nof_ports        = (*std::max_element(config.rx_ports.begin(), config.rx_ports.end())) + 1;
@@ -422,15 +423,16 @@ TEST_P(PuschProcessorFixture, PuschProcessorVectortest)
   // Prepare buffer.
   rx_buffer_spy rm_buffer_spy(
       ldpc::MAX_CODEBLOCK_SIZE,
-      compute_nof_codeblocks(units::bytes(expected_data.size()).to_bits(), config.codeword.value().ldpc_base_graph));
+      compute_nof_codeblocks(units::bytes(expected_data.size()).to_bits(), ue.codeword.value().ldpc_base_graph));
   unique_rx_buffer rm_buffer(rm_buffer_spy, 0);
 
   // Make sure the configuration is valid.
-  ASSERT_TRUE(pdu_validator->is_valid(config));
+  ASSERT_TRUE(pdu_validator->is_valid(config, {&ue, 1}));
 
   // Process PUSCH PDU.
-  pusch_processor_result_notifier_spy results_notifier;
-  pusch_proc->process(data, std::move(rm_buffer), results_notifier, grid, config);
+  pusch_processor_result_notifier_spy     results_notifier;
+  pusch_processor::ue_specific_parameters ue_params = {.grant = ue, .rm_buffer = std::move(rm_buffer), .data = data};
+  pusch_proc->process(results_notifier, grid, config, span<pusch_processor::ue_specific_parameters>(&ue_params, 1));
 
   // The CRC must be KO if the decoder is empty.
   bool expected_tb_crc_ok = true;
@@ -452,7 +454,7 @@ TEST_P(PuschProcessorFixture, PuschProcessorVectortest)
   ASSERT_TRUE(std::isnormal(sinr_dB.value()));
 
   // Skip the rest of the assertions if UCI is not present.
-  if ((config.uci.nof_harq_ack == 0) && (config.uci.nof_csi_part1 == 0) && config.uci.csi_part2_size.entries.empty()) {
+  if ((ue.uci.nof_harq_ack == 0) && (ue.uci.nof_csi_part1 == 0) && ue.uci.csi_part2_size.entries.empty()) {
     return;
   }
 
@@ -467,7 +469,7 @@ TEST_P(PuschProcessorFixture, PuschProcessorVectortest)
   ASSERT_TRUE(std::isnormal(sinr_dB.value()));
 
   // Verify HARQ-ACK result.
-  if (config.uci.nof_harq_ack > 0) {
+  if (ue.uci.nof_harq_ack > 0) {
     std::vector<uint8_t> expected_harq_ack_unpacked = test_case.harq_ack.read();
     uci_payload_type     expected_harq_ack(expected_harq_ack_unpacked.begin(), expected_harq_ack_unpacked.end());
 
@@ -479,7 +481,7 @@ TEST_P(PuschProcessorFixture, PuschProcessorVectortest)
   }
 
   // Verify CSI Part 1 result.
-  if (config.uci.nof_csi_part1 > 0) {
+  if (ue.uci.nof_csi_part1 > 0) {
     std::vector<uint8_t> expected_csi_part1_unpacked = test_case.csi_part1.read();
     uci_payload_type     expected_csi_part1(expected_csi_part1_unpacked.begin(), expected_csi_part1_unpacked.end());
 
@@ -494,10 +496,11 @@ TEST_P(PuschProcessorFixture, PuschProcessorVectortest)
 TEST_P(PuschProcessorFixture, PuschProcessorVectortestZero)
 {
   // Reuses the configurations from the vector test.
-  const PuschProcessorParams&   param     = GetParam();
-  const test_case_t&            test_case = std::get<1>(param);
-  const test_case_context&      context   = test_case.context;
-  const pusch_processor::pdu_t& config    = context.config;
+  const PuschProcessorParams&               param     = GetParam();
+  const test_case_t&                        test_case = std::get<1>(param);
+  const test_case_context&                  context   = test_case.context;
+  const pusch_processor::common_parameters& config    = context.config;
+  const pusch_processor::ue_grant&          ue        = context.ue;
 
   // Read resource grid data and overwrite the RE with zeros.
   std::vector<resource_grid_reader_spy::expected_entry_t> grid_data = test_case.grid.read();
@@ -518,15 +521,16 @@ TEST_P(PuschProcessorFixture, PuschProcessorVectortestZero)
   // Prepare buffer.
   rx_buffer_spy rm_buffer_spy(
       ldpc::MAX_CODEBLOCK_SIZE,
-      compute_nof_codeblocks(units::bytes(data.size()).to_bits(), config.codeword.value().ldpc_base_graph));
+      compute_nof_codeblocks(units::bytes(data.size()).to_bits(), ue.codeword.value().ldpc_base_graph));
   unique_rx_buffer rm_buffer(rm_buffer_spy, 0);
 
   // Make sure the configuration is valid.
-  ASSERT_TRUE(pdu_validator->is_valid(config));
+  ASSERT_TRUE(pdu_validator->is_valid(config, {&ue, 1}));
 
   // Process PUSCH PDU.
-  pusch_processor_result_notifier_spy results_notifier;
-  pusch_proc->process(data, std::move(rm_buffer), results_notifier, grid, config);
+  pusch_processor_result_notifier_spy     results_notifier;
+  pusch_processor::ue_specific_parameters ue_params = {.grant = ue, .rm_buffer = std::move(rm_buffer), .data = data};
+  pusch_proc->process(results_notifier, grid, config, span<pusch_processor::ue_specific_parameters>(&ue_params, 1));
 
   // Verify UL-SCH decode results are invalid.
   const auto& sch_entries = results_notifier.get_sch_entries();
@@ -540,7 +544,7 @@ TEST_P(PuschProcessorFixture, PuschProcessorVectortestZero)
   ASSERT_TRUE(std::isinf(sinr_dB.value()));
 
   // Skip the rest of the assertions if UCI is not present.
-  if ((config.uci.nof_harq_ack == 0) && (config.uci.nof_csi_part1 == 0) && config.uci.csi_part2_size.entries.empty()) {
+  if ((ue.uci.nof_harq_ack == 0) && (ue.uci.nof_csi_part1 == 0) && ue.uci.csi_part2_size.entries.empty()) {
     return;
   }
 
@@ -554,8 +558,8 @@ TEST_P(PuschProcessorFixture, PuschProcessorVectortestZero)
   ASSERT_TRUE(std::isinf(sinr_dB.value()));
 
   // Verify HARQ-ACK result is invalid.
-  if (config.uci.nof_harq_ack > 0) {
-    uci_payload_type expected_payload = ~uci_payload_type(config.uci.nof_harq_ack);
+  if (ue.uci.nof_harq_ack > 0) {
+    uci_payload_type expected_payload = ~uci_payload_type(ue.uci.nof_harq_ack);
     ASSERT_EQ(uci_entry.harq_ack.status, uci_status::invalid);
     ASSERT_EQ(uci_entry.harq_ack.payload, expected_payload);
   } else {
@@ -564,8 +568,8 @@ TEST_P(PuschProcessorFixture, PuschProcessorVectortestZero)
   }
 
   // Verify CSI Part 1 result is invalid.
-  if (config.uci.nof_csi_part1 > 0) {
-    uci_payload_type expected_payload = ~uci_payload_type(config.uci.nof_csi_part1);
+  if (ue.uci.nof_csi_part1 > 0) {
+    uci_payload_type expected_payload = ~uci_payload_type(ue.uci.nof_csi_part1);
     ASSERT_EQ(uci_entry.csi_part1.status, uci_status::invalid);
     ASSERT_EQ(uci_entry.csi_part1.payload, expected_payload);
   } else {
