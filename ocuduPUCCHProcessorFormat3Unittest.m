@@ -219,11 +219,11 @@ classdef ocuduPUCCHProcessorFormat3Unittest < ocuduTest.ocuduBlockUnittest
                 nofUCIBitsPart1 = nofCodeBlockBits - 2*11;
             end
             if (nofUCIBitsPart1 < 5)
-                    nofUCIBitsPart1 = 2 * nofUCIBitsPart1;
-                    nofUCIBitsPart2 = 0;
-	    else
-                    nofUCIBitsPart2 = nofUCIBitsPart1;
-	    end
+                nofUCIBitsPart1 = 2 * nofUCIBitsPart1;
+                nofUCIBitsPart2 = 0;
+            else
+                nofUCIBitsPart2 = nofUCIBitsPart1;
+            end
 
             % Ensure that the UCI codeword is greater or equal to the minimum
             % number of UCI bits for PUCCH Format 3.
@@ -244,7 +244,7 @@ classdef ocuduPUCCHProcessorFormat3Unittest < ocuduTest.ocuduBlockUnittest
         %   Symbol allocation, frequency hopping, number of PRBs and code rate.
 
             import ocuduLib.phy.upper.channel_processors.pucch.ocuduPUCCH3Demodulator
-	    import ocuduLib.phy.upper.channel_processors.pucch.ocuduUCICodeWordLengths
+            import ocuduLib.phy.upper.channel_processors.pucch.ocuduUCICodeWordLengths
             import ocuduTest.helpers.matlab2ocuduCyclicPrefix
             import ocuduTest.helpers.writeResourceGridEntryFile
             import ocuduTest.helpers.writeUint8File
@@ -386,7 +386,7 @@ classdef ocuduPUCCHProcessorFormat3Unittest < ocuduTest.ocuduBlockUnittest
                 nofUCIBitsPart2, ...                        % nof_csi_part2
                 pucch.AdditionalDMRS, ...                   % additional_dmrs
                 strcmp(pucch.Modulation, 'pi/2-BPSK'), ...  % pi2_bpsk
-		MaxCodeRate, ...                            % max_code_rate
+                MaxCodeRate, ...                            % max_code_rate
                 };
 
             % Generate test case context.

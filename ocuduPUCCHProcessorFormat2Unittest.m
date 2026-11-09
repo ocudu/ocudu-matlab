@@ -340,12 +340,12 @@ classdef ocuduPUCCHProcessorFormat2Unittest < ocuduTest.ocuduBlockUnittest
             rxUCIPayloadPart1 = nrUCIDecode(schSoftBits(1:part1CodeWordLength), nofHarqAck + nofSR + nofCSIPart1);
             if (part2CodeWordLength > 0)
                 rxUCIPayloadPart2 = nrUCIDecode(schSoftBits((part1CodeWordLength + 1):end), nofCSIPart2);
-		assert(isequal(size(rxUCIPayloadPart2, 2), 1), ...
-			'ocudu_matlab:ocuduPUCCHProcessorFormat2Unittest', ...
-			'Ambiguous CSI Part 2 message.');
-	    else
+                assert(isequal(size(rxUCIPayloadPart2, 2), 1), ...
+                    'ocudu_matlab:ocuduPUCCHProcessorFormat2Unittest', ...
+                    'Ambiguous CSI Part 2 message.');
+            else
                 rxUCIPayloadPart2 = [];
-	    end
+            end
             rxUCIPayload = [rxUCIPayloadPart1; rxUCIPayloadPart2];
 
             assert(isequal(rxUCIPayload, UCIPayload), ...
@@ -422,7 +422,7 @@ classdef ocuduPUCCHProcessorFormat2Unittest < ocuduTest.ocuduBlockUnittest
                 nofSR, ...                          % nof_sr
                 nofCSIPart1, ...                    % nof_csi_part1
                 nofCSIPart2, ...                    % nof_csi_part2
-		maxCodeRate, ...                    % max_code_rate
+                maxCodeRate, ...                    % max_code_rate
                 };
 
             % Generate test case context.

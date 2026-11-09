@@ -76,7 +76,7 @@ classdef ocuduPDSCHModulatorUnittest < ocuduTest.ocuduBlockUnittest
             fprintf(fileID, '#include "ocudu/ran/precoding/precoding_codebooks.h"\n');
             fprintf(fileID, '#include "ocudu/support/file_vector.h"\n');
         end
-        function addTestDefinitionToHeaderFile(obj, fileID)
+        function addTestDefinitionToHeaderFile(~, fileID)
         %addTestDetailsToHeaderFile Adds details (e.g., type/variable declarations) to the test header file.
             fprintf(fileID, [...
                 'struct context_t {\n' ...
@@ -205,7 +205,6 @@ classdef ocuduPDSCHModulatorUnittest < ocuduTest.ocuduBlockUnittest
             DMRSTypeString = sprintf('dmrs_config_type::type%d', pdsch.DMRS.DMRSConfigurationType);
 
             rntiString = ['to_rnti(', num2str(pdsch.RNTI), ')'];
-            precodingString = ['precoding_beamforming_configuration::make_wideband(make_identity(' num2str(NumLayers) '))'];
 
             bwpConfig = {NStartBWP, NStartBWP + NSizeBWP};
             timeAlloc= {pdsch.SymbolAllocation(1), sum(pdsch.SymbolAllocation)};
