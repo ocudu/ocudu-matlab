@@ -149,14 +149,28 @@ classdef CheckAnalyzers < matlab.unittest.TestCase
 
             % Check the extra output.
             obj.assertClass(extra, 'struct', 'Output "extra" is not a struct.');
-            obj.assertEqual(fieldnames(extra), {'RV'; 'TargetCodeRate'; 'TransportBlockLength'; 'OACK'; 'OCSI1'; 'DCPosition'}, ...
+            obj.assertEqual(fieldnames(extra), {'RV'; 'TargetCodeRate'; 'TransportBlockLength'; 'OACK'; 'OCSI1'; 'DCPosition'; 'TBSLBRM'}, ...
                 'Wrong extra field names.');
+            obj.assertEqual(extra.TBSLBRM, 3168, 'Wrong limited buffer rate matching TBS.');
             obj.assertEqual(extra.RV, 0, 'Wrong redundancy version.');
             obj.assertEqual(extra.TargetCodeRate, 0.92578125, 'Wrong target code rate.');
             obj.assertEqual(extra.TransportBlockLength, 196776, 'Wrong transport block size.');
             obj.assertEmpty(extra.DCPosition, 'Wrong DC position.');
             obj.assertEqual(extra.OACK, 0, 'Wrong number of multiplexed ACK bits.');
             obj.assertEqual(extra.OCSI1, 0, 'Wrong number of multiplexed CSI1 bits.');
+
+            % Non-interactive parsing of the same entry must give the same result.
+            [carrierNI, puschNI, extraNI] = ocuduParseLogs(Entry=logs, SubcarrierSpacing=30, NSizeGrid=273);
+            obj.assertEqual(carrierNI, carrier, 'Non-interactive parsing: wrong carrier.');
+            obj.assertEqual(puschNI, pusch, 'Non-interactive parsing: wrong pusch.');
+            obj.assertEqual(extraNI, extra, 'Non-interactive parsing: wrong extra.');
+
+            % Interactive parsing with fixed numerology only asks for confirmation.
+            obj.injectInputStub({'y'});
+            [carrierFN, puschFN, extraFN] = ocuduParseLogs(SubcarrierSpacing=30, NSizeGrid=273);
+            obj.assertEqual(carrierFN, carrier, 'Fixed numerology parsing: wrong carrier.');
+            obj.assertEqual(puschFN, pusch, 'Fixed numerology parsing: wrong pusch.');
+            obj.assertEqual(extraFN, extra, 'Fixed numerology parsing: wrong extra.');
         end % of function checkParser(obj)
 
         function checkParserPUCCHF0(obj)

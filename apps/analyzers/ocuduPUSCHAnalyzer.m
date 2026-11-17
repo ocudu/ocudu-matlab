@@ -44,7 +44,14 @@
 %   [carrier, pusch, extra] = ocuduParseLogs;
 %   ocuduPUSCHAnalyzer(carrier, pusch, extra, 'rx_symbols.bin', 0, 91728)
 %
-%   See also ocuduParseLogs.
+%   Example (from the whole log file):
+%   T = ocuduParsePUSCHLog('gnb.log');
+%   iRow = find(~T.CRCOK & ~isnan(T.RGOffset), 1);
+%   [carrier, pusch, extra] = ocuduParseLogs(Entry=T.Entry{iRow}, SubcarrierSpacing=30, NSizeGrid=273);
+%   [bits, crcOK, info] = ocuduPUSCHAnalyzer(carrier, pusch, extra, 'rx_symbols.bin', ...
+%       T.RGOffset(iRow), T.RGSize(iRow), Plot=false);
+%
+%   See also ocuduParseLogs, ocuduParsePUSCHLog.
 
 % SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 % SPDX-License-Identifier: BSD-3-Clause-Open-MPI

@@ -5,10 +5,26 @@
 %   CARRIER - an nrCarrierConfig object with the carrier configuration (meaningless
 %             for PRACH)
 %   PHYCH   - a PHY uplink channel configuration object (specifically, an
-%             nrPUSCHConfig, an nrPUCCHNConfig, N=1,2,3,4, or an nrPRACHConfig object)
+%             nrPUSCHConfig, an nrPUCCHNConfig, N=0,1,2,3,4, or an nrPRACHConfig object)
 %   EXTRA   - a struct with PUSCH additional information, namely redundancy
-%             version, transport block size and target code rate for PUSCH, number of
-%             SR, ACK and CSI bits for PUCCH (for PRACH, the struct is empty).
+%             version, transport block size, target code rate, number of multiplexed
+%             ACK and CSI1 bits, DC position and limited buffer rate matching TBS (in
+%             bytes, field TBSLBRM) for PUSCH, number of SR, ACK and CSI bits for PUCCH
+%             (for PRACH, the struct is empty).
+%   The subcarrier spacing and the grid size, which are not part of the log entry,
+%   are requested interactively.
+%
+%   [...] = ocuduParseLogs(Name=Value) specifies additional options as name-value
+%   arguments. Any argument that is not provided is requested interactively.
+%   Entry             - The log entry to parse, either as text with one log line per
+%                       row (e.g., an element of the Entry column of the table returned
+%                       by ocuduParsePUSCHLog) or as a string array or cell array of
+%                       character vectors with one log line per element. The header line
+%                       (PUSCH, PUCCH or PRACH) must come first. When provided, the
+%                       entry is parsed without reading the clipboard nor asking for
+%                       confirmation.
+%   SubcarrierSpacing - Subcarrier spacing in kHz (15, 30 or 120).
+%   NSizeGrid         - Resource grid size as a number of RBs.
 %
 %   Remark: In the PRACH case, some parameters cannot be obtained from the logs.
 %   For instance, the configuration index is set to the first index that supports
@@ -60,53 +76,85 @@
 %     epre=+22.2dB
 %     rsrp=+22.2dB
 %     t_align=0.1us
+%
+%   Example (non-interactive, on a log entry found by ocuduParsePUSCHLog):
+%   T = ocuduParsePUSCHLog('gnb.log');
+%   [carrier, pusch, extra] = ocuduParseLogs(Entry=T.Entry{1}, SubcarrierSpacing=30, NSizeGrid=273);
+%
+%   See also ocuduParsePUSCHLog, ocuduPUSCHAnalyzer, ocuduPUCCHAnalyzer.
 
 % SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 % SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-function [carrier, phych, extra] = ocuduParseLogs
-
-    fprintf(['\nCopy the relevant section of the logs to the system clipboard ', ...
-        '(typically select and Ctrl+C), then switch back to MATLAB and press any key.\n']);
-
-    pause;
-
-    logs = clipboard('paste');
-
-    fprintf('Parsing the following log section:\n\n%s\n\n', logs);
-
-    isOK = input('Do you want to continue? [Y]/N ', 's');
-    if isempty(isOK)
-        isOK = 'Y';
-    end
-    if ~ismember(isOK, {'y', 'Y'})
-        fprintf('Parsing aborted.\n');
-        return;
+function [carrier, phych, extra] = ocuduParseLogs(options)
+    arguments
+        options.Entry                    {mustBeText} = ''
+        options.SubcarrierSpacing double {mustBeScalarOrEmpty, mustBeMember(options.SubcarrierSpacing, [15, 30, 120])} = []
+        options.NSizeGrid         double {mustBeScalarOrEmpty, mustBeInteger, mustBePositive} = []
     end
 
-    allLines = splitlines(logs);
-    nLines = length(allLines);
+    carrier = [];
+    phych = [];
+    extra = [];
 
-    carrier = nrCarrierConfig;
+    if (strlength(join(string(options.Entry), "")) == 0)
+        fprintf(['\nCopy the relevant section of the logs to the system clipboard ', ...
+            '(typically select and Ctrl+C), then switch back to MATLAB and press any key.\n']);
 
-    % The subcarrier spacing must be provided manually.
-    scs = input('Subcarrier spacing in kHz: ');
-    if ismember(scs, [15, 30, 60])
-        carrier.SubcarrierSpacing = scs;
+        pause;
+
+        logs = clipboard('paste');
+
+        fprintf('Parsing the following log section:\n\n%s\n\n', logs);
+
+        isOK = input('Do you want to continue? [Y]/N ', 's');
+        if isempty(isOK)
+            isOK = 'Y';
+        end
+        if ~ismember(isOK, {'y', 'Y'})
+            fprintf('Parsing aborted.\n');
+            return;
+        end
     else
-        error('Invalid subcarrier spacing %d kHz', scs);
+        logs = join(string(options.Entry), newline);
     end
 
-    % The grid size must be provided manually.
-    gridSize = input('Grid size as a number of RBs: ');
-    carrier.NSizeGrid = gridSize;
-    carrier.NStartGrid = 0;
+    allLines = cellstr(splitlines(strtrim(logs)));
+
+    % The subcarrier spacing is requested interactively, if not provided.
+    scs = options.SubcarrierSpacing;
+    if isempty(scs)
+        scs = input('Subcarrier spacing in kHz: ');
+        if ~ismember(scs, [15, 30, 120])
+            error('Invalid subcarrier spacing %d kHz', scs);
+        end
+    end
+
+    % The grid size is requested interactively, if not provided.
+    gridSize = options.NSizeGrid;
+    if isempty(gridSize)
+        gridSize = input('Grid size as a number of RBs: ');
+    end
+
+    carrier = nrCarrierConfig(SubcarrierSpacing=scs, NSizeGrid=gridSize, NStartGrid=0);
+
+    [carrier, phych, extra] = parseEntry(allLines, carrier);
+end % of function ocuduParseLogs(options)
+
+function [carrier, phych, extra] = parseEntry(allLines, carrier)
+% Parses the lines of a PUSCH, PUCCH or PRACH log entry.
+
+    nLines = length(allLines);
 
     % Check whether this is a PUSCH or PUCCH log entry.
     chPattern = ("PUSCH"|"PUCCH"|"PRACH");
     chType = extract(allLines{1}, chPattern);
+    if isempty(chType)
+        error('Invalid channel type: can only parse PUSCH, PUCCH and PRACH logs.');
+    end
 
     isPUSCH = true;
+    format = [];
     if strcmp(chType{1}, 'PUSCH')
         phych = nrPUSCHConfig;
     elseif strcmp(chType{1}, 'PUCCH')
@@ -133,14 +181,18 @@ function [carrier, phych, extra] = ocuduParseLogs
         extra = struct([]);
         phych = parsePRACH(allLines);
         return;
-    else
-        error('Invalid channel type: can only parse PUSCH, PUCCH and PRACH logs.');
     end
 
     nACK = 0;
     nCSI1 = 0;
     nCSI2 = 0;
     nSR = 0;
+    oack = 0;
+    ocsi1 = 0;
+    rv = 0;
+    tcr = [];
+    dcPosition = [];
+    tbsLBRM = [];
     % Now parse all lines and get the values we need.
     for iLine = 2:nLines
         parameter = split(strtrim(allLines{iLine}), '=');
@@ -153,13 +205,13 @@ function [carrier, phych, extra] = ocuduParseLogs
             case 'betas'
                 % This only applies to PUSCH.
                 betas = sscanf(parameter{2}, '[%f, %f, %f]');
-                if betas(1) ~= 0
+                if (betas(1) ~= 0)
                     phych.BetaOffsetACK = betas(1);
                 end
-                if betas(2) ~= 0
+                if (betas(2) ~= 0)
                     phych.BetaOffsetCSI1 = betas(2);
                 end
-                if betas(3) ~= 0
+                if (betas(3) ~= 0)
                     phych.BetaOffsetCSI2 = betas(3);
                 end
             case 'oack'
@@ -182,7 +234,7 @@ function [carrier, phych, extra] = ocuduParseLogs
                 rv = sscanf(parameter{2}, '%d');
             case 'n_id'
                 nid = sscanf(parameter{2}, '%d');
-                if (~isPUSCH && (format == 0 || format == 1))
+                if (~isPUSCH && ((format == 0) || (format == 1)))
                     phych.HoppingID = nid;
                 else
                     phych.NID = nid;
@@ -225,6 +277,9 @@ function [carrier, phych, extra] = ocuduParseLogs
                 phych.PRBSet = prb(1):(prb(2)-1);
             case 'dc_position'
                 dcPosition = sscanf(parameter{2}, '%d');
+            case {'tbs_lbrm', 'lbrm'}
+                % Limited buffer rate matching TBS, in bytes (PUSCH only).
+                tbsLBRM = sscanf(parameter{2}, '%dbytes');
             case 'pi2_bpsk'
                 % This applies to PUCCH F3 and F4 only.
                 if strcmp(parameter{2}, 'false')
@@ -291,7 +346,7 @@ function [carrier, phych, extra] = ocuduParseLogs
         tbs = sscanf(allLines{1}(tStart:end), 'tbs=%d');
 
         extra = struct('RV', rv, 'TargetCodeRate', tcr, 'TransportBlockLength', tbs * 8, ...
-            'OACK', oack, 'OCSI1', ocsi1, 'DCPosition', dcPosition);
+            'OACK', oack, 'OCSI1', ocsi1, 'DCPosition', dcPosition, 'TBSLBRM', tbsLBRM);
     else
         extra = struct('NumHARQAck', nACK, 'NumSR', 0, 'NumCSIPart1', nCSI1, 'NumCSIPart2', nCSI2);
         if (format ~= 1)
@@ -302,7 +357,7 @@ function [carrier, phych, extra] = ocuduParseLogs
             extra.NumSR = 1;
         end
     end
-end
+end % of function parseEntry(allLines, carrier)
 
 function prach = parsePRACH(allLines)
 % Parses a PRACH log.
