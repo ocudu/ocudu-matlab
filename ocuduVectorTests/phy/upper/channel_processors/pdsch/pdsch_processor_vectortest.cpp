@@ -416,7 +416,7 @@ TEST_P(PdschProcessorFixture, PdschProcessorVectortest)
   }
 
   // Make sure the configuration is valid.
-  error_type<std::string> is_valid = pdu_validator->is_valid(config);
+  error_type<std::string> is_valid = pdu_validator->is_valid(config, max_prb);
   ASSERT_TRUE(is_valid.has_value()) << is_valid.error();
 
   // Process PDSCH.
