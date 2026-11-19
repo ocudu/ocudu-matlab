@@ -354,7 +354,7 @@ private:
     pusch_proc_factory_config.ch_estimate_dimensions.nof_prb       = context.rg_nof_rb;
     pusch_proc_factory_config.ch_estimate_dimensions.nof_symbols   = context.rg_nof_symb;
     pusch_proc_factory_config.ch_estimate_dimensions.nof_rx_ports  = context.config.rx_ports.size();
-    pusch_proc_factory_config.ch_estimate_dimensions.nof_tx_layers = context.ue.get_nof_layers();
+    pusch_proc_factory_config.ch_estimate_dimensions.nof_tx_layers = context.ue.dmrs_ports.count();
     pusch_proc_factory_config.csi_sinr_calc_method       = channel_state_information::sinr_type::post_equalization;
     pusch_proc_factory_config.max_nof_concurrent_threads = 1;
     return create_pusch_processor_factory_sw(pusch_proc_factory_config);
@@ -426,12 +426,13 @@ TEST_P(PuschProcessorFixture, PuschProcessorVectortest)
       compute_nof_codeblocks(units::bytes(expected_data.size()).to_bits(), ue.codeword.value().ldpc_base_graph));
   unique_rx_buffer rm_buffer(rm_buffer_spy, 0);
 
-  // Make sure the configuration is valid.
-  ASSERT_TRUE(pdu_validator->is_valid(config, {&ue, 1}));
-
   // Process PUSCH PDU.
   pusch_processor_result_notifier_spy     results_notifier;
   pusch_processor::ue_specific_parameters ue_params = {.grant = ue, .rm_buffer = std::move(rm_buffer), .data = data};
+
+  // Make sure the configuration is valid.
+  ASSERT_TRUE(pdu_validator->is_valid(config, span<pusch_processor::ue_specific_parameters>(&ue_params, 1)));
+
   pusch_proc->process(results_notifier, grid, config, span<pusch_processor::ue_specific_parameters>(&ue_params, 1));
 
   // The CRC must be KO if the decoder is empty.
@@ -524,12 +525,13 @@ TEST_P(PuschProcessorFixture, PuschProcessorVectortestZero)
       compute_nof_codeblocks(units::bytes(data.size()).to_bits(), ue.codeword.value().ldpc_base_graph));
   unique_rx_buffer rm_buffer(rm_buffer_spy, 0);
 
-  // Make sure the configuration is valid.
-  ASSERT_TRUE(pdu_validator->is_valid(config, {&ue, 1}));
-
   // Process PUSCH PDU.
   pusch_processor_result_notifier_spy     results_notifier;
   pusch_processor::ue_specific_parameters ue_params = {.grant = ue, .rm_buffer = std::move(rm_buffer), .data = data};
+
+  // Make sure the configuration is valid.
+  ASSERT_TRUE(pdu_validator->is_valid(config, span<pusch_processor::ue_specific_parameters>(&ue_params, 1)));
+
   pusch_proc->process(results_notifier, grid, config, span<pusch_processor::ue_specific_parameters>(&ue_params, 1));
 
   // Verify UL-SCH decode results are invalid.
